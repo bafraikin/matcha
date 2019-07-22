@@ -14,6 +14,10 @@ class MatchaBase
 		super(*vars)
 	end
 
+	def to_hash
+		self.attributes.reduce({}) {| hash, value| hash[value] = self.send(value.to_s) ; hash}
+	end
+
 	def self.attributes
 		@attributes
 	end
@@ -37,16 +41,24 @@ class MatchaBase
 	end
 
 	def self.where(*args, labels: "", equality: {})
+		hash_map = {}
 		if args.size ==  0 && equality.size == 0
 			raise "please provide some argument to 'where' method #{__FILE__}:#{__LINE__}"
 		end
 		query = "MATCH (n:#{class_name + labels}) WHERE "
 		equality.each do |k,v|
-			args <<  "n." + k.to_s + " = '" + v + "' "
+			args <<  "n." + k.to_s + " = {" + k.to_s + "} "
+			hash_map[k] = equality.delete(k)
 		end
 		query += args.join(" AND ") 
 		query += "RETURN n"
-		transform_it(perform_request(query: query).rows)
+		transform_it(perform_request(query: query, hash: hash_map).rows)
+	end
+
+	def save
+		hash_map = self.to_hash
+		hash_map.delete(:id)
+		self.class.perform_request(query: "MATCH (n) WHERE ID(n) = #{self.id} SET n = {hash}", hash: {:hash => hash_map})
 	end
 
 	private
@@ -55,14 +67,19 @@ class MatchaBase
 		args[0].each_with_index do |arg, index|
 			to_return.push(new)
 			self.attributes.each do |attr|
-				to_return[index].send(attr.to_s + '=', arg[0].properties[attr])
+				if attr.to_s == 'id'
+					to_return[index].send(attr.to_s + '=', arg[0].id)
+				else
+					to_return[index].send(attr.to_s + '=', arg[0].properties[attr])
+				end
 			end
 		end
 		to_return
 	end
 
-	def self.perform_request(query: "")
-		puts query.blue
-		@@adaptor.query(@@session, query)
+	def self.perform_request(query:, hash: {})
+		puts query.blue + " "  + hash.to_s.yellow
+		binding.pry
+		@@session.send('query', query, **hash)
 	end
 end
