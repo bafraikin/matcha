@@ -4,7 +4,5 @@ class User < MatchaBase
 	attr_accessor :first_name, :last_name, :sex, :id, :age
 end
 
-a = User.where(equality: {first_name: 'baptiste'})
+a = User.find(id: 65)
 p a
-
-

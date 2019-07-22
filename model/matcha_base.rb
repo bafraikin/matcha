@@ -61,8 +61,13 @@ class MatchaBase
 		self.class.perform_request(query: "MATCH (n) WHERE ID(n) = #{self.id} SET n = {hash}", hash: {:hash => hash_map})
 	end
 
+	def self.find(id:)
+		transform_it(perform_request(query: "MATCH (n) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
+	end
+
 	private
 	def self.transform_it(*args)
+		binding.pry
 		to_return = []
 		args[0].each_with_index do |arg, index|
 			to_return.push(new)
@@ -79,7 +84,6 @@ class MatchaBase
 
 	def self.perform_request(query:, hash: {})
 		puts query.blue + " "  + hash.to_s.yellow
-		binding.pry
 		@@session.send('query', query, **hash)
 	end
 end
