@@ -5,6 +5,7 @@ class CoucouController < ApplicationController
 	end
 
 	get('/coucou') do 
+		binding.pry
 		erb:'coucou.html'
 	end
 

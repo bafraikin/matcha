@@ -7,6 +7,7 @@ require 'pry'
 class MatchaBase 
 	@@adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://localhost:7474')
 	@@session = Neo4j::Core::CypherSession.new(@@adaptor) 
+	class Error < StandardError; end
 
 	def self.attr_accessor(*vars)
 		@attributes ||= []
@@ -61,13 +62,22 @@ class MatchaBase
 		self.class.perform_request(query: "MATCH (n) WHERE ID(n) = #{self.id} SET n = {hash}", hash: {:hash => hash_map})
 	end
 
+	def self.create(hash: {})
+		unless (self.cant_be_blank_on_creation - hash.keys).size == 0
+			raise MatchaBase::Error, "missing argument on create"
+		end
+		array_label = self.labels.map { |label| hash.delete(label) }
+		query = "CREATE (n:#{class_name + array_label.map {|label| ":"+ label}.join } {hash}) RETURN n"
+		binding.pry
+		transform_it(self.perform_request(query: query, hash: {hash: hash}).rows)
+	end
+
 	def self.find(id:)
 		transform_it(perform_request(query: "MATCH (n) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
 	end
 
 	private
 	def self.transform_it(*args)
-		binding.pry
 		to_return = []
 		args[0].each_with_index do |arg, index|
 			to_return.push(new)
@@ -84,6 +94,6 @@ class MatchaBase
 
 	def self.perform_request(query:, hash: {})
 		puts query.blue + " "  + hash.to_s.yellow
-		@@session.send('query', query, **hash)
+		 @@session.send('query', query, **hash)
 	end
 end
