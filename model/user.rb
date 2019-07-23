@@ -4,5 +4,5 @@ class User < MatchaBase
 	attr_accessor :first_name, :last_name, :sex, :id, :age
 end
 
-a = User.find(id: 65)
+a = User.all
 p a
