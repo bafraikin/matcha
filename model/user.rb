@@ -27,7 +27,7 @@ class User < MatchaBase
 
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?
-			super(hash: hash)
+			super(hash: hash_password(hash: hash))
 		else
 			error_message(array: error)
 		end
