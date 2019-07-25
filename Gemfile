@@ -4,4 +4,5 @@ source 'https://rubygems.org' do
 	gem 'bcrypt'
 	gem 'faker'
 	gem 'sinatra'
+	gem 'rack-console'
 end
