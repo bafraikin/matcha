@@ -1,5 +1,6 @@
 class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
+	include
 	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest
 
 	def interest
@@ -13,6 +14,16 @@ class User < MatchaBase
 	def self.cant_be_blank_on_creation
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
 	end
+
+	def self.hash_password(hash:)
+		hash[:password] = BCrypt::Password.create(hash[:password])
+		hash
+	end
+
+	def self.good_password?(to_test:, hash:)
+		BCrypt::Password.new(hash) == to_test
+	end
+
 
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?
