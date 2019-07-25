@@ -33,8 +33,7 @@ module UserHelper
 		end
 
 		def valid_last_name?(last_name)
-			if last_name.nil? || last_name[/\A\w+\z/].to_s.size < 2
-				p last_name
+			if last_name.nil? || last_name[/\A(\w|')+\z/].to_s.size < 2
 				false
 			else
 				true
