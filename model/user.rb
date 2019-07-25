@@ -1,7 +1,7 @@
 class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
 	include BCrypt
-	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest
+	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude
 
 	def interest
 		@interest || []
@@ -24,6 +24,10 @@ class User < MatchaBase
 		BCrypt::Password.new(hash) == to_test
 	end
 
+	def range_generator(type:, range:)
+		["n.#{type} < n.#{type} + #{range}", 
+   "n.#{type} > n.#{type} - #{range}"]
+	end
 
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?

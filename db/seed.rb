@@ -1,5 +1,3 @@
-
-
 require 'Faker'
 require 'BCrypt'
 Dir['../model/helper/*.rb'].each {|file| require file}

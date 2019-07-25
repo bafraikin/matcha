@@ -42,6 +42,20 @@ class MatchaBase
 		transform_it(perform_request(query: query).rows)
 	end
 
+	def self.find_with_right_interest_and_right_value(*args, interest:, option:, equality: {})
+		label = labels.map{|l| ':{l}'}.join.to_s
+		if option.size == 1
+			option = "n." + option[0]
+		elsif option.size
+			option = 'n.' + option[0] + " OR n." + option[1]
+		end
+		equality.each do |k,v|
+			args <<  "n." + k.to_s + " = " + v.to_s + " "
+		end
+		query = "MATCH (n:user) WHERE " + option + " AND #{interest} IN n.interest AND" + args.flatten.join(" AND ") + "RETURN n"
+		query_transform(query: query)
+	end
+
 	def self.where(*args, labels: "", equality: {})
 		hash_map = {}
 		if args.size ==  0 && equality.size == 0
@@ -76,6 +90,8 @@ class MatchaBase
 	def self.create(hash: {})
 		unless (self.cant_be_blank_on_creation - hash.keys).size == 0
 			raise MatchaBase::Error, "missing argument on create"
+		elsif (hash.keys - self.attributes).size != 0
+			raise MatchaBase::Error, "too many argument on create"
 		end
 		array_label = self.labels.map { |label| hash[label.to_sym] }
 		query = "CREATE (n:#{class_name + array_label.map {|label| ":"+ label}.join.to_s } {hash}) RETURN n"
