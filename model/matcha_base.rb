@@ -5,6 +5,7 @@ Dir["../lib/*.rb"].each {|file| require file }
 require 'pry'
 
 class MatchaBase 
+	extend ValidatorHelper
 	@@adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://localhost:7474')
 	@@session = Neo4j::Core::CypherSession.new(@@adaptor) 
 	class Error < StandardError; end
@@ -62,21 +63,35 @@ class MatchaBase
 		self.class.perform_request(query: "MATCH (n) WHERE ID(n) = #{self.id} SET n = {hash}", hash: {:hash => hash_map})
 	end
 
+	def is_related_with(link:, type_of_node: [])
+		query = "MATCH (n)-[:#{link}]->(m)"
+		type_of_node.each_with_index do |type, index|
+			query += (index  ==  0) ?  " WHERE " : " OR "
+			query += "m."  + type
+		end
+		query += " AND ID(n) = " + self.id + "RETURN m"
+		self.class.query_transform(query: query)
+	end
+
 	def self.create(hash: {})
 		unless (self.cant_be_blank_on_creation - hash.keys).size == 0
 			raise MatchaBase::Error, "missing argument on create"
 		end
-		array_label = self.labels.map { |label| hash.delete(label) }
-		query = "CREATE (n:#{class_name + array_label.map {|label| ":"+ label}.join } {hash}) RETURN n"
-		binding.pry
+		array_label = self.labels.map { |label| hash[label.to_sym] }
+		query = "CREATE (n:#{class_name + array_label.map {|label| ":"+ label}.join.to_s } {hash}) RETURN n"
 		transform_it(self.perform_request(query: query, hash: {hash: hash}).rows)
 	end
+
 
 	def self.find(id:)
 		transform_it(perform_request(query: "MATCH (n) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
 	end
 
 	private
+	def self.query_transform(query:, hash: {})
+		transform_it(self.perform_request(query: query, hash: hash).rows)
+	end
+
 	def self.transform_it(*args)
 		to_return = []
 		args[0].each_with_index do |arg, index|
@@ -94,6 +109,6 @@ class MatchaBase
 
 	def self.perform_request(query:, hash: {})
 		puts query.blue + " "  + hash.to_s.yellow
-		 @@session.send('query', query, **hash)
+		@@session.send('query', query, **hash)
 	end
 end
