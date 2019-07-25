@@ -1,6 +1,6 @@
 class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
-	include
+	include BCrypt
 	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest
 
 	def interest
