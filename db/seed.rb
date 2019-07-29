@@ -6,7 +6,7 @@ Dir[__dir__ + '/../model/*.rb'].each {|file| require file}
 
 
 def random_interest
-	interest = ['man', 'women']
+	interest = ['man', 'woman']
 	if rand(1..2) == 2
 		interest
 	else
