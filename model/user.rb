@@ -41,7 +41,7 @@ class User < MatchaBase
 		unless (error = self.class.validator(hash: self.to_hash)).any?
 			super
 		else
-			error_message(array: error)
+			self.class.error_message(array: error)
 		end
 	end
 
