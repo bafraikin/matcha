@@ -1,8 +1,8 @@
 require 'bundler/setup'
 require "neo4j-core"
 require 'neo4j/core/cypher_session/adaptors/http'
-Dir["../lib/*.rb"].each {|file| require file }
 require 'pry'
+Dir[__dir__ + "/../lib/*.rb"].each {|file| require file }
 
 class MatchaBase 
 	extend ValidatorHelper
@@ -42,7 +42,7 @@ class MatchaBase
 		transform_it(perform_request(query: query).rows)
 	end
 
-	def self.find_with_right_interest_and_right_value(*args, interest:, option:, equality: {})
+	def find_matchable(*args, interest:,   option:, equality: {})
 		label = labels.map{|l| ':{l}'}.join.to_s
 		if option.size == 1
 			option = "n." + option[0]
@@ -52,7 +52,7 @@ class MatchaBase
 		equality.each do |k,v|
 			args <<  "n." + k.to_s + " = " + v.to_s + " "
 		end
-		query = "MATCH (n:user) WHERE " + option + " AND #{interest} IN n.interest AND" + args.flatten.join(" AND ") + "RETURN n"
+		query = "MATCH (n:user) WHERE " + option + " AND #{self.sex} IN n.interest AND" + args.flatten.join(" AND ") + "RETURN n"
 		query_transform(query: query)
 	end
 
@@ -88,7 +88,7 @@ class MatchaBase
 	end
 
 	def self.create(hash: {})
-		unless (self.cant_be_blank_on_creation - hash.keys).size == 0
+		if (self.cant_be_blank_on_creation - hash.keys).size != 0
 			raise MatchaBase::Error, "missing argument on create"
 		elsif (hash.keys - self.attributes).size != 0
 			raise MatchaBase::Error, "too many argument on create"
