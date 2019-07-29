@@ -59,7 +59,7 @@ module UserHelper
 
 	module DisplayError
 		def error_password
-			"A password should at liest contain 8 charater, one numeric character, one alphabet letter and one, non alphanumeric letter"
+			"A password should at least contain 8 charater, one numeric character, one alphabet letter and one, non alphanumeric letter"
 		end
 
 		def error_age
