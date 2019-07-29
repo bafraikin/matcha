@@ -42,6 +42,12 @@ class MatchaBase
 		transform_it(perform_request(query: query).rows)
 	end
 
+	def create_links(id:, type:)
+		hash = {id_1: self.id, id_2: id}
+		query = "MATCH (n), (m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
+		query += "CREATE (n)-[:#{type.upcase} {timestamp: timestamp() }]->(m),  (m)-[:#{type.upcase} {timestamp: timestamp()}]->(n)"
+		self.class.perform_request(query: query, hash: hash)
+	end
 
 	def self.where(*args, labels: "", equality: {})
 		hash_map = {}
@@ -65,12 +71,13 @@ class MatchaBase
 	end
 
 	def is_related_with(link:, type_of_node: [])
-		query = "MATCH (n)-[:#{link}]->(m)"
+		query = "MATCH (n)-[:#{link}]->(m) WHERE "
 		type_of_node.each_with_index do |type, index|
-			query += (index  ==  0) ?  " WHERE " : " OR "
-			query += "m."  + type
+			query += (index  ==  0) ?  ""  : " OR "
+			query += "m."  + type 
 		end
-		query += " AND ID(n) = " + self.id + "RETURN m"
+		query+= "AND " if type_of_node.any?
+		query += "  ID(n) = " + self.id.to_s + " RETURN m"
 		self.class.query_transform(query: query)
 	end
 
@@ -84,7 +91,6 @@ class MatchaBase
 		query = "CREATE (n:#{class_name + array_label.map {|label| ":"+ label}.join.to_s } {hash}) RETURN n"
 		transform_it(self.perform_request(query: query, hash: {hash: hash}).rows)
 	end
-
 
 	def self.find(id:)
 		transform_it(perform_request(query: "MATCH (n:#{class_name}) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first

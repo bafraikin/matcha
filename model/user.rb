@@ -49,7 +49,7 @@ class User < MatchaBase
 		raise MatchaBase::Error if  self.interest.empty?
 		args.map!{|arg| "n." + arg}
 		equality.each do |k,v|
-			args <<  "n." + k.to_s + " = " + v.to_s + " "
+			args << v.is_a?(String) ? "n." + k.to_s + " = '" + v.to_s + "' " :  "n." + k.to_s + " = " + v.to_s + " " 
 		end
 		query = "MATCH (o) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
 		query += " AND " + args.join(" AND ")  if args.size > 0
