@@ -49,7 +49,7 @@ module UserHelper
 		end
 
 		def valid_interest?(interest)
-			if interest.nil? || !interest.is_a?(Array) || interest.size < 1 || (interest - ['women', 'man']).size != 0
+			if interest.nil? || !interest.is_a?(Array) || interest.size < 1 || (interest - ['woman', 'man']).size != 0
 				false
 			else
 				true
@@ -59,7 +59,7 @@ module UserHelper
 
 	module DisplayError
 		def error_password
-			"A password should at liest contain 8 charater, one numeric character, one alphabet letter and one, non alphanumeric letter"
+			"A password should at least contain 8 charater, one numeric character, one alphabet letter and one, non alphanumeric letter"
 		end
 
 		def error_age
