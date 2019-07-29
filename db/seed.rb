@@ -15,5 +15,5 @@ def random_interest
 end
 
 500.times do
-p 	User.create(hash: {interest: random_interest, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, password: Faker::Stripe.valid_token + "/1", sex: ['man', 'women'].sample, age: rand(18..35), email: Faker::Internet.unique.email, email_token: SecureRandom.hex});
+p 	User.create(hash: {interest: random_interest, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, password: "coucou123/", sex: ['man', 'women'].sample, age: rand(18..35), email: Faker::Internet.unique.email, email_token: SecureRandom.hex});
 end

@@ -42,19 +42,6 @@ class MatchaBase
 		transform_it(perform_request(query: query).rows)
 	end
 
-	def find_matchable(*args, interest:,   option:, equality: {})
-		label = labels.map{|l| ':{l}'}.join.to_s
-		if option.size == 1
-			option = "n." + option[0]
-		elsif option.size
-			option = 'n.' + option[0] + " OR n." + option[1]
-		end
-		equality.each do |k,v|
-			args <<  "n." + k.to_s + " = " + v.to_s + " "
-		end
-		query = "MATCH (n:user) WHERE " + option + " AND #{self.sex} IN n.interest AND" + args.flatten.join(" AND ") + "RETURN n"
-		query_transform(query: query)
-	end
 
 	def self.where(*args, labels: "", equality: {})
 		hash_map = {}
@@ -100,7 +87,7 @@ class MatchaBase
 
 
 	def self.find(id:)
-		transform_it(perform_request(query: "MATCH (n) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
+		transform_it(perform_request(query: "MATCH (n:#{class_name}) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
 	end
 
 	private

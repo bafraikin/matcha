@@ -20,8 +20,8 @@ class User < MatchaBase
 		hash
 	end
 
-	def self.good_password?(to_test:, hash:)
-		BCrypt::Password.new(hash) == to_test
+	def good_password?(to_test:)
+		BCrypt::Password.new(self.password) == to_test
 	end
 
 	def range_generator(type:, range:)
@@ -37,11 +37,26 @@ class User < MatchaBase
 		end
 	end
 
-	def find_matchable(range: 0.5)
+	def save
+		unless (error = self.class.validator(hash: self.to_hash)).any?
+			super
+		else
+			error_message(array: error)
+		end
+	end
+
+	def find_matchable(*args, range: 0.5, equality: {})
 		raise MatchaBase::Error if  self.interest.empty?
-		query = "MATCH (o) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest RETURN o"
+		args.map!{|arg| "n." + arg}
+		equality.each do |k,v|
+			args <<  "n." + k.to_s + " = " + v.to_s + " "
+		end
+		query = "MATCH (o) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
+		query += " AND " + args.join(" AND ")  if args.size > 0
+		query += " RETURN n"
 		self.class.query_transform(query: query)
 	end
+
 
 end
 
