@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>User.html</title>
+	</head>
+	<body>
+		body
+		<script charset="utf-8">
+
+
+var exampleSocket = new WebSocket("ws://localhost:4567/user/chat");
+exampleSocket.onopen = function (event) {
+  exampleSocket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
+  };
+		</script>
+	</body>
+</html>

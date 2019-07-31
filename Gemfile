@@ -6,5 +6,6 @@ source 'https://rubygems.org' do
 	gem 'sinatra'
 	gem 'rack-console'
 	gem 'async-websocket'
+	gem 'sinatra-websocket'
 	gem 'sinatra-contrib'
 end

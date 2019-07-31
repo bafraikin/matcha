@@ -1,7 +1,7 @@
 class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
 	include BCrypt
-  BCrypt::Engine.cost = 8
+  	BCrypt::Engine.cost = 8
 	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude
 
 	def interest
@@ -33,7 +33,6 @@ class User < MatchaBase
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?
 			super(hash: hash_password(hash: hash))
-
 		else
 			error_message(array: error)
 		end
