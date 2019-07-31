@@ -4,6 +4,9 @@ require 'BCrypt'
 require 'set'
 require "sinatra/namespace"
 require 'sinatra-websocket' 
+require 'rack/protection'
+
+
 
 files = Dir[ __dir__ + "/controller/*.rb"].each {|file| load file }
 models = Dir[__dir__ + "/model/**/*.rb"].each {|file| load file }

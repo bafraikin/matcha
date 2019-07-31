@@ -13,7 +13,7 @@ class UserController < ApplicationController
 		end
 
 		get "/chat" do
-			unless request.websocket?
+			unless !request.websocket?
 				chat_with
 			end
 		end

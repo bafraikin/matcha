@@ -39,7 +39,6 @@ class User < MatchaBase
 	end
 
 	def self.create(hash: {})
-		binding.pry
 		unless (error = validator(hash: hash)).any?
 			super(hash: hash_password(hash: hash))
 		else
