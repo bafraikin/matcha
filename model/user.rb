@@ -21,6 +21,14 @@ class User < MatchaBase
 		hash
 	end
 
+	def add_match(id:, data: nil)
+		create_links(id: id, type: "MATCH", data: data)
+	end
+
+	def add_like(id:)
+		create_links(id: id, type: "LIKE")
+	end
+
 	def good_password?(to_test:)
 		BCrypt::Password.new(self.password) == to_test
 	end
@@ -31,6 +39,7 @@ class User < MatchaBase
 	end
 
 	def self.create(hash: {})
+		binding.pry
 		unless (error = validator(hash: hash)).any?
 			super(hash: hash_password(hash: hash))
 		else

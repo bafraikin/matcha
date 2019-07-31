@@ -42,10 +42,10 @@ class MatchaBase
 		transform_it(perform_request(query: query).rows)
 	end
 
-	def create_links(id:, type:)
-		hash = {id_1: self.id, id_2: id}
+	def create_links(id:, type:, data: nil)
+		hash = {id_1: self.id, id_2: id, data: data}
 		query = "MATCH (n), (m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
-		query += "CREATE (n)-[:#{type.upcase} {timestamp: timestamp() }]->(m),  (m)-[:#{type.upcase} {timestamp: timestamp()}]->(n)"
+		query += "CREATE (n)-[:#{type.upcase} {timestamp: timestamp(), {data} }]->(m)"
 		self.class.perform_request(query: query, hash: hash)
 	end
 

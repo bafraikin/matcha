@@ -6,5 +6,4 @@ class RegistrationController < ApplicationController
 	get '/registration' do 
 		erb:'coucou.html'
 	end
-
 end

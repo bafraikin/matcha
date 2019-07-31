@@ -1,7 +1,6 @@
 require 'bundler/setup'
 require 'sinatra'
 require 'BCrypt'
-require 'async/websocket/adapters/rack'
 require 'set'
 require "sinatra/namespace"
 require 'sinatra-websocket' 
