@@ -4,6 +4,7 @@ require 'BCrypt'
 require 'set'
 require "sinatra/namespace"
 require 'sinatra-websocket' 
+require 'sinatra/flash' 
 require 'rack/protection'
 
 files = Dir[ __dir__ + "/controller/*.rb"].each {|file| load file }
