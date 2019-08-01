@@ -1,6 +1,8 @@
 
 class ApplicationController < Sinatra::Base
 	register Sinatra::Namespace
+	register Sinatra::Flash
+
 	set :views, File.expand_path('../../views', __FILE__)
 	set :erb, layout: :'/layout.html'
 	set :sockets, Hash.new
