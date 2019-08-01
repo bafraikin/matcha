@@ -5,7 +5,7 @@ class UserController < ApplicationController
 	end
 
 	namespace '/user' do
-		get "new" do
+		get "/new" do
 			erb :"user.html"
 		end
 
