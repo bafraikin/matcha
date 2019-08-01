@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>User.html</title>
-	</head>
-	<body>
 		<form action="user/user_create" method="post" accept-charset="utf-8">
+			<input type=hidden name='authenticity_token' value="<%=env['rack.session'][:csrf]%>">
 			<label>first_name</label>
 			<input type="text" value="" name="user[first_name]" id="first_name"/>	
 			<label>last_name</label>
@@ -35,15 +28,3 @@
 			</div>
 			<input type="submit" value="OK" />		
 		</form>
-
-		<script charset="utf-8">
-var exampleSocket = new WebSocket("ws://localhost:4567/user/chat");
-exampleSocket.onopen = function (event) {
-  exampleSocket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
-  };
-  exampleSocket.onmessage = function (event) {
- console.log(event);
-  };
-		</script>
-	</body>
-</html>

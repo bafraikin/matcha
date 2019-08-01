@@ -1,15 +1,21 @@
 class UserController < ApplicationController
 
+	def title
+		"coucou"
+	end
+
 	namespace '/user' do
 		get /\/?/ do
 			erb :"user.html"
 		end
 
 		post "/user_create" do
-			a = Array.new
-			a << params[:user].delete(:interest1)
-			a << params[:user].delete(:interest2)
-			User.create(hash: params[:user].merge(interest: a.select{|b|b}))
+			array = Array.new
+			1.upto(2) do |i|
+				symbol = ("interest" + i.to_s).to_sym
+				array << params[:user].delete(symbol) if params[:user].key?(symbol)
+			end
+			User.create(hash: params[:user].merge(interest: array))
 		end
 
 		get "/chat" do
