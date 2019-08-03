@@ -16,6 +16,8 @@ class ApplicationController < Sinatra::Base
 	environment.append_path "assets"
 	set :sockets, Hash.new
 
+	set :log, Logger.new(STDOUT)
+
 	def title
 		"MATCHA"
 	end

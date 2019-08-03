@@ -9,8 +9,24 @@ class RegistrationController < ApplicationController
 			erb:'login.html'
 		end
 
-		get '/new'do
-			erb:'user.html'
+		post '/registrate' do
+			settings.log.info(params)
+			if params[:user] && params[:user][:email]
+				a = User.where(equality: {email: params[:user][:email]})
+				if !(a.any? && a[0].good_password?(to_test: params[:user][:password]))
+					flash[:error] = "WRONG CONNECTION"
+					redirect to('registration/login')
+				elsif a.any?
+					session[:current_user] = a[0]
+					flash[:success] = "Connection reussi"
+					redirect "/"
+				end
+
+			end
+		end
+
+		get '/sign_up'do
+			erb:'sign_up.html'
 		end
 
 		post "/create" do
@@ -24,10 +40,11 @@ class RegistrationController < ApplicationController
 			hash.delete(:confirm_password)
 			hash = hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 			error = User.create(hash: hash.merge({interest: array, email_token: SecureRandom.hex}))
-			if error.any?
+			if error.any? && !error[0].is_a?(User)
 				flash[:error] = error.join('<br/>')
-				redirect "/registration/new"
+				redirect "/registration/sign_up"
 			else
+				flash[:success] = "Un email vous a ete envoyer"
 				redirect "/"
 			end
 		end
