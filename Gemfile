@@ -8,4 +8,5 @@ source 'https://rubygems.org' do
 	gem 'sinatra-websocket'
 	gem 'sinatra-flash'
 	gem 'sinatra-contrib'
+	gem 'sprockets'
 end

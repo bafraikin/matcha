@@ -6,6 +6,7 @@ require "sinatra/namespace"
 require 'sinatra-websocket' 
 require 'sinatra/flash' 
 require 'rack/protection'
+require 'sprockets'
 
 files = Dir[ __dir__ + "/controller/*.rb"].each {|file| load file }
 models = Dir[__dir__ + "/model/**/*.rb"].each {|file| load file }

@@ -4,21 +4,22 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" href="/assets/favico.png" />	
 		<title> <%= title %> </title>
 	</head>
 	<body>
-
 		<% flash.keys.each do |type| %>
 			<div data-alert class="flash <%= type %> alert-box radius">
 				<%= flash[type] %>
 				<a href="#" class="close" onclick="this.parentNode.hidden = true">&times;</a>
 			</div>
 		<% end %>
-
-		<%= yield  %>
-
+		<div>
+			<a href="/" target="_top">MATCHA HOME</a>
+		</div>
+		<%= yield %>
 		<script charset="utf-8">
-var exampleSocket = new WebSocket("ws://localhost:4567/user/chat");
+var exampleSocket = new WebSocket("ws://localhost:4567/user/socket");
 exampleSocket.onopen = function (event) {
   exampleSocket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
   };
