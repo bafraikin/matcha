@@ -67,7 +67,6 @@ class User < MatchaBase
 
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?
-			MailHelper.confirme_mail(hash[:email], hash[:email_token])
 			user = super(hash: hash_password(hash: hash))
 			user[0].build_attachement if user.any?
 			user
@@ -92,7 +91,7 @@ class User < MatchaBase
 		end
 		query = "MATCH (o) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " RETURN o"
+		query += " AND ID(o) <> #{self.id} RETURN o"
 		self.class.query_transform(query: query)
 	end
 end

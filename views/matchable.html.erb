@@ -1,0 +1,10 @@
+<div>
+	<% @users.each do |user| %>
+		<p>
+		<%= user.first_name %>
+		<%= user.last_name %>
+		<span onclick='send_like(<%= user.id.to_json %>)'>like it</span>
+		</p>
+	<% end %>
+</div>
+<script charset="utf-8" src="/assets/javascript/matchable.js" type="application/javascript"></script>
