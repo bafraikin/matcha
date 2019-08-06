@@ -1,0 +1,30 @@
+		<form action="create" method="post" accept-charset="utf-8">
+			<input type=hidden name='authenticity_token' value="<%=env['rack.session'][:csrf]%>">
+			<label>first_name</label>
+			<input type="text" value="" name="user[first_name]" id="first_name"/>	
+			<label>last_name</label>
+			<input type="text" value="" name="user[last_name]" id=""/>	
+			<label>password</label>
+			<input type="password" value="" name="user[password]" id=""/>	
+			<label>confirm password</label>
+			<input type="password" value="" name="user[confirm_password]" id=""/>	
+			<label>email</label>
+			<input type="email" value="" name="user[email]" id="" placeholder="email"/>	
+			<label>age</label>
+			<input type="numeric" value="" name="user[age]" id=""/>	
+			<label>sex</label>
+			<select name="user[sex]" id="user[sex]" multiple size="1">
+				<option value="man">man</option>
+				<option value="woman">woman</option>
+			</select>
+			<label>interest</label>
+			<div>
+				<input type="checkbox" value="man" name="user[interest1]" id=""/>
+				<label>man</label>
+			</div>
+			<div>
+				<input type="checkbox" value="woman" name="user[interest2]" id=""/>	
+				<label>woman</label>
+			</div>
+			<input type="submit" value="OK" />		
+		</form>

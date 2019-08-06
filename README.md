@@ -5,3 +5,6 @@ to do:
 	send mail
 	use verificator a lot even when you #save
 	perform query to give me matchable person and adding those links in bd
+
+to escape and send mail
+http://sinatrarb.com/faq.html

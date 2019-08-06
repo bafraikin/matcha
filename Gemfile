@@ -5,7 +5,10 @@ source 'https://rubygems.org' do
 	gem 'faker'
 	gem 'sinatra'
 	gem 'rack-console'
-	gem 'async-websocket'
+	gem 'sinatra-websocket'
+	gem 'sinatra-flash'
 	gem 'sinatra-contrib'
 	gem 'pony'
+	gem 'sprockets'
+	gem 'erubis'
 end
