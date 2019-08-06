@@ -1,6 +1,5 @@
 class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
-	include MailHelper
 	include BCrypt
 	BCrypt::Engine.cost = 8
 	attr_accessor :first_name, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp
