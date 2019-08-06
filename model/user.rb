@@ -88,9 +88,9 @@ class User < MatchaBase
 		equality.each do |k,v|
 			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
 		end
-		query = "MATCH (o) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
+		query = "MATCH (o), (p) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " AND ID(o) <> #{self.id} RETURN o"
+		query += " AND NOT (p)-[:LIKE | :MATCH]->(o) AND NOT ID(o) = #{self.id} AND ID(p) = #{self.id} RETURN o"
 		self.class.query_transform(query: query)
 	end
 end

@@ -1,4 +1,3 @@
-require 'pry'
 module MailHelper
     def self.confirme_mail(mail, token)
         Pony.mail(
