@@ -20,6 +20,11 @@ class MatchaBase
 		self.attributes.reduce({}) {| hash, value| hash[value] = self.send(value.to_s) ; hash}
 	end
 
+	def destroy
+		query = "MATCH (n) WHERE ID(n) = " + self.id + "DELETE n"
+		self.class.perform_request(query: query)
+	end
+
 	def replace_relation(id:, new_type:, new_data: nil)
 		query = "MATCH (n)-[r]->(m)
 		WHERE ID(r) = #{id}
@@ -27,6 +32,33 @@ class MatchaBase
 		CREATE (n)-[:#{new_type} {timestamp: timestamp(), data: '#{new_data}'}]->(m)
 		WITH r
 		DELETE r"
+		self.class.perform_request(query: query, hash: {})
+	end
+
+	def  suppress_his_relation_with(id:)
+		hash = {id_1: self.id, id_2: id}
+		query = "MATCH (n)-[r]->(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}
+		WITH r
+		DELETE r"
+		self.class.perform_request(query: query, hash: hash)
+	end
+
+	def find_every_node_related(type_of_node: "")
+		query = "MATCH (n)-[r*]-(m) WHERE ID(n) = " + self.id.to_s
+		if !type_of_node.to_s.empty? && type_of_node.is_a?(String)
+			query += " AND m:" + type_of_node[/^\w+/]
+		end
+		query+= " ORDER BY m.timestamp RETURN m"
+		self.class.query_transform(query: query, hash: {})
+	end
+
+	def delete_every_node_related(type_of_node: "")
+		query = "MATCH (n)-[r*]-(m) WHERE ID(n) = " + self.id.to_s
+		if !type_of_node.to_s.empty? && type_of_node.is_a?(String)
+			query += " AND m:" + type_of_node[/^\w+/]
+		end
+		query+= " WITH r, m
+		FOREACH (elem in r | DELETE elem) DELETE m"
 		self.class.perform_request(query: query, hash: {})
 	end
 
@@ -117,10 +149,16 @@ class MatchaBase
 		transform_it(perform_request(query: "MATCH (n:#{class_name}) WHERE ID(n) = {id} RETURN n", hash: {id: id}).rows).first
 	end
 
+	def self.clean_up
+		query = "MATCH ()-[r]-(), (e) DELETE r,e"
+		perform_request(query: query)
+	end
+
 	private
 	def self.query_transform(query:, hash: {})
 		transform_it(self.perform_request(query: query, hash: hash).rows)
 	end
+
 
 	def self.transform_it(*args)
 		to_return = []

@@ -10,6 +10,15 @@ class Messenger < MatchaBase
 		[]
 	end
 
+	def collapse
+		delete_every_node_related(type_of_node: "message")
+		self.destroy
+	end
+
+	def get_message
+		find_every_node_related(type_of_node: "message")
+	end
+
 	def create(hash:)
 		if !(error = validator(hash: hash)).any?
 			super(hash: hash)

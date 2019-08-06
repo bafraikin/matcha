@@ -27,10 +27,19 @@ class User < MatchaBase
 		rel.any? ? rel = rel[0][0] : return
 		create_links(id: id, type: "MATCH", data: data)
 		replace_relation(id: rel.id, new_type: "MATCH", new_data: data)
+		Messenger.create(hash: {match_hash: data})
+	end
+
+	def delete_match_with(id:)
+		suppress_his_relation_with(id: id)
+		rel = self.is_related_with(id: id, type_of_link: "LIKE")
+		data = rel.data
+		replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
+		Messenger.where(equality: {data: data}).first.collapse
 	end
 
 	def add_like(id:)
-			create_links(id: id, type: "LIKE")
+		create_links(id: id, type: "LIKE")
 	end
 
 	def good_password?(to_test:)

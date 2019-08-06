@@ -13,6 +13,12 @@ class UserController < ApplicationController
 				request.websocket {}
 			end
 		end
+
+		post "/add_like" do
+			if user_logged_in?
+				current_user.add_like(params[:user_id])
+			end
+		end
 	end
 
 	private	

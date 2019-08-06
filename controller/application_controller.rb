@@ -5,7 +5,7 @@ class ApplicationController < Sinatra::Base
 
 	set :views, File.expand_path('../../views', __FILE__)
 	set :erb, layout: :'/layout.html'
-	set :layout_engine => :erb
+	set :layout_engine => :erb	
 	enable :sessions
 	use Rack::Protection
 	use Rack::Protection::AuthenticityToken
