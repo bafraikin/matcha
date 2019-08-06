@@ -7,4 +7,5 @@ source 'https://rubygems.org' do
 	gem 'rack-console'
 	gem 'async-websocket'
 	gem 'sinatra-contrib'
+	gem 'pony'
 end
