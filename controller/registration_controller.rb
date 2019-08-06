@@ -1,5 +1,5 @@
 class RegistrationController < ApplicationController
-
+	include MailHelper
 	def title
 		"registration"
 	end
@@ -44,6 +44,7 @@ class RegistrationController < ApplicationController
 				flash[:error] = error.join('<br/>')
 				redirect "/registration/sign_up"
 			else
+				MailHelper.confirme_mail(hash[:email], hash[:email_token])
 				flash[:success] = "Un email vous a ete envoyer"
 				redirect "/"
 			end
