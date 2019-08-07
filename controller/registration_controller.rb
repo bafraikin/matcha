@@ -21,7 +21,6 @@ class RegistrationController < ApplicationController
 					flash[:success] = "Connection reussi"
 					redirect "/"
 				end
-
 			end
 		end
 
