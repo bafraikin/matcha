@@ -21,7 +21,7 @@ class MatchaBase
 	end
 
 	def destroy
-		query = "MATCH (n) WHERE ID(n) = " + self.id + "DELETE n"
+		query = "MATCH (n)-[r]->() WHERE ID(n) = " + self.id.to_s + " DELETE r,n"
 		self.class.perform_request(query: query)
 	end
 
@@ -150,7 +150,9 @@ class MatchaBase
 	end
 
 	def self.clean_up
-		query = "MATCH ()-[r]-(), (e) DELETE r,e"
+		query = "MATCH ()-[r]-() DELETE r"
+		perform_request(query: query)
+		query = "MATCH (r) DELETE r"
 		perform_request(query: query)
 	end
 

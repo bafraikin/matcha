@@ -44,7 +44,7 @@ class RegistrationController < ApplicationController
 				flash[:error] = error.join('<br/>')
 				redirect "/registration/sign_up"
 			else
-				confirme_mail(hash[:email], hash[:email_token])
+				confirme_mail(hash[:email], error[0].email_token)
 				flash[:success] = "Un email vous a ete envoyer"
 				redirect "/"
 			end

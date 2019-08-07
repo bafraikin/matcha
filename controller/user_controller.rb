@@ -14,11 +14,10 @@ class UserController < ApplicationController
 		end
 
 		post "/add_like" do
-				user_to_like = User.find(id: params[:id])
+				user_to_like = User.find(id: params[:id].to_i)
 			if user_logged_in? && !params[:id].to_s.empty? && user_to_like
 				current_user.add_like(id: user_to_like.id)
-				notif = user_to_like.add_notification(notif: "SOMEONE_LIKED_YOU")
-
+				notif = user_to_like.add_notification(type: "SOMEONE_LIKED_YOU")
 			end
 		end
 
