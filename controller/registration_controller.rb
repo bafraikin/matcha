@@ -4,10 +4,6 @@ class RegistrationController < ApplicationController
 		"registration"
 	end
 
-  def title
-    "registration"
-  end
-
   namespace "/registration" do
     get '/login' do 
       erb:'login.html'
