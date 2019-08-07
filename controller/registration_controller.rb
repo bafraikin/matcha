@@ -1,5 +1,5 @@
 class RegistrationController < ApplicationController
-#	include MailHelper
+	include MailHelper
 	def title
 		"registration"
 	end
@@ -38,16 +38,24 @@ class RegistrationController < ApplicationController
 			end
 			hash.delete(:confirm_password)
 			hash = hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+			check_user_email_already_used(email: hash[:email])
 			error = User.create(hash: hash.merge({interest: array, email_token: SecureRandom.hex}))
 			if error.any? && !error[0].is_a?(User)
 				flash[:error] = error.join('<br/>')
 				redirect "/registration/sign_up"
 			else
-#				MailHelper.confirme_mail(hash[:email], hash[:email_token])
+				confirme_mail(hash[:email], hash[:email_token])
 				flash[:success] = "Un email vous a ete envoyer"
 				redirect "/"
 			end
 		end
 
+	end
+	private
+	def check_user_email_already_used(email:)
+		if email && User.where(equality: {email: email}).any?
+			flash[:error] = "email already used"
+			redirect "/registration/sign_up"
+		end
 	end
 end
