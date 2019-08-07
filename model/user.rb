@@ -31,11 +31,11 @@ class User < MatchaBase
 	end
 
 	def delete_match_with(id:)
+		rel = self.is_related_with(id: id, type_of_link: "MATCH")
+		rel.any? ? rel = rel[0][0] : return
 		suppress_his_relation_with(id: id)
-		rel = self.is_related_with(id: id, type_of_link: "LIKE")
-		data = rel.data
 		replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
-		Messenger.where(equality: {data: data}).first.collapse
+		Messenger.where(equality: {data: rel.data}).first.collapse
 	end
 
 	def add_like(id:)
