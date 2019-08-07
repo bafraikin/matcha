@@ -1,4 +1,4 @@
-require 'pry'
+## The Url adress is no good yet
 module MailHelper
     def self.confirme_mail(mail, token)
         Pony.mail(
