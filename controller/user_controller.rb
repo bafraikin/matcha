@@ -5,7 +5,6 @@ class UserController < ApplicationController
 	end
 
 	namespace '/user' do
-
 		get "/socket" do
 			if request.websocket? && user_logged_in?
 				new_websocket(id: current_user.id)
@@ -15,9 +14,15 @@ class UserController < ApplicationController
 		end
 
 		post "/add_like" do
-			if user_logged_in?
-				current_user.add_like(params[:user_id])
+			if user_logged_in? && !params[:id].to_s.empty? 
+				current_user.add_like(id: params[:id].to_i)
 			end
+		end
+
+		get "/likeable" do
+			halt if !user_logged_in?
+			@users = current_user.find_matchable
+			erb:'matchable.html'
 		end
 	end
 
