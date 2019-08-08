@@ -36,7 +36,7 @@ class ApplicationController < Sinatra::Base
 		!settings.sockets[user.key].nil?
 	end
 
-	def send_notif_to(user:, notif:)
+	def send_notif_to(user:, notif:, from: nil)
 		return if !user.is_a?(User) && !is_connected?(user: user)
 	end
 
