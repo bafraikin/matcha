@@ -14,10 +14,23 @@ class UserController < ApplicationController
 		end
 
 		post "/add_like" do
-				user_to_like = User.find(id: params[:id].to_i)
+			settings.log.info(params)
+			user_to_like = User.find(id: params[:id].to_i)
 			if user_logged_in? && !params[:id].to_s.empty? && user_to_like
-				current_user.add_like(id: user_to_like.id)
-				notif = user_to_like.add_notification(type: "SOMEONE_LIKED_YOU")
+			notif = nil
+				like = current_user.is_related_with(id: user_to_like.id, type_of_link: "LIKE")
+				if like.empty?
+					current_user.add_like(id: user_to_like.id)
+					notif = user_to_like.add_notification(type: "SOMEONE_LIKED_YOU")
+				elsif like[0][0].start_node_id == current_user.id
+			settings.log.info("LIKE DEUX FOIS")
+					return
+				else
+					current_user.add_match(id: user_to_like.id)
+					notif = user_to_like.add_notification(type: "NEW_MATCH")
+					flash["match"] = "C'est un match avec #{user_to_like.first_name}"
+					redirect "/user/likeable"
+				end
 			end
 		end
 
