@@ -21,7 +21,6 @@ class RegistrationController < ApplicationController
           flash[:success] = "Connection reussi"
           redirect "/"
         end
-
       end
     end
 
@@ -50,8 +49,8 @@ class RegistrationController < ApplicationController
         redirect "/"
       end
     end
-
   end
+  
   private
   def check_user_email_already_used(email:)
     if email && User.where(equality: {email: email}).any?
