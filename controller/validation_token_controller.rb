@@ -25,10 +25,14 @@ class ValidationTokenController < ApplicationController
     get '/reset_password' do
       settings.log.info(params)
       a = User.where(equality: {reset_token: params[:token]})
-      if a.any?
-        #123
+      if a.any? && a[0].email_token == nil
+        session[:current_user] = a[0]
+        a[0].reset_token = nil
+        a[0].save
+        flash[:success] = "you can now modify your password on your profile"
+        #add redirect to user profil
       end
-      erb:'token.html'
+      redirect "/"
     end
   end
 end
