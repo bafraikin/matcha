@@ -7,15 +7,18 @@ class UserController < ApplicationController
 	namespace '/user' do
 		get "/socket" do
 			if request.websocket? && user_logged_in?
-				new_websocket(id: current_user.id)
-			elsif request.websocket? 
+				new_websocket(user: current_user)
+			elsif request.websocket?
 				request.websocket {}
 			end
 		end
 
 		post "/add_like" do
-			if user_logged_in? && !params[:id].to_s.empty? 
-				current_user.add_like(id: params[:id].to_i)
+				user_to_like = User.find(id: params[:id])
+			if user_logged_in? && !params[:id].to_s.empty? && user_to_like
+				current_user.add_like(id: user_to_like.id)
+				notif = user_to_like.add_notification(notif: "SOMEONE_LIKED_YOU")
+
 			end
 		end
 
@@ -26,20 +29,4 @@ class UserController < ApplicationController
 		end
 	end
 
-	private	
-	def new_websocket(id:)
-		key = "user#{id}".to_sym
-		request.websocket do |ws|
-			ws.onopen do
-				settings.sockets[key] = ws
-			end
-			ws.onmessage do |msg|
-				EM.next_tick { settings.sockets.each_value{|s| s.send(msg) } }
-			end
-			ws.onclose do
-				warn("websocket closed")
-				settings.sockets.delete(key)
-			end
-		end
-	end
 end

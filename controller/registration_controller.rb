@@ -1,5 +1,5 @@
 class RegistrationController < ApplicationController
-  include MailHelper
+	include MailHelper
 	def title
 		"registration"
 	end
