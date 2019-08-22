@@ -21,6 +21,10 @@ class User < MatchaBase
 		hash
 	end
 
+	def full_name
+		self.first_name + " " + self.last_name
+	end
+
 	def add_match(id:)
 		data = SecureRandom.hex
 		rel = self.is_related_with(id: id, type_of_link: "LIKE")
