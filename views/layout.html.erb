@@ -49,13 +49,16 @@
 			</div>
 		</nav>
 		<%= yield %>
+		<div class="notif_wrapper">	
+		</div>
+		<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
 		<script charset="utf-8">
-var exampleSocket = new WebSocket("ws://localhost:4567/user/socket");
-exampleSocket.onopen = function (event) {
-  exampleSocket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
+var Socket = new WebSocket("ws://localhost:4567/user/socket");
+Socket.onopen = function (event) {
+  Socket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
   };
-  exampleSocket.onmessage = function (event) {
- console.log(event);
+  Socket.onmessage = function (event) {
+  display_notif(event);
   };
 		</script>
 	</body>
