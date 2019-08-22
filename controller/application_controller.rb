@@ -37,7 +37,10 @@ class ApplicationController < Sinatra::Base
 	end
 
 	def send_notif_to(user:, notif:, from: nil)
-		return if !user.is_a?(User) && !is_connected?(user: user)
+		return if !user.is_a?(User) || !is_connected?(user: user)
+		settings.log.info("sending notif to #{user.key}")
+		notif = notif.to_hash if notif.is_a?(Notification)
+		notif.merge!(from: from.full_name) if from
 		settings.sockets[user.key].send(notif.to_json)
 	end
 
@@ -60,10 +63,6 @@ class ApplicationController < Sinatra::Base
 		request.websocket do |ws|
 			ws.onopen do
 				settings.sockets[key] = ws
-			end
-			ws.onmessage do |msg|
-				p msg
-				EM.next_tick { send_notif_to(user: user, notif: msg)}
 			end
 			ws.onclose do
 				warn("websocket closed")
