@@ -21,7 +21,7 @@ class MatchaBase
 	end
 
 	def destroy
-		query = "MATCH (n)-[r]->() WHERE ID(n) = " + self.id.to_s + " DELETE r,n"
+		query = "MATCH (n)-[r]-() WHERE ID(n) = " + self.id.to_s + " DELETE r,n"
 		self.class.perform_request(query: query)
 	end
 

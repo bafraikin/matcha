@@ -38,10 +38,15 @@ class ApplicationController < Sinatra::Base
 
 	def send_notif_to(user:, notif:, from: nil)
 		return if !user.is_a?(User) && !is_connected?(user: user)
+		settings.sockets[user.key].send(notif.to_json)
 	end
 
 	get /\/?/ do
-		erb:"index.html"
+		@users = []
+		if user_logged_in?
+		@users = current_user.find_matchable
+		end
+		erb:'matchable.html'
 	end
 
 	get "/assets/*" do
@@ -57,7 +62,8 @@ class ApplicationController < Sinatra::Base
 				settings.sockets[key] = ws
 			end
 			ws.onmessage do |msg|
-				EM.next_tick { settings.sockets.each_value{|s| s.send(msg) } }
+				p msg
+				EM.next_tick { send_notif_to(user: user, notif: msg)}
 			end
 			ws.onclose do
 				warn("websocket closed")

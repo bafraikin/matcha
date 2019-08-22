@@ -17,6 +17,10 @@
 		<% end %>
 		<div>
 			<a href="/" target="_top">MATCHA HOME</a>
+				<% unless user_logged_in? %>
+					<a href="/registration/sign_up" target="_top">Cree toi ton compte de matcheur fou</a>
+					<a href="/registration/login" target="_top">Connecte toi le matcheur fou</a>
+				<% end %>
 		</div>
 		<%= yield %>
 		<script charset="utf-8">
