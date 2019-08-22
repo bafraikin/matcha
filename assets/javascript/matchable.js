@@ -18,7 +18,7 @@ function send_like(id)
 		if (this.readyState === XMLHttpRequest.DONE)
 		{
 			if (this.status === 200) 
-				console.log("Réponse reçue: %s", this.responseText);
+				console.log("Réponse recu", this);
 			else 
 				console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
 		}
@@ -26,3 +26,6 @@ function send_like(id)
 	req.send("id=" + id + "&authenticity_token=" + normalize_data(csrf));
 
 }
+
+
+

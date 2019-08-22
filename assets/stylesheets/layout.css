@@ -1,0 +1,19 @@
+
+a.icon {
+	background-color: grey;
+	border-radius: 15px;
+	margin-left: 10px;
+}
+
+body {
+	padding-top: 56px;
+}
+
+.success {
+	background-color: green;
+
+}
+
+.error {
+	background-color: red;
+}
