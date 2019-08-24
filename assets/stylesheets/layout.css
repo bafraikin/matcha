@@ -17,3 +17,13 @@ body {
 .error {
 	background-color: red;
 }
+
+#notif_wrapper {
+	display: flex;
+	left: 50%;
+	align-content: end;
+	width: 20vw;
+	position: fixed;
+	bottom: 10%;
+	flex-direction: column;
+}
