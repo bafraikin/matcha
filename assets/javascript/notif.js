@@ -55,6 +55,4 @@ window.onload = () => {
 		this.classList.remove("active");}
 	document.querySelector("#matcha_match").onclick = function() {
 		this.classList.remove("active");}
-	document.querySelector("#matcha_conv").onclick = function() {
-		this.classList.remove("active");}
 };
