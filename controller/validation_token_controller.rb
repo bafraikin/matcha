@@ -5,9 +5,6 @@ class ValidationTokenController < ApplicationController
   end
 
   namespace "/token" do
-    get '/' do 
-      erb:'login.html'
-    end
 
     get '/validated_account' do
       settings.log.info(params)
@@ -22,15 +19,22 @@ class ValidationTokenController < ApplicationController
       redirect "/registration/login"
     end
 
-    get '/reset_password' do
+    post '/reset_password' do
       settings.log.info(params)
-      a = User.where(equality: {reset_token: params[:token]})
-      if a.any? && a[0].email_token == nil
-        session[:current_user] = a[0]
-        a[0].reset_token = nil
-        a[0].save
-        flash[:success] = "you can now modify your password on your profile"
-        #add redirect to user profil
+      user_to_reset = User.where(equality: {reset_token: params[:user][:token_password]})
+      if user_to_reset.any? && user_to_reset[0].email_token == nil && params[:user][:password] == params[:user][:confirm_password]
+        user_to_reset[0].password = params[:user][:password]
+        error = User.validator(hash: user_to_reset[0].to_hash)
+        if error.any?
+          flash[:error] = User.error_message(array: error).join("\n")
+          redirect '/reset_password?token=' + params[:user][:token_password]
+          halt
+        else
+          user_to_reset[0].password = User.hash_password(password: params[:user][:password])
+          user_to_reset[0].reset_token = nil
+          user_to_reset[0].save
+        end
+        redirect "/"
       end
       redirect "/"
     end

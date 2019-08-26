@@ -5,6 +5,14 @@ class PasswordController < ApplicationController
     erb:'forgot_password.html'
   end
 
+  get '/reset_password' do
+    unless params['token'].nil?
+      erb:'reset_password.html'
+    else 
+       redirect not_found
+    end
+  end
+
   post '/forgot_password' do
     a = User.where(equality: {email: params[:email]})
     if a.any? && a[0].is_a?(User)

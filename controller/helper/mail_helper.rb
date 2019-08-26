@@ -12,6 +12,6 @@ module MailHelper
             :to => mail,
             :from => 'noreply@matcha.fr', 
             :subject => 'Did you forgot your Matcha password ?', 
-            :body => "Hello there , click on the link to login and reset your password -> start finding love again  http://localhost:4567/token/reset_password?token=#{token}")
+            :body => "Hello there , click on the link to login and reset your password -> start finding love again  http://localhost:4567/reset_password?token=#{token}")
         end
 end
