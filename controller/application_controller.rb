@@ -31,6 +31,15 @@ class ApplicationController < Sinatra::Base
 		!session[:current_user].nil?
 	end
 
+	def is_connected?(user:)
+		return if !user.is_a?(User)
+		!settings.sockets[user.key].nil?
+	end
+
+	def send_notif_to(user:, notif:)
+		return if !user.is_a?(User) && !is_connected?(user: user)
+	end
+
 	get /\/?/ do
 		erb:"index.html"
 	end
@@ -40,4 +49,20 @@ class ApplicationController < Sinatra::Base
 		settings.environment.call(env)
 	end
 
+	private	
+	def new_websocket(user:)
+		key = user.key
+		request.websocket do |ws|
+			ws.onopen do
+				settings.sockets[key] = ws
+			end
+			ws.onmessage do |msg|
+				EM.next_tick { settings.sockets.each_value{|s| s.send(msg) } }
+			end
+			ws.onclose do
+				warn("websocket closed")
+				settings.sockets.delete(key)
+			end
+		end
+	end
 end

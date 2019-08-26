@@ -30,11 +30,11 @@ class User < MatchaBase
 	end
 
 	def delete_match_with(id:)
+		rel = self.is_related_with(id: id, type_of_link: "MATCH")
+		rel.any? ? rel = rel[0][0] : return
 		suppress_his_relation_with(id: id)
-		rel = self.is_related_with(id: id, type_of_link: "LIKE")
-		data = rel.data
 		replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
-		Messenger.where(equality: {data: data}).first.collapse
+		Messenger.where(equality: {data: rel.data}).first.collapse
 	end
 
 	def add_like(id:)
@@ -60,6 +60,9 @@ class User < MatchaBase
 		notif_to_add = Notification.create(type: type)
 		if notif_to_add[0].is_a?(Notification)
 			notif_root[0].create_links(id: notif_to_add[0].id, type: "NOTIF")
+			notif_to_add[0]
+		else
+			notif_to_add
 		end
 	end
 
@@ -71,6 +74,10 @@ class User < MatchaBase
 		else
 			error_message(array: error)
 		end
+	end
+
+	def key
+		"user#{self.id}".to_sym
 	end
 
 	def save
@@ -87,9 +94,11 @@ class User < MatchaBase
 		equality.each do |k,v|
 			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
 		end
-		query = "MATCH (o), (p) WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
+		query = "MATCH (p {email: '#{self.email}'})-[:LIKE | :MATCH]->(o) WITH  COLLECT(o) as to_exclude"
+		query += " MATCH (o:user)"
+		query+= " WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " AND NOT (p)-[:LIKE | :MATCH]->(o) AND NOT ID(o) = #{self.id} AND ID(p) = #{self.id} RETURN o"
+		query += " WITH to_exclude, collect(o) as result WHERE NONE (i IN result WHERE i IN to_exclude) UNWIND result as to_return RETURN to_return"
 		self.class.query_transform(query: query)
 	end
 end
