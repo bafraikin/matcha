@@ -20,6 +20,10 @@ class User < MatchaBase
 		BCrypt::Password.create(password)
 	end
 
+  def account_validated?
+    self.email_token.nil?
+  end
+
 	def add_match(id:)
 		data = SecureRandom.hex
 		rel = self.is_related_with(id: id, type_of_link: "LIKE")

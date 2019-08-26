@@ -22,10 +22,10 @@ class ValidationTokenController < ApplicationController
     post '/reset_password' do
       settings.log.info(params)
       user_to_reset = User.where(equality: {reset_token: params[:user][:token_password]})
-      if user_to_reset.any? && user_to_reset[0].email_token == nil && params[:user][:password] == params[:user][:confirm_password]
+      if user_to_reset.any? && user_to_reset[0].account_validated? 
         user_to_reset[0].password = params[:user][:password]
         error = User.validator(hash: user_to_reset[0].to_hash)
-        if error.any?
+        if error.any? || params[:user][:password] != params[:user][:confirm_password]
           flash[:error] = User.error_message(array: error).join("\n")
           redirect '/reset_password?token=' + params[:user][:token_password]
           halt
@@ -34,6 +34,8 @@ class ValidationTokenController < ApplicationController
           user_to_reset[0].reset_token = nil
           user_to_reset[0].save
         end
+      else
+        flash[:error] = "go home you're drunk"
         redirect "/"
       end
       redirect "/"
