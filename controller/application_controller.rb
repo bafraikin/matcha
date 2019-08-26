@@ -31,6 +31,16 @@ class ApplicationController < Sinatra::Base
 		!session[:current_user].nil?
 	end
 
+  def block_unsigned_and_unvalidated
+	  if !user_logged_in?
+      flash[:error] = "You need to sign in"
+      redirect "/"
+    elsif !current_user.account_validated?
+      flash[:error] = "You need to validate your account"
+      redirect "/"
+    end
+  end
+
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
 		!settings.sockets[user.key].nil?
