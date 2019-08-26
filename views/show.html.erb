@@ -1,0 +1,15 @@
+<% #if user own profile show form %>
+
+<h2>Biographie</h2>
+<div>
+	<% if current_user.id == @user.id %>
+		<p id="biography" contenteditable='true'><%= @user.biography %></p>
+	<input type='submit' value="save">
+	<% else %>
+		<p><%= @user.biography %></p>
+	<% end %> 
+</div>
+<% if current_user.id == @user.id %>
+<script charset="utf-8" src="/assets/javascript/profile.js">
+</script>
+<% end %>

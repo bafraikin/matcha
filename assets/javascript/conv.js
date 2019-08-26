@@ -10,6 +10,7 @@ const send_text = function () {
 	const input = this.parentNode.querySelector("input");
 	const csrf = document.querySelector("meta[name=csrf-token]").content
 	if (!input || input.value === "" || !csrf || !Socket)
+		console.log("coucou");
 
 }
 

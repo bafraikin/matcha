@@ -27,3 +27,6 @@ body {
 	bottom: 10%;
 	flex-direction: column;
 }
+p[contenteditable="true"] {
+	background-color: #dddbdb;
+}

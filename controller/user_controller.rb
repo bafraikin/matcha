@@ -15,8 +15,13 @@ class UserController < ApplicationController
 
     get '/show/:id' do
       block_unsigned_and_unvalidated
-      @user = User.find(id: params[:id])
-      @user = @user[0] if user.any?
+      @user = User.find(id: params[:id].to_i)
+	  if !@user
+		  redirect "/"
+		  halt
+	  else
+		  erb:'show.html'
+	  end
     end
 
 		post "/add_like" do
