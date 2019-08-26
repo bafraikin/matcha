@@ -13,6 +13,12 @@ class UserController < ApplicationController
 			end
 		end
 
+    get '/show/:id' do
+      block_unsigned_and_unvalidated
+      @user = User.find(id: params[:id])
+      @user = @user[0] if user.any?
+    end
+
 		post "/add_like" do
 			settings.log.info(params)
 			user_to_like = User.find(id: params[:id].to_i)
