@@ -4,29 +4,29 @@ class RegistrationController < ApplicationController
 		"registration"
 	end
 
-	namespace "/registration" do
-		get '/login' do 
-			erb:'login.html'
-		end
+  namespace "/registration" do
+    get '/login' do 
+      erb:'login.html'
+    end
 
-		post '/registrate' do
-			settings.log.info(params)
-			if params[:user] && params[:user][:email]
-				a = User.where(equality: {email: params[:user][:email]})
-				if !(a.any? && a[0].good_password?(to_test: params[:user][:password]))
-					flash[:error] = "WRONG CONNECTION"
-					redirect to('registration/login')
-				elsif a.any?
-					session[:current_user] = a[0]
-					flash[:success] = "Connection reussi"
-					redirect "/"
-				end
-			end
-		end
+    post '/registrate' do
+      settings.log.info(params)
+      if params[:user] && params[:user][:email]
+        a = User.where(equality: {email: params[:user][:email]})
+        if !(a.any? && a[0].good_password?(to_test: params[:user][:password]))
+          flash[:error] = "WRONG CONNECTION"
+          redirect to('registration/login')
+        elsif a.any?
+          session[:current_user] = a[0]
+          flash[:success] = "Connection reussi"
+          redirect "/"
+        end
+      end
+    end
 
-		get '/sign_up'do
-			erb:'sign_up.html'
-		end
+    get '/sign_up'do
+      erb:'sign_up.html'
+    end
 
 		post "/create" do
 			hash = params[:user]
