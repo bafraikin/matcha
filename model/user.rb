@@ -16,10 +16,13 @@ class User < MatchaBase
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
 	end
 
-	def self.hash_password(hash:)
-		hash[:password] = BCrypt::Password.create(hash[:password])
-		hash
+	def self.hash_password(password:)
+		BCrypt::Password.create(password)
 	end
+
+  def account_validated?
+    self.email_token.nil?
+  end
 
 	def add_match(id:)
 		data = SecureRandom.hex
@@ -69,7 +72,7 @@ class User < MatchaBase
 
 	def self.create(hash: {})
 		unless (error = validator(hash: hash)).any?
-			user = super(hash: hash_password(hash: hash))
+			user = super(hash: hash.merge!(password: hash_password(password: hash[:password])))
 			user[0].build_attachement if user.any?
 			user
 		else
