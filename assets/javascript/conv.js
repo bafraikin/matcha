@@ -5,14 +5,12 @@ const new_message = function (text, receiver) {
 }
 
 const send_text = function () {
-	console.log("coucou");
 	if (!this.parentNode)
 		return;
 	const input = this.parentNode.querySelector("input");
 	const csrf = document.querySelector("meta[name=csrf-token]").content
-	if (!input || input.value === "" || !csrf)
-		return ;
-	debugger;
+	if (!input || input.value === "" || !csrf || !Socket)
+
 }
 
 window.onload = () => {
