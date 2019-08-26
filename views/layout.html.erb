@@ -6,6 +6,9 @@
 		<meta name="viewport" content="width=device-width" />
 		<meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
 		<link rel="icon" type="image/png" href="/assets/favico.png" />	
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" charset="utf-8">
+		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
 		<title> <%= title %> </title>
 	</head>
 	<body>
@@ -15,17 +18,48 @@
 				<a href="#" class="close" onclick="this.parentNode.hidden = true">&times;</a>
 			</div>
 		<% end %>
-		<div>
-			<a href="/" target="_top">MATCHA HOME</a>
-		</div>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<div class="container">
+				<a class="navbar-brand" href="/">MATCHA</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarResponsive">
+					<ul class="navbar-nav ml-auto">
+						<% unless user_logged_in? %>
+							<li class="nav-item">
+								<a class="nav-link" href="/registration/sign_up" target="_top">Cree toi ton compte de matcheur fou</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/registration/login" target="_top">Connecte toi le matcheur fou</a>
+							</li>
+						<% else %>
+							<li class="nav-item">
+								<a class="nav-link icon" id="matcha_like" href="#"><i class="fa fa-star"></i><span>0</span></a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link icon" id="matcha_match" href="#"><i class="fa fa-heart"></i><span>0</span></a>
+							</li>		
+							<li class="nav-item">
+								<a class="nav-link icon" id="matcha_conv" href="#"><i class="fa fa-comments"></i><span>0</span></a>
+							</li>		
+						<% end %>
+					</ul>
+				</div>
+			</div>
+		</nav>
 		<%= yield %>
+		<div id="notif_wrapper">	
+		</div>
+		<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
+		<script src="/assets/javascript/conv.js" charset="utf-8"> </script>
 		<script charset="utf-8">
-var exampleSocket = new WebSocket("ws://localhost:4567/user/socket");
-exampleSocket.onopen = function (event) {
-  exampleSocket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
+var Socket = new WebSocket("ws://localhost:4567/user/socket");
+Socket.onopen = function (event) {
+  Socket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
   };
-  exampleSocket.onmessage = function (event) {
- console.log(event);
+  Socket.onmessage = function (event) {
+  display_notif(event);
   };
 		</script>
 	</body>

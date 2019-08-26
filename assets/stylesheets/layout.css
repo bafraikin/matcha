@@ -1,0 +1,29 @@
+
+a.icon {
+	background-color: grey;
+	border-radius: 15px;
+	margin-left: 10px;
+}
+
+body {
+	padding-top: 56px;
+}
+
+.success {
+	background-color: green;
+
+}
+
+.error {
+	background-color: red;
+}
+
+#notif_wrapper {
+	display: flex;
+	left: 50%;
+	align-content: end;
+	width: 20vw;
+	position: fixed;
+	bottom: 10%;
+	flex-direction: column;
+}

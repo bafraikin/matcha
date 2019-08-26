@@ -28,34 +28,34 @@ class RegistrationController < ApplicationController
       erb:'sign_up.html'
     end
 
-    post "/create" do
-      hash = params[:user]
-      hash[:age]= hash[:age].to_i
-      array = Array.new
-      1.upto(2) do |i|
-        symbol = ("interest" + i.to_s).to_sym
-        array << hash.delete(symbol) if hash.key?(symbol)
-      end
-      hash.delete(:confirm_password)
-      hash = hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-      check_user_email_already_used(email: hash[:email])
-      error = User.create(hash: hash.merge({interest: array, email_token: SecureRandom.hex}))
-      if error.any? && !error[0].is_a?(User)
-        flash[:error] = error.join('<br/>')
-        redirect "/registration/sign_up"
-      else
-        confirme_mail(hash[:email], error[0].email_token)
-        flash[:success] = "Un email vous a ete envoyer"
-        redirect "/"
-      end
-    end
-  end
-  
-  private
-  def check_user_email_already_used(email:)
-    if email && User.where(equality: {email: email}).any?
-      flash[:error] = "email already used"
-      redirect "/registration/sign_up"
-    end
-  end
+		post "/create" do
+			hash = params[:user]
+			hash[:age]= hash[:age].to_i
+			array = Array.new
+			1.upto(2) do |i|
+				symbol = ("interest" + i.to_s).to_sym
+				array << hash.delete(symbol) if hash.key?(symbol)
+			end
+			hash.delete(:confirm_password)
+			hash = hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+			check_user_email_already_used(email: hash[:email])
+			error = User.create(hash: hash.merge({interest: array, email_token: SecureRandom.hex}))
+			if error.any? && !error[0].is_a?(User)
+				flash[:error] = error.join('<br/>')
+				redirect "/registration/sign_up"
+			else
+				confirme_mail(hash[:email], error[0].email_token)
+				flash[:success] = "Un email vous a ete envoyer"
+				redirect "/"
+			end
+		end
+
+	end
+	private
+	def check_user_email_already_used(email:)
+		if email && User.where(equality: {email: email}).any?
+			flash[:error] = "email already used"
+			redirect "/registration/sign_up"
+		end
+	end
 end

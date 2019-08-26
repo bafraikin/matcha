@@ -20,9 +20,15 @@ class User < MatchaBase
 		BCrypt::Password.create(password)
 	end
 
+
+	def full_name
+		self.first_name + " " + self.last_name
+	end
+
   def account_validated?
     self.email_token.nil?
   end
+
 
 	def add_match(id:)
 		data = SecureRandom.hex
@@ -98,11 +104,15 @@ class User < MatchaBase
 		equality.each do |k,v|
 			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
 		end
-		query = "MATCH (p {email: '#{self.email}'})-[:LIKE | :MATCH]->(o) WITH  COLLECT(o) as to_exclude"
-		query += " MATCH (o:user)"
-		query+= " WHERE " + self.interest.map{|sex| "o:" + sex}.join(' OR ') + " AND '#{self.sex}' IN o.interest"
+		interest = self.interest.map{|sex| "other:" + sex}.join(' OR ')
+		interest = "(#{interest})" if self.interest.size > 1
+		query = "MATCH (self:user {email: '#{self.email}'})
+		OPTIONAL MATCH (self)-[:LIKE | :MATCH]->(other:user) 
+		WITH  COLLECT(DISTINCT other) as to_exclude, self"
+		query += " MATCH (other:user)"
+		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " WITH to_exclude, collect(o) as result WHERE NONE (i IN result WHERE i IN to_exclude) UNWIND result as to_return RETURN to_return"
+		query += " RETURN other"
 		self.class.query_transform(query: query)
 	end
 end
