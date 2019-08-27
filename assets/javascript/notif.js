@@ -49,10 +49,11 @@ const create_notif = function(notif) {
 	return (body);
 }
 
-
 window.onload = () => {
-	document.querySelector("#matcha_like").onclick = function() {
-		this.classList.remove("active");}
-	document.querySelector("#matcha_match").onclick = function() {
-		this.classList.remove("active");}
+	let like = document.querySelector("#matcha_like");
+	let match = document.querySelector("#matcha_match");
+	if (like)
+		like.onclick = function() {this.classList.remove("active");}
+	if (match)
+		match.onclick = function() {this.classList.remove("active");}
 };
