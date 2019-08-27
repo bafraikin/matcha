@@ -9,7 +9,7 @@ class User < MatchaBase
 	end
 
 	def self.labels
-		[:sex]
+		[]
 	end
 
 	def self.cant_be_blank_on_creation
@@ -104,7 +104,7 @@ class User < MatchaBase
 		equality.each do |k,v|
 			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
 		end
-		interest = self.interest.map{|sex| "other:" + sex}.join(' OR ')
+		interest = self.interest.map{|sex| "other.sex = '#{sex}'"}.join(' OR ')
 		interest = "(#{interest})" if self.interest.size > 1
 		query = "MATCH (self:user {email: '#{self.email}'})
 		OPTIONAL MATCH (self)-[:LIKE | :MATCH]->(other:user) 
