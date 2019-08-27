@@ -121,8 +121,11 @@ class MatchaBase
 	end
 
 
-	def get_node_related_with(link:, type_of_node: [])
-		query = "MATCH (n)-[:#{link}]-(m) WHERE "
+	def get_node_related_with(link: "", type_of_node: [])
+		unless link.empty?
+			link  = ":" + link 
+		end
+		query = "MATCH (n)-[#{link}]-(m) WHERE "
 		type_of_node.each_with_index do |type, index|
 			query += (index  ==  0) ?  ""  : " OR "
 			query += "m:"  + type 

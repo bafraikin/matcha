@@ -25,10 +25,9 @@ class User < MatchaBase
 		self.first_name + " " + self.last_name
 	end
 
-  def account_validated?
-    self.email_token.nil?
-  end
-
+	def account_validated?
+		self.email_token.nil?
+	end
 
 	def add_match(id:)
 		data = SecureRandom.hex
@@ -62,7 +61,9 @@ class User < MatchaBase
 
 	def build_attachement
 		notif  = Notification.create(type: "ROOT")
+		picture_default = Picture.root
 		create_links(id: notif[0].id, type: "NOTIFICATION_POOL")
+		create_links(id: picture_default.id, type: "PROFILE_PICTURE")
 	end
 
 	def add_notification(type:)
@@ -73,6 +74,36 @@ class User < MatchaBase
 			notif_to_add[0]
 		else
 			notif_to_add
+		end
+	end
+
+	def attach_photo(photo:)
+		if photo.is_a?(Picture)
+			photo = photo[0]
+			create_links(id: photo.id, type: "BELONGS_TO")
+			true
+		else
+			false
+		end
+	end
+
+	def profile_picture
+		self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])[0]
+	end
+
+	def pictures
+			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+	end
+
+	def define_photo_as_profile_picture(photo:)
+		if photo.is_a?(Picture)
+			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
+			rel.any? ? rel = rel[0][0] : return
+			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE", new_data: data)
+			if last_profile_picture.src != Picture.root_path
+				create_links(id: last_profile_picture.id, type: "BELONGS_TO")
+			end
 		end
 	end
 

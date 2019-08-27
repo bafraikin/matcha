@@ -30,6 +30,7 @@ class UserController < ApplicationController
 			block_unsigned
 			block_unvalidated if (current_user.id != params[:id].to_i)
 			@user = User.find(id: params[:id].to_i)
+			@picture = @user.profile_picture
 			if !@user
 				redirect "/"
 				halt
