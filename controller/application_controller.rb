@@ -19,6 +19,10 @@ class ApplicationController < Sinatra::Base
 
 	set :log, Logger.new(STDOUT)
 
+	def h(text)
+		    Rack::Utils.escape_html(text)
+	end
+
 	def title
 		"MATCHA"
 	end
@@ -31,15 +35,19 @@ class ApplicationController < Sinatra::Base
 		!session[:current_user].nil?
 	end
 
-  def block_unsigned_and_unvalidated
-	  if !user_logged_in?
-      flash[:error] = "You need to sign in"
-      redirect "/"
-    elsif !current_user.account_validated?
-      flash[:error] = "You need to validate your account"
-      redirect "/"
-    end
-  end
+	def block_unsigned
+		if !user_logged_in?
+			flash[:error] = "You need to sign in"
+			redirect "/"
+		end
+	end
+
+	def block_unvalidated
+		if !current_user.account_validated?
+			flash[:error] = "You need to validate your account"
+			redirect "/"
+		end
+	end
 
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
@@ -57,7 +65,7 @@ class ApplicationController < Sinatra::Base
 	get /\/?/ do
 		@users = []
 		if user_logged_in?
-		@users = current_user.find_matchable
+			@users = current_user.find_matchable
 		end
 		erb:'matchable.html'
 	end

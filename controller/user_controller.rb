@@ -12,17 +12,31 @@ class UserController < ApplicationController
 				request.websocket {}
 			end
 		end
+		post '/update' do
+			settings.log.info(params)
+			block_unsigned
+			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym)
+			current_user.send(params[:id].to_s + "=", params[:content])
+			error = current_user.save
+			if error.is_a?(Array)
+				return error.to_json
+			else
+				return true.to_json
+			end
+		end
 
-    get '/show/:id' do
-      block_unsigned_and_unvalidated
-      @user = User.find(id: params[:id].to_i)
-	  if !@user
-		  redirect "/"
-		  halt
-	  else
-		  erb:'show.html'
-	  end
-    end
+		get '/show/:id' do
+			return if params[:id].nil?
+			block_unsigned
+			block_unvalidated if (current_user.id != params[:id].to_i)
+			@user = User.find(id: params[:id].to_i)
+			if !@user
+				redirect "/"
+				halt
+			else
+				erb:'show.html'
+			end
+		end
 
 		post "/add_like" do
 			settings.log.info(params)
