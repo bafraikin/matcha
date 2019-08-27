@@ -29,4 +29,5 @@ body {
 }
 p[contenteditable="true"] {
 	background-color: #dddbdb;
+	min-height: 2vh;
 }
