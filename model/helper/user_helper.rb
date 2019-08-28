@@ -17,7 +17,7 @@ module UserHelper
 		end
 
 		def valid_age?(age)
-			if age.nil? || age.to_i < 18 || age.to_i > 98
+			if age.nil? || age.to_i < 18 || age.to_i > 98 || age.to_s[/\d+/].size != age.to_s.size
 				false
 			else
 				true
