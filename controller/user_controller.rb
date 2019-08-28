@@ -1,5 +1,5 @@
 class UserController < ApplicationController
-
+	include ShowHelper
 	def title
 		"coucou"
 	end

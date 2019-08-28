@@ -65,9 +65,10 @@
 <div>
   <p>list d'interet</p>
   <% if current_user.id == @user.id %>
-    <select>
-      <option value="man">man</option>
-      <option value="woman">woman</option>
+    <% Hashtag.all.each do |value| %>
+        <input  type="checkbox" value="<%= checkbox_methode(value: value, user: @user)%>">
+        <p><%= h(value.name) %></p>
+    <% end %>
     </select>
   <% else %>
     <p><%= h(@user.age) %></p>
