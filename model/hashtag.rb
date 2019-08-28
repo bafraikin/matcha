@@ -1,5 +1,5 @@
 class Hashtag < MatchaBase
-  attr_accessor :name, :id
+  attr_accessor :name, :id, :type
 
   def self.possible_hashtag
     ['#ruby', '#node', '#NO', '#YES', '#travel', '#hiking', '#hashtag', '#DOG', '#CAT', '#wine']
