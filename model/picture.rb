@@ -12,16 +12,20 @@ class Picture < MatchaBase
 	end
 
 	def self.root_path
-		"./assets/pictures/root.png"
+		"./assets/pictures/#{root_name}"
+	end
+
+	def self.root_name
+		"root.png"
 	end
 
 	def self.root
 		if File.exist?(root_path)
-			root =  Picture.where(equality: {src: root_path})
+			root =  Picture.where(equality: {src: root_name})
 			 if root.any?
 				 root[0]
 			 else
-				 error = create(hash: {src: root_path})
+				 error = create(hash: {src: root_name})
 				 exit if !error.any? || !error[0].is_a?(Picture)
 				 error[0]
 			 end

@@ -30,7 +30,7 @@
 	function  handle_file() {
 		const input = document.querySelector('input[type=file]');
 		let button = document.querySelector('div#upload button');
-	//	send_it(button);
+		send_it(button);
 		let files = input.files;
 		if (files.length > 1 || files[0].size > 50000000 || !files[0].type.match(/(jpeg|jpg|png)/))
 			dont_send_it(button);
@@ -49,8 +49,6 @@
 	function display_photo_uploaded(response) {
 		if (!!response.match(/error/))
 			return ;
-		const div = document.querySelector('div.video');
-		const video = document.querySelector('#video');
 		const startbutton = document.querySelector('.startbutton');
 		let img = document.querySelector('#uploaded');
 		if (!!video)
@@ -80,9 +78,11 @@
 
 	function upload_photo() {
 		let photo = document.querySelector('input[type=file]').files[0];
+		const csrf = document.querySelector("meta[name=csrf-token]").content
+			if (!csrf || !photo)
+				return;
 		let req = new XMLHttpRequest();
-		var form_data = new FormData();        
-		req.open("POST", '/galerie/php/upload_photo.php', true);
+		req.open("POST", '/user/add_photo', true);
 		req.overrideMimeType("text/plain;");
 		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		req.onreadystatechange = function(event) {
@@ -94,16 +94,20 @@
 		};
 		getBase64(photo)
 			.then((data) => {
-				req.send('file=' +  normalize_data(data));
+				req.send('file=' +  normalize_data(data) + "&authenticity_token=" + normalize_data(csrf));
 			})
 		.catch(error => console.error(error));
 	}
 
 	function create_button_upload() {
+		let pic = document.querySelectorAll('img.photo');
+		if (pic.length < 5)
+		{
 		let div = document.querySelector('div#picture');
 		div.innerHTML += '<div id="upload"><p>(100Ko max)</p><input type="file" name="picture" accept="image/jpg|image/png|image/jpeg"><button>send</button></div>';
 		let input = document.querySelector('input[type=file]');
 		input.addEventListener('change', handle_file);
+		}
 	}
 
 	create_button_upload();

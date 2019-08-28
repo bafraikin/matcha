@@ -12,6 +12,7 @@ class UserController < ApplicationController
 				request.websocket {}
 			end
 		end
+
 		post '/update' do
 			settings.log.info(params)
 			block_unsigned
@@ -25,12 +26,36 @@ class UserController < ApplicationController
 			end
 		end
 
+		post '/add_photo' do
+			block_unsigned
+			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
+			return "error" if !params[:file]
+			return "error Picture must be lighter" if params[:file].size > 500000
+			type = params[:file].slice(0,50)[/jpeg|png|jpg/]
+			file = Base64.decode64(params[:file][(params[:file].index(",")+1)..])
+			return "error wrong picture type" if !type
+			if name = create_file(data: file, type: type)
+				pic = Picture.create(hash: {src: name})
+				return "error" if !pic.any? || !pic[0].is_a?(Picture)
+				current_user.attach_photo(photo: pic[0])
+				if current_user.profile_picture.src == Picture.root_name
+					current_user.define_photo_as_profile_picture(photo: pic[0])
+				else
+					current_user.attach_photo(photo: pic[0])
+				end
+				name
+			else
+				"error"
+			end
+		end
+
 		get '/show/:id' do
 			return if params[:id].nil?
 			block_unsigned
 			block_unvalidated if (current_user.id != params[:id].to_i)
 			@user = User.find(id: params[:id].to_i)
-			@picture = @user.profile_picture
+			@profile_picture = @user.profile_picture
+			@pictures = @user.get_node_related_with(link: "BELONGS_TO", type_of_node: ['picture'])
 			if !@user
 				redirect "/"
 				halt
@@ -64,4 +89,26 @@ class UserController < ApplicationController
 		end
 	end
 
+	private
+	def good_name_picture
+		pics = Dir["./assets/pictures/userpic#{current_user.id}*"]
+		max_number = pics.max_by{|name| name[/\d+/].to_i}
+		good_number = max_number.to_s[/\d+/].to_i + 1
+		"userpic#{current_user.id}#{good_number}"
+	end
+
+	def create_file(data:, type:)
+		name = good_name_picture + ".#{type}"
+		file = File.open("./assets/pictures/" + name, "w+")
+		if file
+			size = file.write(data)
+			if size = data.size
+				name
+			else
+				false
+			end
+		else
+			false
+		end
+	end
 end

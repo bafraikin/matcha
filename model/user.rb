@@ -79,7 +79,6 @@ class User < MatchaBase
 
 	def attach_photo(photo:)
 		if photo.is_a?(Picture)
-			photo = photo[0]
 			create_links(id: photo.id, type: "BELONGS_TO")
 			true
 		else
@@ -100,8 +99,8 @@ class User < MatchaBase
 			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
 			rel.any? ? rel = rel[0][0] : return
 			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
-			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE", new_data: data)
-			if last_profile_picture.src != Picture.root_path
+			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE")
+			if last_profile_picture[0].src != Picture.root_name
 				create_links(id: last_profile_picture.id, type: "BELONGS_TO")
 			end
 		end
