@@ -1,12 +1,17 @@
 module ShowHelper
 
-    def checkbox_methode(value:, user: )
-        if (user.is_related_with(id: value.id, type_of_link: 'APPRECIATE'))
+    def checkbox_methode(hashtag:, checkbox: )
+        checked = ''
+        if (checkbox.include?(hashtag.name))
             checked = 'checked'
-        else
-            checked = ''
         end
-        h(value.id.to_s + '" name="' + value.name + '"' + checked )
+        'id=' + hashtag.name+ '" ' + checked
+    end
+
+    def showoff_hashtag(hashtag:, checkbox: )
+        if (checkbox.include?(hashtag.name))
+            hashtag.name
+        end
     end
 
 end

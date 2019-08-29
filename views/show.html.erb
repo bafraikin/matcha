@@ -64,15 +64,13 @@
 
 <div>
   <p>list d'interet</p>
-  <% if current_user.id == @user.id %>
-    <% Hashtag.all.each do |value| %>
-        <input  type="checkbox" value="<%= checkbox_methode(value: value, user: @user)%>">
-        <p><%= h(value.name) %></p>
-    <% end %>
-    </select>
+    <% @hashtags.each do |hashtag| %>
+    <% if current_user.id == @user.id %>
+        <input  type="checkbox" <%= checkbox_methode(hashtag: hashtag, checkbox: @checkboxes) %> >
+        <p><%=hashtag.name %></p>
   <% else %>
-    <p><%= h(@user.age) %></p>
-  <% end %> 
+    <p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
+  <% end end %> 
 </div>
 
 
