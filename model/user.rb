@@ -103,7 +103,7 @@ class User < MatchaBase
 			if last_profile_picture[0].src != Picture.root_name
 				create_links(id: last_profile_picture.id, type: "BELONGS_TO")
 			else
-				current_user.suppress_his_relation_with(id: last_profile_picture.id)
+				suppress_his_relation_with(id: last_profile_picture[0].id)
 			end
 		end
 	end
