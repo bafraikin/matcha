@@ -40,13 +40,19 @@ class UserController < ApplicationController
 				current_user.attach_photo(photo: pic[0])
 				if current_user.profile_picture.src == Picture.root_name
 					current_user.define_photo_as_profile_picture(photo: pic[0])
-				else
-					current_user.attach_photo(photo: pic[0])
 				end
 				name
 			else
 				"error"
 			end
+		end
+
+		post '/delete_photo' do
+			block_unsigned
+			return "error" if params[:src]
+			return "error" if !(pic = Picture.where(equality: {src: params[:src]})).any?
+			return "error" if current_user.pictures.map(&:src).include?(params[:src])
+			binding.pry
 		end
 
 		get '/show/:id' do

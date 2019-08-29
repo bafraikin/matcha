@@ -91,7 +91,7 @@ class User < MatchaBase
 	end
 
 	def pictures
-			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+		pictures = self.get_node_related_with(type_of_node: ["picture"])
 	end
 
 	def define_photo_as_profile_picture(photo:)
@@ -102,6 +102,8 @@ class User < MatchaBase
 			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE")
 			if last_profile_picture[0].src != Picture.root_name
 				create_links(id: last_profile_picture.id, type: "BELONGS_TO")
+			else
+				current_user.suppress_his_relation_with(id: last_profile_picture.id)
 			end
 		end
 	end

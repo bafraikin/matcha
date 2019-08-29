@@ -1,0 +1,9 @@
+
+<div id="picture" class="text-center container-fluid">
+	<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= @profile_picture.src%>"/>
+	<% @pictures.each do |pic| %>
+		<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= pic.src%>"/>
+	<% end %>
+</div>
+
+

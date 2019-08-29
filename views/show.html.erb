@@ -1,12 +1,10 @@
 <% #if user own profile show form %>
 
+<% if current_user.id == @user.id %>
+	<link rel="stylesheet" href="/assets/stylesheets/profile.css"  media="screen" charset="utf-8">
+<% end %>
 
-<div id="picture" class="text-center container-fluid">
-	<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= @profile_picture.src%>"/>
-	<% @pictures.each do |pic| %>
-		<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= pic.src%>"/>
-	<% end %>
-</div>
+	<%= erb :"_show_img.html" %>
 
 <h2>Biographie</h2>
 <div>
