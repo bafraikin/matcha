@@ -62,7 +62,7 @@
   <% end %> 
 </div>
 
-<div>
+<div id='hashtag'>
   <p>list d'interet</p>
     <% @hashtags.each do |hashtag| %>
     <% if current_user.id == @user.id %>
@@ -70,7 +70,10 @@
         <p><%=hashtag.name %></p>
   <% else %>
     <p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
-  <% end end %> 
+  <% end end %>
+    <% if current_user.id == @user.id %>
+        <input type='submit' value="save_hashtag">
+    <% end %> 
 </div>
 
 

@@ -5,7 +5,7 @@ module ShowHelper
         if (checkbox.include?(hashtag.name))
             checked = 'checked'
         end
-        'id=' + hashtag.name+ '" ' + checked
+        'value=' + hashtag.name + ' ' + checked
     end
 
     def showoff_hashtag(hashtag:, checkbox: )
