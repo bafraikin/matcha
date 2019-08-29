@@ -103,8 +103,8 @@
 		let pic = document.querySelectorAll('img.photo');
 		if (pic.length < 5)
 		{
-		let div = document.querySelector('div#picture');
-		div.innerHTML += '<div id="upload"><p>(100Ko max)</p><input type="file" name="picture" accept="image/jpg|image/png|image/jpeg"><button>send</button></div>';
+		let div = document.querySelector('div#photo_img');
+		div.innerHTML += '<form><div class="form-group"><label for="exampleFormControlFile1">500 ko max</label><input type="file" name="picture" accept="image/jpg|image/png|image/jpeg" class="form-control-file" id="exampleFormControlFile1"></div></form>'
 		let input = document.querySelector('input[type=file]');
 		input.addEventListener('change', handle_file);
 		}

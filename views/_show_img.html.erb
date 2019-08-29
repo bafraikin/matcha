@@ -1,9 +1,19 @@
 
-<div id="picture" class="text-center container-fluid">
-	<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= @profile_picture.src%>"/>
-	<% @pictures.each do |pic| %>
-		<img class="img-thumbnail rounded mx-auto photo" src="/assets/pictures/<%= pic.src%>"/>
-	<% end %>
+<div id="photo_img">
+	<div id="picture" class="text-center container-fluid">
+		<div class="card general-card">
+			<img class="card-img-top" src="/assets/pictures/<%= @profile_picture.src%>"/>
+			<div class="card-body">
+				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+			</div>
+		</div>
+		<% @pictures.each do |pic| %>
+			<div class="card general-card">
+				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>"/>
+				<div class="card-body">
+					<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+				</div>
+			</div>
+		<% end %>
+	</div>
 </div>
-
-
