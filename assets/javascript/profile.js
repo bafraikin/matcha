@@ -24,13 +24,8 @@
 		};
 		req.send("id=" + id + "&content=" + content + "&authenticity_token=" + normalize_data(csrf));
 	};
-	let inputs = document.querySelectorAll("input[value='save']");
-	inputs.forEach(function (input) {
-		input.addEventListener("click", update);
-	});
-/*
-** function for check box under this comment
-*/
+
+
 	const update_hashtag = function () {
 		const csrf = document.querySelector("meta[name=csrf-token]").content;
 		const req = new XMLHttpRequest();
@@ -45,9 +40,16 @@
 					console.log("display_error");
 			}
 		};
-		req.send("id=hashtag" + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
+		req.send( "value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
 	};
 
-	let hashtag_input = document.querySelector("input[type='checkbox']");
-		hashtag_input.addEventListener("click", update_hashtag);
+	let hashtag_input = document.querySelectorAll("input[type='checkbox']");
+	hashtag_input.forEach(function (hashtag_input){ 
+			hashtag_input.addEventListener("click", update_hashtag);
+		});
+
+	let inputs = document.querySelectorAll("input[value='save']");
+	inputs.forEach(function (input) {
+		input.addEventListener("click", update);
+	});
 })();

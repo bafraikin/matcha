@@ -28,15 +28,13 @@ class UserController < ApplicationController
 		post '/update_hashtag' do
 			settings.log.info(params)
 			block_unsigned
-			return if params[:id].nil? || params[:value].nil? || !check_if_valide_hashtag?(params[:value])
-			id_hashtag = Hashtag.where(equality: {name: params[:value]})[0].id
+			id_hashtag = check_if_valide_hashtag(params[:value])
+			return if params[:value].nil? || id_hashtag == false
 			if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
 				current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
 			else
 				current_user.suppress_his_relation_with(id: id_hashtag)
 			end
-
-
 		end
 
 		get '/show/:id' do
