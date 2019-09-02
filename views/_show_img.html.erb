@@ -2,15 +2,17 @@
 <div id="photo_img">
 	<div id="picture" class="text-center container-fluid">
 		<div class="card general-card">
-			<img class="card-img-top" src="/assets/pictures/<%= @profile_picture.src%>"/>
+			<img class="card-img-top" src="/assets/pictures/<%= @profile_picture.src%>" id="<%= @profile_picture.id %>"/>
 			<div class="card-body">
-				<button type="button" class="btn btn-secondary profile_picture"> <i class="fa fa-star"></i></button>
-				<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+				<% if  @profile_picture.src != Picture.root_name%>
+					<button type="button" class="btn btn-secondary profile_picture"> <i class="fa fa-star"></i></button>
+					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+				<% end %>
 			</div>
 		</div>
 		<% @pictures.each do |pic| %>
 			<div class="card general-card">
-				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>"/>
+				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>" id="<%= pic.id %>"/>
 				<div class="card-body">
 					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>

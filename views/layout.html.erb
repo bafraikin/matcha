@@ -5,7 +5,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
-		<link rel="icon" type="image/png" href="/assets/favico.png" />	
+		<link rel="icon" type="image/png" href="/assets/pictures/favico.png" />	
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" charset="utf-8">
 		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
@@ -35,7 +35,7 @@
 							</li>
 						<% else %>
 							<li class="nav-item">
-								<a class="nav-link icon" id="profile" href="/user/show/<%=current_user.id %>"><i class="fa fa-user-check"></i></a>
+								<a class="nav-link icon" id="profile" href="/user/show/<%=current_user.id %>"><i class="fa fa-user"></i></a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link icon" id="matcha_like" href="#"><i class="fa fa-star"></i><span>0</span></a>

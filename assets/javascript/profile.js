@@ -49,8 +49,8 @@
 	function display_photo_uploaded(response) {
 		if (!!response.match(/error/))
 			return ;
-			const div = document.querySelector('div.card.general-card');
-			const picture_div = document.querySelector('#picture');
+		const div = document.querySelector('div.card.general-card');
+		const picture_div = document.querySelector('#picture');
 		if (response && div && picture_div)
 		{
 			let new_div = div.cloneNode(true);
@@ -68,10 +68,43 @@
 		});
 	}
 
+	function toggle_profile() {
+		const csrf = document.querySelector("meta[name=csrf-token]")
+		if (!csrf || !csrf.content || !this || !this.parentNode || this.classList.contains('btn-secondary') || !this.parentNode.parentNode)
+			return ;
+		let button = this;
+		let img = this.parentNode.parentNode.querySelector('img');
+		if (!img || !img.id || isNaN(img.id))
+			return ;
+		let req = new XMLHttpRequest();
+		req.open("POST", '/user/toggle_profile', true);
+		req.overrideMimeType("text/plain;");
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.onreadystatechange = function(event) {
+			if (this.readyState === XMLHttpRequest.DONE) {
+				if (this.status === 200 && !this.response.match(/error/)) {
+					const ancient_profile_picture = document.querySelector('.btn-secondary');
+					if (ancient_profile_picture)
+					{
+					button.classList.remove('btn-info');
+					button.classList.add('btn-secondary');
+					ancient_profile_picture.classList.add('btn-info');
+					ancient_profile_picture.classList.remove('btn-secondary');
+					}
+				}
+			}
+		}
+					req.send('id=' + img.id  + "&authenticity_token=" + normalize_data(csrf.content));
+	}
+
+	function delete_this_picture() {
+		console.log('cppp');
+	}
+
 	function upload_photo() {
 		let photo = document.querySelector('input[type=file]').files[0];
-		const csrf = document.querySelector("meta[name=csrf-token]").content
-			if (!csrf || !photo)
+		const csrf = document.querySelector("meta[name=csrf-token]")
+			if (!csrf || !csrf.content || !photo)
 				return;
 		let req = new XMLHttpRequest();
 		req.open("POST", '/user/add_photo', true);
@@ -86,7 +119,7 @@
 		};
 		getBase64(photo)
 			.then((data) => {
-				req.send('file=' +  normalize_data(data) + "&authenticity_token=" + normalize_data(csrf));
+				req.send('file=' +  normalize_data(data) + "&authenticity_token=" + normalize_data(csrf.content));
 			})
 		.catch(error => console.error(error));
 	}

@@ -48,6 +48,14 @@ class UserController < ApplicationController
 			end
 		end
 
+		post '/toggle_profile' do
+			block_unsigned
+			return "error" if current_user.get_node_related_with(type_of_node: ['picture']).size == 0 || params[:id].nil? || params[:id][/\d+/].to_i.to_s.size != params[:id].to_s.size
+			picture = Picture.find(id: params[:id].to_i)
+			return "error" if picture.nil?
+			current_user.define_photo_as_profile_picture(photo: picture)
+		end
+
 		post '/delete_photo' do
 			block_unsigned
 			return "error" if params[:src]
