@@ -4,14 +4,16 @@
 		<div class="card general-card">
 			<img class="card-img-top" src="/assets/pictures/<%= @profile_picture.src%>"/>
 			<div class="card-body">
-				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+				<button type="button" class="btn btn-secondary profile_picture"> <i class="fa fa-star"></i></button>
+				<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
 			</div>
 		</div>
 		<% @pictures.each do |pic| %>
 			<div class="card general-card">
 				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>"/>
 				<div class="card-body">
-					<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
+					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
 				</div>
 			</div>
 		<% end %>

@@ -29,7 +29,7 @@
 
 	function  handle_file() {
 		const input = document.querySelector('input[type=file]');
-		let button = document.querySelector('div#upload button');
+		let button = document.querySelector('span#inputGroupFileAddon01');
 		send_it(button);
 		let files = input.files;
 		if (files.length > 1 || files[0].size > 50000000 || !files[0].type.match(/(jpeg|jpg|png)/))
@@ -49,22 +49,14 @@
 	function display_photo_uploaded(response) {
 		if (!!response.match(/error/))
 			return ;
-		const startbutton = document.querySelector('.startbutton');
-		let img = document.querySelector('#uploaded');
-		if (!!video)
-			video.parentNode.removeChild(video);
-		if (!img)
+			const div = document.querySelector('div.card.general-card');
+			const picture_div = document.querySelector('#picture');
+		if (response && div && picture_div)
 		{
-			img = document.createElement('img');
-			let button = document.createElement('button');
-			button.textContent = 'Monter';
-			button.style.width = "100%";
-			img.id = 'uploaded';
-			startbutton.append(button);
-			div.append(img);
-			button.addEventListener('click', mount_them);
+			let new_div = div.cloneNode(true);
+			new_div.querySelector('img').src = "/assets/pictures/" + response;
+			picture_div.append(new_div);
 		}
-		img.src = '/galerie/tmp/' + response;
 	}
 
 	function getBase64(file) {
@@ -103,16 +95,24 @@
 		let pic = document.querySelectorAll('img.photo');
 		if (pic.length < 5)
 		{
-		let div = document.querySelector('div#photo_img');
-		div.innerHTML += '<form><div class="form-group"><label for="exampleFormControlFile1">500 ko max</label><input type="file" name="picture" accept="image/jpg|image/png|image/jpeg" class="form-control-file" id="exampleFormControlFile1"></div></form>'
-		let input = document.querySelector('input[type=file]');
-		input.addEventListener('change', handle_file);
+			let div = document.querySelector('div#photo_img');
+			div.innerHTML += '<div class="input-group container-fluid"><div class="input-group-prepend"><span class="input-group-text" id="inputGroupFileAddon01">Upload</span></div><div class="custom-file"><input type="file"  accept="image/jpg|image/png|image/jpeg"    class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01"><label class="custom-file-label" for="inputGroupFile01">Choose file</label></div></div>';
+			let input = document.querySelector('input[type=file]');
+			input.addEventListener('change', handle_file);
 		}
 	}
 
 	create_button_upload();
 	let inputs = document.querySelectorAll("input[value='save']");
+	let buttons_profile = document.querySelectorAll('button.profile_picture');
+	let delete_picture = document.querySelectorAll('button.delete_picture');
 	inputs.forEach(function (input) {
 		input.addEventListener("click", update);
+	});
+	buttons_profile.forEach(function (input) {
+		input.addEventListener("click", toggle_profile);
+	});
+	delete_picture.forEach(function (input) {
+		input.addEventListener("click", delete_this_picture);
 	});
 })();

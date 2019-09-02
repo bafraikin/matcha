@@ -40,6 +40,7 @@ class UserController < ApplicationController
 				current_user.attach_photo(photo: pic[0])
 				if current_user.profile_picture.src == Picture.root_name
 					current_user.define_photo_as_profile_picture(photo: pic[0])
+					current_user.suppress_his_relation_with(id: Picture.root.id)
 				end
 				name
 			else
@@ -99,7 +100,7 @@ class UserController < ApplicationController
 	def good_name_picture
 		pics = Dir["./assets/pictures/userpic#{current_user.id}*"]
 		max_number = pics.max_by{|name| name[/\d+/].to_i}
-		good_number = max_number.to_s[/\d+/].to_i + 1
+		good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
 		"userpic#{current_user.id}#{good_number}"
 	end
 
