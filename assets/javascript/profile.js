@@ -96,9 +96,10 @@
 		}
 					req.send('id=' + img.id  + "&authenticity_token=" + normalize_data(csrf.content));
 	}
-
 	function delete_this_picture() {
-		console.log('cppp');
+		const csrf = document.querySelector("meta[name=csrf-token]")
+		if (!csrf || !csrf.content || !this || !this.parentNode || !this.parentNode.parentNode)
+			return ;
 	}
 
 	function upload_photo() {
