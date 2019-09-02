@@ -29,23 +29,13 @@
 		input.addEventListener("click", update);
 	});
 /*
-**
+** function for check box under this comment
 */
 	const update_hashtag = function () {
-		/** */
 		const csrf = document.querySelector("meta[name=csrf-token]").content;
 		const req = new XMLHttpRequest();
 		if (!csrf)
 			return;
-		/** */
-		let array = [];
-		let a = document.getElementById('hashtag');
-		let list = a.querySelectorAll('input[checked]');
-		for (var div of list.values()) {
-			array.push(div.value);
-			console.log(div.value);
-		}
-		/** */
 		req.open('POST', '/user/update_hashtag', true);
 		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
@@ -55,10 +45,9 @@
 					console.log("display_error");
 			}
 		};
-		req.send("id=hashtag" + "&value=" + array.join(' ') + "&authenticity_token=" + normalize_data(csrf));
-		/** */
+		req.send("id=hashtag" + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
 	};
 
-	let hashtag_input = document.querySelector("input[value='save_hashtag']");
+	let hashtag_input = document.querySelector("input[type='checkbox']");
 		hashtag_input.addEventListener("click", update_hashtag);
 })();

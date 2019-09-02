@@ -14,4 +14,10 @@ module ShowHelper
         end
     end
 
+    def check_if_valide_hashtag?(value)
+        Hashtag.all.each do |hashtag|
+            return true if (hashtag.name == params[:value])
+end      
+        return false
+    end 
 end
