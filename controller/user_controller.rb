@@ -57,11 +57,27 @@ class UserController < ApplicationController
 		end
 
 		post '/delete_photo' do
+			settings.log.info(params)
 			block_unsigned
-			return "error" if params[:src]
-			return "error" if !(pic = Picture.where(equality: {src: params[:src]})).any?
-			return "error" if current_user.pictures.map(&:src).include?(params[:src])
-			binding.pry
+			return "error" if params[:src].nil?
+			src = params[:src][/(?<=\/)[^\/]*$/]
+			return "error" if !src || src == Picture.root_name
+			return "error" if !(pictures = current_user.pictures).map(&:src).include?(src)
+			pic = pictures.select{|pic| pic.src == src}
+			if pictures.size > 1 && (rel = current_user.is_related_with(id: pic[0].id))
+				if rel.any?
+					rel = rel[0][0]
+				else
+					return "error"
+				end
+				if rel.type.to_s == "PROFILE_PICTURE"
+					current_user.define_photo_as_profile_picture(photo: pictures.select{|pic| pic.src != src}[0])
+				end
+			else
+				current_user.root_photo_is_now_profile_picture
+			end
+			pic[0].destroy
+			"true"
 		end
 
 		get '/show/:id' do

@@ -61,9 +61,8 @@ class User < MatchaBase
 
 	def build_attachement
 		notif  = Notification.create(type: "ROOT")
-		picture_default = Picture.root
 		create_links(id: notif[0].id, type: "NOTIFICATION_POOL")
-		create_links(id: picture_default.id, type: "PROFILE_PICTURE")
+		root_photo_is_now_profile_picture
 	end
 
 	def add_notification(type:)
@@ -96,7 +95,6 @@ class User < MatchaBase
 
 	def define_photo_as_profile_picture(photo:)
 		if photo.is_a?(Picture)
-			binding.pry
 			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
 			rel.any? ? rel = rel[0][0] : return
 			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
@@ -109,6 +107,11 @@ class User < MatchaBase
 			end
 			true
 		end
+	end
+
+	def root_photo_is_now_profile_picture
+		picture_default = Picture.root
+		create_links(id: picture_default.id, type: "PROFILE_PICTURE")
 	end
 
 	def self.create(hash: {})
