@@ -100,9 +100,10 @@ class User < MatchaBase
 			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
 			rel.any? ? rel = rel[0][0] : return
 			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+			rel_last_picture = self.is_related_with(id: last_profile_picture[0].id, type_of_link: "PROFILE_PICTURE")
 			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE")
 			if last_profile_picture[0].src != Picture.root_name
-				replace_relation(id: last_profile_picture[0].id, type: "BELONGS_TO")
+				replace_relation(id: rel_last_picture[0][0].id, new_type: "BELONGS_TO")
 			else
 				suppress_his_relation_with(id: last_profile_picture[0].id)
 			end
