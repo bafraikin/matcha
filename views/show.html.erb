@@ -1,7 +1,7 @@
 <h2>Biographie</h2>
 <div>
   <% if current_user.id == @user.id %>
-    <p id="biography" contenteditable='true'><%= h(@user.biography) %></p>
+    <p class="form-control" id="biography" contenteditable='true'><%= h(@user.biography) %></p>
     <input type='submit' value="save">
   <% else %>
     <p><%= h(@user.biography) %></p>
@@ -9,9 +9,9 @@
 </div>
 
 <div>
-  <p>First name</p>
+  <p class="font-weight-bold" >First name</p>
   <% if current_user.id == @user.id %>
-    <p id="first_name" contenteditable='true'><%= h(@user.first_name) %></p>
+    <p class="form-control" id="first_name" contenteditable='true'><%= h(@user.first_name) %></p>
     <input type='submit' value="save">
   <% else %>
     <p><%= h(@user.first_name) %></p>
@@ -21,7 +21,7 @@
 <div>
   <p>Last name</p>
   <% if current_user.id == @user.id %>
-    <p id="last_name" contenteditable='true'><%= h(@user.last_name) %></p>
+    <p class="form-control" id="last_name" contenteditable='true'><%= h(@user.last_name) %></p>
     <input type='submit' value="save">
   <% else %>
     <p><%= h(@user.last_name) %></p>
@@ -31,7 +31,7 @@
 <div>
   <% if current_user.id == @user.id %>
   <p>email</p>
-    <p id="email" contenteditable='true'><%= h(@user.email) %></p>
+    <p class="form-control" id="email" contenteditable='true'><%= h(@user.email) %></p>
     <input type='submit' value="save">
   <% end %> 
 </div>
@@ -41,7 +41,7 @@
 <div>
   <p>age</p>
   <% if current_user.id == @user.id %>
-    <p id="age" contenteditable='true'><%= h(@user.age) %></p>
+    <p class="form-control" id="age" contenteditable='true'><%= h(@user.age) %></p>
     <input type='submit' value="save">
   <% else %>
     <p><%= h(@user.age) %></p>
@@ -65,12 +65,13 @@
 <div id='hashtag'>
   <p>list d'interet</p>
     <% @hashtags.each do |hashtag| %>
-    <% if current_user.id == @user.id %>
+     <% if current_user.id == @user.id %>
         <input  type="checkbox" <%= checkbox_methode(hashtag: hashtag, checkbox: @checkboxes) %> >
         <p><%=hashtag.name %></p>
-  <% else %>
-    <p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
-  <% end end %>
+     <% else %>
+        <p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
+     <% end %>
+  <% end %>
 </div>
 
 
