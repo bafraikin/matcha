@@ -77,6 +77,7 @@ class UserController < ApplicationController
 				current_user.root_photo_is_now_profile_picture
 			end
 			pic[0].destroy
+			FileUtils.rm("./assets/pictures/" + pic[0].src)
 			"true"
 		end
 

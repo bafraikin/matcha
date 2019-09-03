@@ -14,8 +14,10 @@
 			<div class="card general-card">
 				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>" id="<%= pic.id %>"/>
 				<div class="card-body">
+					<% if  current_user.id == @user.id %>	
 					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+					<% end %>
 				</div>
 			</div>
 		<% end %>
