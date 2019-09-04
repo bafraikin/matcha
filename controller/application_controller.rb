@@ -43,6 +43,14 @@ class ApplicationController < Sinatra::Base
 		end
 	end
 
+	def block_logged_in
+		if user_logged_in?
+			flash[:error] = "There is nothing to see here"
+			redirect "/"
+			halt
+		end
+	end
+
 	def block_access_to_not_valuable_account
 		if @user.nil? || !@user.is_valuable?
 			flash[:error] = "There is nothing to do here"
