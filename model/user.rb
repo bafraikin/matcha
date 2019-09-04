@@ -16,6 +16,24 @@ class User < MatchaBase
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
 	end
 
+	def cant_be_empty_for_valuable_account
+		[:interest, :first_name, :sex, :age, :pictures, :biography]
+	end
+
+	def is_valuable?
+		self.cant_be_empty_for_valuable_account.select do |method|
+			self.send(method).then do|result|
+				if result.is_a?(Array) || result.is_a?(String)
+					result.empty?
+				elsif result.is_a?(Integer)
+					result < 18
+				else
+					result.nil?
+				end
+			end
+		end.empty?
+	end
+
 	def self.hash_password(password:)
 		BCrypt::Password.create(password)
 	end
@@ -91,6 +109,7 @@ class User < MatchaBase
 
 	def pictures
 		pictures = self.get_node_related_with(type_of_node: ["picture"])
+		pictures.select {|pic| pic.src != Picture.root_name }
 	end
 
 	def define_photo_as_profile_picture(photo:)

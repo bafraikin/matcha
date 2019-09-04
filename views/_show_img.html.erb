@@ -4,9 +4,15 @@
 		<div class="card general-card">
 			<img class="card-img-top" src="/assets/pictures/<%= @profile_picture.src%>" id="<%= @profile_picture.id %>"/>
 			<div class="card-body">
-				<% if  @profile_picture.src != Picture.root_name%>
+				<% if  @profile_picture.src != Picture.root_name && current_user.id == @user.id %>
 					<button type="button" class="btn btn-secondary profile_picture"> <i class="fa fa-star"></i></button>
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+				<% elsif @profile_picture.src != Picture.root_name %>
+					<button type="button" class="btn btn-outline-success like"><i class="fa fa-heart"></i> </button>
+					<button type="button" class="btn btn-outline-info message"><i class="fa fa-comment"></i></button>
+					<p class="text-muted">
+					report this picture with <a href="#" class="text-reset">this link</a>.
+					</p>
 				<% end %>
 			</div>
 		</div>
@@ -15,8 +21,14 @@
 				<img class="card-img-top" src="/assets/pictures/<%= pic.src%>" id="<%= pic.id %>"/>
 				<div class="card-body">
 					<% if  current_user.id == @user.id %>	
-					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
-					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+						<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
+						<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
+					<% else %>
+						<button type="button" class="btn btn-outline-success like"><i class="fa fa-heart"></i> </button>
+						<button type="button" class="btn btn-outline-info message"><i class="fa fa-comment"></i></button>
+						<p class="text-muted">
+						report this picture with <a href="#" class="text-reset">this link</a>.
+						</p>
 					<% end %>
 				</div>
 			</div>

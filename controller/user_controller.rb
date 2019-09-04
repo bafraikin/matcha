@@ -84,8 +84,9 @@ class UserController < ApplicationController
 		get '/show/:id' do
 			return if params[:id].nil?
 			block_unsigned
-			block_unvalidated if (current_user.id != params[:id].to_i)
+			block_unvalidated
 			@user = User.find(id: params[:id].to_i)
+			block_access_to_not_valuable_account
 			@profile_picture = @user.profile_picture
 			@pictures = @user.get_node_related_with(link: "BELONGS_TO", type_of_node: ['picture'])
 			if !@user

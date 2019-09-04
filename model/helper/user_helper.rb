@@ -55,6 +55,7 @@ module UserHelper
 				true
 			end
 		end
+
 	end
 
 	module DisplayError

@@ -35,7 +35,17 @@
 							</li>
 						<% else %>
 							<li class="nav-item">
-								<a class="nav-link icon" id="profile" href="/user/show/<%=current_user.id %>"><i class="fa fa-user"></i></a>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle icon" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fa fa-user"></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+									<a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
+									<a class="dropdown-item" href="#">Logout</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="#">Delete account</a>
+								</div>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link icon" id="matcha_like" href="#"><i class="fa fa-star"></i><span>0</span></a>
