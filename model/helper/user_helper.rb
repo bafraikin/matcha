@@ -56,6 +56,13 @@ module UserHelper
 			end
 		end
 
+		def valid_valuable?(bool)
+			if bool == true || bool == false
+				true
+			else
+				false
+			end
+		end
 	end
 
 	module DisplayError
@@ -85,6 +92,10 @@ module UserHelper
 
 		def error_interest
 			"You should not have interest list empty and filled with good value"
+		end
+
+		def error_valuable
+			"valuable should be a boolean"
 		end
 	end
 end

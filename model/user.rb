@@ -2,7 +2,7 @@ class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
 	include BCrypt
 	BCrypt::Engine.cost = 8
-	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp
+	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable
 
 	def interest
 		@interest || []
@@ -18,7 +18,7 @@ class User < MatchaBase
 	end
 
 	def self.cant_be_blank_on_creation
-		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
+		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
 	end
 
 	def cant_be_empty_for_valuable_account
@@ -37,6 +37,11 @@ class User < MatchaBase
 				end
 			end
 		end.empty?
+	end
+
+	def update_valuable
+		self.valuable = self.is_valuable?
+		self.save
 	end
 
 	def self.hash_password(password:)
@@ -158,6 +163,7 @@ class User < MatchaBase
 	end
 
 	def save
+		self.valuable = self.is_valuable?
 		unless (error = self.class.validator(hash: self.to_hash)).any?
 			super
 		else

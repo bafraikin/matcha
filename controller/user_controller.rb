@@ -47,6 +47,7 @@ class UserController < ApplicationController
 				current_user.attach_photo(photo: pic[0])
 				if current_user.profile_picture.src == Picture.root_name
 					current_user.define_photo_as_profile_picture(photo: pic[0])
+					current_user.update_valuable
 				end
 				name
 			else
@@ -81,6 +82,7 @@ class UserController < ApplicationController
 				end
 			else
 				current_user.root_photo_is_now_profile_picture
+				current_user.update_valuable
 			end
 			pic[0].destroy
 			FileUtils.rm("./assets/pictures/" + pic[0].src)
