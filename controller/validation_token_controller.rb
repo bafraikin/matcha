@@ -14,7 +14,8 @@ class ValidationTokenController < ApplicationController
 				a[0].save #check ce que la fonction retourne pour pas avoir d'erreur
 				flash[:success] = "Account validated"
 				current_user.email_token = nil if user_logged_in?
-				redirect "/registration/login"
+				redirect "/registration/login" if !user_logged_in?
+				redirect "/"
 			end
 			flash[:error] = "invalid token"
 			redirect "/registration/login"
