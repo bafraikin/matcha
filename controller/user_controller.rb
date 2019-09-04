@@ -26,6 +26,13 @@ class UserController < ApplicationController
 			end
 		end
 
+		get '/destroy' do
+			block_unsigned
+			current_user.destroy
+			session.clear
+			redirect "/"
+		end
+
 		post '/add_photo' do
 			block_unsigned
 			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
@@ -40,7 +47,6 @@ class UserController < ApplicationController
 				current_user.attach_photo(photo: pic[0])
 				if current_user.profile_picture.src == Picture.root_name
 					current_user.define_photo_as_profile_picture(photo: pic[0])
-					current_user.suppress_his_relation_with(id: Picture.root.id)
 				end
 				name
 			else
@@ -86,9 +92,10 @@ class UserController < ApplicationController
 			block_unsigned
 			block_unvalidated
 			@user = User.find(id: params[:id].to_i)
-			block_access_to_not_valuable_account
+			block_access_to_not_valuable_account if @user.id != current_user.id
 			@profile_picture = @user.profile_picture
 			@pictures = @user.get_node_related_with(link: "BELONGS_TO", type_of_node: ['picture'])
+			@pictures.select!{|pic| pic.id != @profile_picture.id}
 			if !@user
 				redirect "/"
 				halt

@@ -25,6 +25,11 @@ class MatchaBase
 		self.class.perform_request(query: query)
 	end
 
+	def destroy_relation(id:)
+		query = "MATCH (n)-[r]-() WHERE ID(r) = {id} AND ID(n) = {id_model} DELETE r"
+		self.class.perform_request(query: query, hash: {id: id, id_model: self.id})
+	end
+
 	def replace_relation(id:, new_type:, new_data: nil)
 		query = "MATCH (n)-[r]->(m)
 		WHERE ID(r) = #{id}

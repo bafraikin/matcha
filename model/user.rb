@@ -12,6 +12,11 @@ class User < MatchaBase
 		[]
 	end
 
+	def destroy
+		pictures.map(&:destroy)
+		super
+	end
+
 	def self.cant_be_blank_on_creation
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
 	end
@@ -108,23 +113,28 @@ class User < MatchaBase
 	end
 
 	def pictures
-		pictures = self.get_node_related_with(type_of_node: ["picture"])
-		pictures.select {|pic| pic.src != Picture.root_name }
+		pictures = self.get_node_related_with(link: "BELONGS_TO", type_of_node: ["picture"])
 	end
 
 	def define_photo_as_profile_picture(photo:)
 		if photo.is_a?(Picture)
 			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
-			rel.any? ? rel = rel[0][0] : return
-			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
-			rel_last_picture = self.is_related_with(id: last_profile_picture[0].id, type_of_link: "PROFILE_PICTURE")
-			replace_relation(id: rel.id, new_type: "PROFILE_PICTURE")
-			if last_profile_picture[0].src != Picture.root_name
-				replace_relation(id: rel_last_picture[0][0].id, new_type: "BELONGS_TO")
+			if rel.any? 
+				rel = rel[0][0] 
 			else
-				suppress_his_relation_with(id: last_profile_picture[0].id)
+				return false
+			end
+			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+			if last_profile_picture.any?
+				rel_last_picture = self.is_related_with(id: last_profile_picture[0].id, type_of_link: "PROFILE_PICTURE")
+				self.destroy_relation(id: rel_last_picture[0][0].id)
+				self.create_links(id: photo.id, type: "PROFILE_PICTURE")
+			else
+				return false
 			end
 			true
+		else
+			false
 		end
 	end
 

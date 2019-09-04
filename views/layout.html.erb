@@ -42,9 +42,10 @@
 								</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 									<a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
-									<a class="dropdown-item" href="#">Logout</a>
+									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
 									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="#">Delete account</a>
+									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
+
 								</div>
 							</li>
 							<li class="nav-item">
@@ -62,9 +63,30 @@
 			</div>
 		</nav>
 		<%= yield %>
-		<div id="notif_wrapper">	
-		</div>
 
+		<% if user_logged_in? %>
+			<div id="notif_wrapper">	
+			</div>
+			<div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="signOutLabel">Voulez vous vraiment supprimer votre compte</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							cette action est irreversible
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-danger" onclick="window.location = '/user/destroy';">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% end %>
 		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 		<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
