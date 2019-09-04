@@ -149,6 +149,7 @@ class User < MatchaBase
 	end
 
 	def self.create(hash: {})
+		hash[:valuable] = false
 		unless (error = validator(hash: hash)).any?
 			user = super(hash: hash.merge!(password: hash_password(password: hash[:password])))
 			user[0].build_attachement if user.any?
@@ -183,7 +184,7 @@ class User < MatchaBase
 		OPTIONAL MATCH (self)-[:LIKE | :MATCH]->(other:user) 
 		WITH  COLLECT(DISTINCT other) as to_exclude, self"
 		query += " MATCH (other:user)"
-		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude"
+		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
 		query += " RETURN other"
 		self.class.query_transform(query: query)
