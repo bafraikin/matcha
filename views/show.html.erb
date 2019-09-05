@@ -1,8 +1,6 @@
 <% #if user own profile show form %>
 
-<% if current_user.id == @user.id %>
 	<link rel="stylesheet" href="/assets/stylesheets/profile.css"  media="screen" charset="utf-8">
-<% end %>
 
 <%= erb :"_show_img.html", layout: nil%>
 

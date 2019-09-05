@@ -133,7 +133,7 @@ class UserController < ApplicationController
 
 	private
 	def good_name_picture
-		pics = Dir["./assets/pictures/userpic#{current_user.id}*"]
+		pics = Dir["./assets/pictures/picuser#{current_user.id}*"]
 		max_number = pics.max_by{|name| name[/\d+/].to_i}
 		good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
 		"userpic#{current_user.id}#{good_number}"

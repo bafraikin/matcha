@@ -26,7 +26,7 @@ class User < MatchaBase
 	end
 
 	def is_valuable?
-		self.cant_be_empty_for_valuable_account.select do |method|
+		 self.cant_be_empty_for_valuable_account.select do |method|
 			self.send(method).then do|result|
 				if result.is_a?(Array) || result.is_a?(String)
 					result.empty?
@@ -137,6 +137,7 @@ class User < MatchaBase
 			else
 				return false
 			end
+			update_valuable
 			true
 		else
 			false
@@ -146,6 +147,7 @@ class User < MatchaBase
 	def root_photo_is_now_profile_picture
 		picture_default = Picture.root
 		create_links(id: picture_default.id, type: "PROFILE_PICTURE")
+		update_valuable
 	end
 
 	def self.create(hash: {})
