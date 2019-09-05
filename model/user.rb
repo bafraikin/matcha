@@ -16,6 +16,10 @@ class User < MatchaBase
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
 	end
 
+	def self.gender_pool
+	['man', 'woman', 'chicken'] 
+	end
+
 	def self.hash_password(password:)
 		BCrypt::Password.create(password)
 	end

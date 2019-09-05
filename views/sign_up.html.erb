@@ -14,17 +14,16 @@
 			<input type="numeric" value="" name="user[age]" id=""/>	
 			<label>sex</label>
 			<select name="user[sex]" id="user[sex]" multiple size="1">
-				<option value="man">man</option>
-				<option value="woman">woman</option>
+			<%User.gender_pool.each do |gender| %>
+				<option value="<%=gender%>"><%=gender%></option>
+			<%end%>
 			</select>
 			<label>interest</label>
+			<%User.gender_pool.each_with_index do |gender, index| %>
 			<div>
-				<input type="checkbox" value="man" name="user[interest1]" id=""/>
-				<label>man</label>
+				<input type="checkbox" value="<%=gender%>" name="user[interest<%=index%>]" id=""/>
+				<label><%=gender%></label>
 			</div>
-			<div>
-				<input type="checkbox" value="woman" name="user[interest2]" id=""/>	
-				<label>woman</label>
-			</div>
+			<%end%>
 			<input type="submit" value="OK" />		
 		</form>

@@ -41,7 +41,7 @@ module UserHelper
 		end
 
 		def valid_sex?(sex)
-			if sex.nil? || !['woman', 'man'].include?(sex)
+			if sex.nil? || !User.gender_pool.include?(sex)
 				false
 			else
 				true

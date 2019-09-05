@@ -46,8 +46,8 @@ class UserController < ApplicationController
 				redirect "/"
 				halt
 			else
-			@hashtags = Hashtag.all
-			@checkboxes =  @user.get_node_related_with(link: "APPRECIATE").map(&:name)
+				@hashtags = Hashtag.all
+				@checkboxes =  @user.get_node_related_with(link: "APPRECIATE").map(&:name)
 				erb:'show.html'
 			end
 		end
