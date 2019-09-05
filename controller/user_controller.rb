@@ -28,12 +28,28 @@ class UserController < ApplicationController
 		post '/update_hashtag' do
 			settings.log.info(params)
 			block_unsigned
-			id_hashtag = check_if_valide_hashtag(params[:value])
-			return if params[:value].nil? || id_hashtag == false
-			if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
-				current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
-			else
-				current_user.suppress_his_relation_with(id: id_hashtag)
+			halt if params.nil? || params[:id].nil? || params[:value].nil?
+			if params[:id] == "hashtag"
+				id_hashtag = check_if_valide_hashtag(params[:value])
+				return if params[:value].nil? || id_hashtag == false
+				if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
+					current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
+				else
+					current_user.suppress_his_relation_with(id: id_hashtag)
+				end
+			elsif params[:id] == "interest"
+				halt if !(gender = check_if_valide_gender(params[:value]))
+				if current_user.interest.include? params[:value]
+					current_user.interest.delete(params[:value])
+				else
+					current_user.interest.push(params[:value])
+				end
+				error = current_user.save
+				if error.is_a?(Array)
+					return error.to_json
+				else
+					return true.to_json
+				end
 			end
 		end
 
@@ -76,5 +92,4 @@ class UserController < ApplicationController
 			end
 		end
 	end
-
 end

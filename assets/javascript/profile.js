@@ -26,9 +26,10 @@
 	};
 
 
-	const update_hashtag = function () {
+	const update_checkbox = function () {
 		const csrf = document.querySelector("meta[name=csrf-token]").content;
 		const req = new XMLHttpRequest();
+		const id = this.id;
 		if (!csrf)
 			return;
 		req.open('POST', '/user/update_hashtag', true);
@@ -40,7 +41,7 @@
 					console.log("display_error");
 			}
 		};
-		req.send( "value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
+		req.send( "id=" + id + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
 	};
 
 	const update_sex = function () {
@@ -62,7 +63,7 @@
 
 	let hashtag_input = document.querySelectorAll("input[type='checkbox']");
 	hashtag_input.forEach(function (hashtag_input){ 
-			hashtag_input.addEventListener("click", update_hashtag);
+			hashtag_input.addEventListener("click", update_checkbox);
 		});
 
 	let inputs = document.querySelectorAll("input[value='save']");

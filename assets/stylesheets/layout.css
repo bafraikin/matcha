@@ -35,12 +35,15 @@ p[id="biography"] {
 }
 
 .grid-container {
+  max-width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-template-areas: ". text text text ." ". text text text ." ". text text text ." ". checkbox checkbox checkbox ." ". . . . .";
 }
 
 .checkbox { grid-area: checkbox;
-	display: inline; }
+	display: inline;
+	max-width: 500px; }
 
-.text { grid-area: text; }
+.text { grid-area: text;
+	max-width: 500px; }

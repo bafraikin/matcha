@@ -19,4 +19,17 @@ module ShowHelper
         return id_hashtag if id_hashtag.is_a? Integer
          false
     end 
+
+    def check_if_valide_gender(value)
+        return true if User.gender_pool.include?(value)
+        false
+    end
+
+    def looking_for_gender(gender:)
+        checked = ''
+        if (current_user.interest.include? gender)
+           checked = 'checked'
+        end
+        'value=' + gender + ' ' + checked
+    end
 end
