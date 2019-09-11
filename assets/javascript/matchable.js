@@ -4,12 +4,16 @@
 		return (data.replace(/\+/g, '%2B'));
 	}
 
-	function construct_photo(name) {
-		let href = "/galerie/photo/" + name;
-		let div = document.createElement('div');
-		div.classList.add('photo_loaded');
-		let string = "<a href='/galerie/photo.php?img=" + name + "'><img src='" + href + "'/></a>";
-		div.innerHTML = string;
+	function construct_card(user) {
+		let div = document.getElementById("exemple");
+		if (!div)
+			return ;
+		div = div.cloneNode(true);
+		div.querySelector("h5.card-title").innerText = user.first_name;
+		div.querySelector("p.text-truncate").innerText = user.biography;
+		div.querySelector("button").onclick = function() { window.location= '/user/show/'+ user.id; }
+		div.querySelector("img").id = user.id
+			div.style = "display: flex"; 
 		return (div);
 	}
 
