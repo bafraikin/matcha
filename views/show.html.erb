@@ -38,12 +38,16 @@
       <% end %> 
     </div>
 
-    <% if current_user.id == @user.id %>
+    <div>
+ <% if current_user.id == @user.id %>
+
       <p class="font-weight-bold">Set new password</p>
-      <input contenteditable="true" id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);">
+      <p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);" contenteditable='true'></p>
       <br>
       <input type='submit' value="save">
-    <% end %>
+
+  <% end %>
+  </div>
 
     <div>
       <p class="font-weight-bold">age</p>
@@ -87,10 +91,12 @@
     </div>
   </div>
   <div>
+    <% if current_user.id == @user.id %>
       <p class="font-weight-bold">Looking for</p>
           <%User.gender_pool.each do |gender| %>
             <input id="interest" type="checkbox" <%=looking_for_gender(gender: gender) %>> <%= gender%></option>
           <% end %> 
+        <%end%>
   </div>
 </div>
 

@@ -49,7 +49,7 @@ module UserHelper
 		end
 
 		def valid_interest?(interest)
-			if interest.nil? || !interest.is_a?(Array) || interest.size < 1 || (interest - ['woman', 'man']).size != 0
+			if interest.nil? || !interest.is_a?(Array) || interest.size < 1 || (interest - User.gender_pool).size != 0
 				false
 			else
 				true
