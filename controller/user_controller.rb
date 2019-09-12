@@ -16,7 +16,10 @@ class UserController < ApplicationController
 			settings.log.info(params)
 			block_unsigned
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
-			params[:content] = User.hash_password(password: params[:content]) if (params[:id] == "password")
+			if (params[:id] == "password")
+				return User.error_password if !User.valid_password?(params[:content])
+				params[:content] = User.hash_password(password: params[:content])
+			end 
 			current_user.send(params[:id].to_s + "=", params[:content])
 			error = current_user.save
 			if error.is_a?(Array)

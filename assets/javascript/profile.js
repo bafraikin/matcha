@@ -19,10 +19,10 @@
 		req.onreadystatechange = function (event) {
 			if (this.readyState === XMLHttpRequest.DONE) {
 				if (!(this.status === 200 && this.response.match(/true/)))
-					console.log("display_error");
+				alert(this.response);
 			}
 		};
-		req.send("id=" + id + "&content=" + content + "&authenticity_token=" + normalize_data(csrf));
+		req.send("id=" + id + "&content=" + encodeURI(content) + "&authenticity_token=" + normalize_data(csrf));
 	};
 
 
@@ -38,10 +38,10 @@
 		req.onreadystatechange = function (event) {
 			if (this.readyState === XMLHttpRequest.DONE) {
 				if (!(this.status === 200 && this.response.match(/true/)))
-					console.log("display_error");
+					alert(this.response);
 			}
 		};
-		req.send( "id=" + id + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
+		req.send( "id=" + encodeURI(id) + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
 	};
 
 	const update_sex = function () {
@@ -55,10 +55,10 @@
 		req.onreadystatechange = function (event) {
 			if (this.readyState === XMLHttpRequest.DONE) {
 				if (!(this.status === 200 && this.response.match(/true/)))
-					console.log("display_error");
+					alert(this.response);
 			}
 		};
-		req.send("id=sex" + "&content=" + this.value + "&authenticity_token=" + normalize_data(csrf));
+		req.send("id=sex" + "&content=" + encodeURI(this.value) + "&authenticity_token=" + normalize_data(csrf));
 	};
 
 	let hashtag_input = document.querySelectorAll("input[type='checkbox']");
