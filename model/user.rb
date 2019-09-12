@@ -174,7 +174,7 @@ class User < MatchaBase
 		end
 	end
 
-	def find_matchable(*args, range: 0.5, equality: {})
+	def find_matchable(*args, range: 0.5, equality: {}, limit: 7)
 		raise MatchaBase::Error if  self.interest.empty?
 		args.map!{|arg| "o." + arg}
 		equality.each do |k,v|
@@ -188,8 +188,8 @@ class User < MatchaBase
 		query += " MATCH (other:user)"
 		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " RETURN other"
-		self.class.query_transform(query: query)
+		query += " RETURN other LIMIT {limit}"
+		self.class.query_transform(query: query, hash: {limit: limit})
 	end
 end
 

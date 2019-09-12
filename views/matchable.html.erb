@@ -1,29 +1,50 @@
 
 <link rel="stylesheet" href="/assets/stylesheets/matchable.css"  media="screen" charset="utf-8">
 
-<div class="container-fluid d-flex flex-wrap justify-content-center">
-	<% @users.each do |user| %>
-		<div class="card general-card to_load mx-5 my-2" >
-			<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
-			<div class="card-body">
-				<h5 class="card-title"><%= user.first_name %></h5>
-				<p class="card-text text-truncate"> <%= user.biography %> </p>
-			</div>
-			<div class="card-footer">	
-				<button onclick="window.location= '/user/show/<%= user.id %>'" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
-			</div>
-		</div>
-	<% end %>
-</div>
 
-<div class="card general-card to_load mx-5 my-2" id="exemple" style="display: none;">
-	<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader"/>
-	<div class="card-body">
-		<h5 class="card-title"></h5>
-		<p class="card-text text-truncate"> </p>
+<% if user_logged_in? %>
+	<div class="container">
+		<div class="input-group" >
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="basic-addon1">result number</span>
+			</div>
+			<input type="number" class="form-control" value=7 aria-label="Username" aria-describedby="basic-addon1">
+		</div>
+		<div class="form-group">
+			<label for="formControlRange">Distance prefere en (metre) <span>1 km</span></label>
+			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="1000">
+		</div>
 	</div>
-	<div class="card-footer">	
-		<button  type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+
+
+	<div class="container-fluid d-flex flex-wrap justify-content-center">
+		<% @users.each do |user| %>
+			<div class="card general-card to_load mx-5 my-2" >
+				<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
+				<div class="card-body">
+					<h5 class="card-title"><%= user.first_name %></h5>
+					<p class="card-text text-truncate"> <%= user.biography %> </p>
+				</div>
+				<div class="card-footer">	
+					<button onclick="window.location= '/user/show/<%= user.id %>'" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+				</div>
+			</div>
+		<% end %>
 	</div>
-</div>
-<script charset="utf-8" src="/assets/javascript/matchable.js" type="application/javascript"></script>
+
+	<div class="card general-card to_load mx-5 my-2" id="exemple" style="display: none;">
+		<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader"/>
+		<div class="card-body">
+			<h5 class="card-title"></h5>
+			<p class="card-text text-truncate"> </p>
+		</div>
+		<div class="card-footer">	
+			<button  type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+		</div>
+	</div>
+
+	<div class="container text-center">	
+		<img id="main_loader" src="/assets/pictures/main_loader.gif" alt=""/>
+	</div>
+	<script charset="utf-8" src="/assets/javascript/matchable.js" type="application/javascript"></script>
+<% end %>

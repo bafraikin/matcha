@@ -26,6 +26,20 @@ class UserController < ApplicationController
 			end
 		end
 
+		get '/get_profile_picture/:id' do
+			id = params[:id]
+			if id && id.to_i > 0
+				id = id.to_i
+				user = User.find(id: id)
+				img = user.profile_picture
+				if img
+					return img.src.to_json
+				else
+					false.to_json
+				end
+			end
+		end
+
 		get '/destroy' do
 			block_unsigned
 			current_user.destroy
