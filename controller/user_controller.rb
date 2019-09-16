@@ -15,6 +15,7 @@ class UserController < ApplicationController
 		end
 		post '/update' do
 			settings.log.info(params)
+			block_unvalidated
 			block_unsigned
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
 			if (params[:id] == "password")
@@ -33,6 +34,7 @@ class UserController < ApplicationController
 
 		post '/update_hashtag' do
 			settings.log.info(params)
+			block_unvalidated
 			block_unsigned
 			check_good_params_checkbox
 			if params[:id] == "hashtag"
@@ -60,6 +62,7 @@ class UserController < ApplicationController
 		end
 
 		get '/show/:id' do
+			block_unvalidated
 			return if params[:id].nil?
 			block_unsigned
 			@user = nil
@@ -81,6 +84,7 @@ class UserController < ApplicationController
 
 		post "/add_like" do
 			settings.log.info(params)
+			block_unvalidated
 			user_to_like = User.find(id: params[:id].to_i)
 			if user_logged_in? && !params[:id].to_s.empty? && user_to_like
 				notif = nil
