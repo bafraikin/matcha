@@ -11,7 +11,9 @@ require 'sprockets'
 require 'erubis'
 
 
-models = Dir[__dir__ + "/model/**/*.rb"].each {|file| load file }
+Dir[__dir__ + "/model/helper/*.rb"].each{|helper| load helper}
+Dir[__dir__ + "/model/matcha_base.rb"].then{|base| load base[0]}
+models = Dir[__dir__ + "/model/*.rb"].each {|file| load file }
 helper_controller = Dir[ __dir__ + "/controller/helper/*.rb"].each {|file| load file }
 files = Dir[ __dir__ + "/controller/*.rb"].each {|file| load file }
 
