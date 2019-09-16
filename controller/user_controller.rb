@@ -62,8 +62,13 @@ class UserController < ApplicationController
 		get '/show/:id' do
 			return if params[:id].nil?
 			block_unsigned
-			block_unvalidated if (current_user.id != params[:id].to_i)
-			@user = User.find(id: params[:id].to_i)
+			@user = nil
+			if current_user.id != params[:id].to_i
+				block_unvalidated
+				@user = User.find(id: params[:id].to_i) 
+			else
+				@user = current_user
+			end
 			if !@user
 				redirect "/"
 				halt
