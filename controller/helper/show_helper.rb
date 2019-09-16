@@ -14,13 +14,13 @@ module ShowHelper
         end
     end
 
-    def check_if_valide_hashtag(value)
+    def check_if_valide_hashtag_and_return_id(value)
         id_hashtag = Hashtag.where(equality: {name: params[:value]})[0].id
         return id_hashtag if id_hashtag.is_a? Integer
          false
     end 
 
-    def check_if_valide_gender(value)
+    def check_if_valide_gender?(value)
         return true if User.gender_pool.include?(value)
         false
     end

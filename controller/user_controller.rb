@@ -1,5 +1,6 @@
 class UserController < ApplicationController
 	include ShowHelper
+	include UserControllerHelper
 	def title
 		"coucou"
 	end
@@ -33,17 +34,17 @@ class UserController < ApplicationController
 		post '/update_hashtag' do
 			settings.log.info(params)
 			block_unsigned
-			halt if params.nil? || params[:id].nil? || params[:value].nil?
+			check_good_params_checkbox
 			if params[:id] == "hashtag"
-				id_hashtag = check_if_valide_hashtag(params[:value])
+				id_hashtag = check_if_valide_hashtag_and_return_id(params[:value])
 				return if params[:value].nil? || id_hashtag == false
 				if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
 					current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
 				else
 					current_user.suppress_his_relation_with(id: id_hashtag)
 				end
-			elsif params[:id] == "interest"
-				halt if !(gender = check_if_valide_gender(params[:value]))
+			else
+				halt if !check_if_valide_gender?(params[:value])
 				if current_user.interest.include? params[:value]
 					current_user.interest.delete(params[:value])
 				else
@@ -53,10 +54,9 @@ class UserController < ApplicationController
 				if error.is_a?(Array)
 					session[:current_user] = User.find(id: current_user.id)
 					return error.to_json
-				else
-					return true.to_json
 				end
 			end
+			return true.to_json
 		end
 
 		get '/show/:id' do
