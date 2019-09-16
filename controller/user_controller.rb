@@ -13,10 +13,11 @@ class UserController < ApplicationController
 				request.websocket {}
 			end
 		end
+
 		post '/update' do
+			block_unsigned
 			settings.log.info(params)
 			block_unvalidated
-			block_unsigned
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
 			if (params[:id] == "password")
 				return User.error_password if !User.valid_password?(params[:content])
@@ -33,9 +34,9 @@ class UserController < ApplicationController
 		end
 
 		post '/update_hashtag' do
+			block_unsigned
 			settings.log.info(params)
 			block_unvalidated
-			block_unsigned
 			check_good_params_checkbox
 			if params[:id] == "hashtag"
 				id_hashtag = check_if_valide_hashtag_and_return_id(params[:value])
@@ -62,9 +63,8 @@ class UserController < ApplicationController
 		end
 
 		get '/show/:id' do
-			block_unvalidated
-			return if params[:id].nil?
 			block_unsigned
+			return if params[:id].nil?
 			@user = nil
 			if current_user.id != params[:id].to_i
 				block_unvalidated
@@ -83,6 +83,7 @@ class UserController < ApplicationController
 		end
 
 		post "/add_like" do
+			block_unsigned
 			settings.log.info(params)
 			block_unvalidated
 			user_to_like = User.find(id: params[:id].to_i)
