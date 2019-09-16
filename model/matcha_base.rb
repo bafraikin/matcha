@@ -142,7 +142,6 @@ class MatchaBase
 
 	def self.create(hash: {})
 		if (self.cant_be_blank_on_creation - hash.keys).size != 0
-			p self.cant_be_blank_on_creation, hash
 			raise MatchaBase::Error, "missing argument on create"
 		elsif (hash.keys - self.attributes).size != 0
 			raise MatchaBase::Error, "too many argument on create"

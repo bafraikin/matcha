@@ -42,7 +42,7 @@ class RegistrationController < ApplicationController
 			hash = params[:user]
 			hash[:age]= hash[:age].to_i
 			array = Array.new
-			1.upto(2) do |i|
+			0.upto(User.gender_pool.size) do |i|
 				symbol = ("interest" + i.to_s).to_sym
 				array << hash.delete(symbol) if hash.key?(symbol)
 			end
