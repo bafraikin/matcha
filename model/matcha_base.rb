@@ -25,6 +25,11 @@ class MatchaBase
 		self.class.perform_request(query: query)
 	end
 
+	def destroy_relation(id:)
+		query = "MATCH (n)-[r]-() WHERE ID(r) = {id} AND ID(n) = {id_model} DELETE r"
+		self.class.perform_request(query: query, hash: {id: id, id_model: self.id})
+	end
+
 	def replace_relation(id:, new_type:, new_data: nil)
 		query = "MATCH (n)-[r]->(m)
 		WHERE ID(r) = #{id}
@@ -121,8 +126,11 @@ class MatchaBase
 	end
 
 
-	def get_node_related_with(link:, type_of_node: [])
-		query = "MATCH (n)-[:#{link}]-(m) WHERE "
+	def get_node_related_with(link: "", type_of_node: [])
+		unless link.empty?
+			link  = ":" + link 
+		end
+		query = "MATCH (n)-[#{link}]-(m) WHERE "
 		type_of_node.each_with_index do |type, index|
 			query += (index  ==  0) ?  ""  : " OR "
 			query += "m:"  + type 
