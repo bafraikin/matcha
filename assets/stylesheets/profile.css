@@ -1,0 +1,15 @@
+
+.general-card{
+max-width: 450px;
+}
+
+#picture {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.card-body {
+	display: flex;
+	justify-content: space-between;
+}

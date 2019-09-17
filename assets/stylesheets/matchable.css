@@ -1,0 +1,14 @@
+
+.general-card {
+	max-width: 450px;
+}
+
+@media screen and (max-width: 640px) {
+	.general-card {
+		margin: 0 !important;
+		margin-bottom: 2vw !important;
+	}
+	.container-fluid {
+		padding: 0 !important;	
+	}
+}

@@ -9,23 +9,25 @@ const send_text = function () {
 		return;
 	const input = this.parentNode.querySelector("input");
 	const csrf = document.querySelector("meta[name=csrf-token]").content
-	if (!input || input.value === "" || !csrf || !Socket)
-		console.log("coucou");
+		if (!input || input.value === "" || !csrf || !Socket)
+			console.log("coucou");
 
 }
 
 window.onload = () => {
-	document.querySelector("#matcha_conv").onclick = function() {
-		const input = document.createElement("input");
-		const button = document.createElement("button");
-		button.innerText = "envoyer";
-		const div = document.createElement("div");
-		div.append(input);
-		div.append(button);
-		button.onclick = send_text;
-		document.body.append(div);
-		this.classList.remove("active");
-	}
+	const button = document.querySelector("#matcha_conv")
+		if (button)
+			button.onclick = function() {
+				const input = document.createElement("input");
+				const button = document.createElement("button");
+				button.innerText = "envoyer";
+				const div = document.createElement("div");
+				div.append(input);
+				div.append(button);
+				button.onclick = send_text;
+				document.body.append(div);
+				this.classList.remove("active");
+			}
 };
 
 

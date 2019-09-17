@@ -39,13 +39,31 @@ class ApplicationController < Sinatra::Base
 		if !user_logged_in?
 			flash[:error] = "You need to sign in"
 			redirect "/"
+			halt
+		end
+	end
+
+	def block_logged_in
+		if user_logged_in?
+			flash[:error] = "There is nothing to see here"
+			redirect "/"
+			halt
+		end
+	end
+
+	def block_access_to_not_valuable_account
+		if @user.nil? || !@user.is_valuable?
+			flash[:error] = "There is nothing to do here"
+			redirect "/"
+			halt
 		end
 	end
 
 	def block_unvalidated
-		if !current_user.account_validated?
+		if current_user.nil? || !current_user.account_validated?
 			flash[:error] = "You need to validate your account"
 			redirect "/"
+			halt
 		end
 	end
 

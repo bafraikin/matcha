@@ -2,7 +2,7 @@ class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
 	include BCrypt
 	BCrypt::Engine.cost = 8
-	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp
+	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable
 
 	def interest
 		@interest || []
@@ -12,8 +12,36 @@ class User < MatchaBase
 		[]
 	end
 
+	def destroy
+		pictures.map(&:destroy)
+		super
+	end
+
 	def self.cant_be_blank_on_creation
-		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email]
+		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
+	end
+
+	def cant_be_empty_for_valuable_account
+		[:interest, :first_name, :sex, :age, :pictures, :biography]
+	end
+
+	def is_valuable?
+		 self.cant_be_empty_for_valuable_account.select do |method|
+			self.send(method).then do|result|
+				if result.is_a?(Array) || result.is_a?(String)
+					result.empty?
+				elsif result.is_a?(Integer)
+					result < 18
+				else
+					result.nil?
+				end
+			end
+		end.empty?
+	end
+
+	def update_valuable
+		self.valuable = self.is_valuable?
+		self.save
 	end
 
 	def self.gender_pool
@@ -33,10 +61,9 @@ class User < MatchaBase
 		self.first_name + " " + self.last_name
 	end
 
-  def account_validated?
-    self.email_token.nil?
-  end
-
+	def account_validated?
+		self.email_token.nil?
+	end
 
 	def add_match(id:)
 		data = SecureRandom.hex
@@ -71,6 +98,7 @@ class User < MatchaBase
 	def build_attachement
 		notif  = Notification.create(type: "ROOT")
 		create_links(id: notif[0].id, type: "NOTIFICATION_POOL")
+		root_photo_is_now_profile_picture
 	end
 
 	def add_notification(type:)
@@ -84,7 +112,54 @@ class User < MatchaBase
 		end
 	end
 
+	def attach_photo(photo:)
+		if photo.is_a?(Picture)
+			create_links(id: photo.id, type: "BELONGS_TO")
+			true
+		else
+			false
+		end
+	end
+
+	def profile_picture
+		self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])[0]
+	end
+
+	def pictures
+		pictures = self.get_node_related_with(link: "BELONGS_TO", type_of_node: ["picture"])
+	end
+
+	def define_photo_as_profile_picture(photo:)
+		if photo.is_a?(Picture)
+			rel = self.is_related_with(id: photo.id, type_of_link: "BELONGS_TO")
+			if rel.any? 
+				rel = rel[0][0] 
+			else
+				return false
+			end
+			last_profile_picture = self.get_node_related_with(link: "PROFILE_PICTURE", type_of_node: ["picture"])
+			if last_profile_picture.any?
+				rel_last_picture = self.is_related_with(id: last_profile_picture[0].id, type_of_link: "PROFILE_PICTURE")
+				self.destroy_relation(id: rel_last_picture[0][0].id)
+				self.create_links(id: photo.id, type: "PROFILE_PICTURE")
+			else
+				return false
+			end
+			update_valuable
+			true
+		else
+			false
+		end
+	end
+
+	def root_photo_is_now_profile_picture
+		picture_default = Picture.root
+		create_links(id: picture_default.id, type: "PROFILE_PICTURE")
+		update_valuable
+	end
+
 	def self.create(hash: {})
+		hash[:valuable] = false
 		unless (error = validator(hash: hash)).any?
 			user = super(hash: hash.merge!(password: hash_password(password: hash[:password])))
 			user[0].build_attachement if user.any?
@@ -99,6 +174,7 @@ class User < MatchaBase
 	end
 
 	def save
+		self.valuable = self.is_valuable?
 		unless (error = self.class.validator(hash: self.to_hash)).any?
 			super
 		else
@@ -106,7 +182,7 @@ class User < MatchaBase
 		end
 	end
 
-	def find_matchable(*args, range: 0.5, equality: {})
+	def find_matchable(*args, range: 0.5, equality: {}, limit: 7)
 		raise MatchaBase::Error if  self.interest.empty?
 		args.map!{|arg| "o." + arg}
 		equality.each do |k,v|
@@ -118,10 +194,10 @@ class User < MatchaBase
 		OPTIONAL MATCH (self)-[:LIKE | :MATCH]->(other:user) 
 		WITH  COLLECT(DISTINCT other) as to_exclude, self"
 		query += " MATCH (other:user)"
-		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude"
+		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query += " RETURN other"
-		self.class.query_transform(query: query)
+		query += " RETURN other LIMIT {limit}"
+		self.class.query_transform(query: query, hash: {limit: limit})
 	end
 end
 
