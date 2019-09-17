@@ -47,6 +47,14 @@ class UserController < ApplicationController
 			end
 		end
 
+		get	'/get_profiles' do
+			settings.log.info(params)
+			block_unsigned
+			block_unvalidated
+			#valid_params_request(params)
+			current_user.find_matchable()
+		end
+
 		get '/destroy' do
 			block_unsigned
 			current_user.destroy
