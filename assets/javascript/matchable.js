@@ -122,6 +122,3 @@ function value_converter(meter) {
 	else
 		return (meter).toString() + " m";
 }
-
-
-
