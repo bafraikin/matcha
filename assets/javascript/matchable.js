@@ -18,11 +18,8 @@
 		return (div);
 	}
 
-	function display_photo(object) {
-		const div = document.getElementById('photo');
-		for (img of object) {
-			add_photo(div, img);
-		}
+	const display_profile_picture = function (response) {
+		this.querySelector("img").src = "assets/pictures/" + JSON.parse(response)
 	}
 
 	const load_photo = function() {
