@@ -11,6 +11,19 @@ class ApplicationController < Sinatra::Base
 	use Rack::Protection
 	use Rack::Protection::AuthenticityToken
 
+
+	before do
+		headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+		headers['Access-Control-Allow-Origin'] = 'https://api.ipify.org/?format=json'
+		headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
+
+	  end
+	  
+	  options '*' do
+		headers['Allow'] = 'HEAD,GET,PUT,DELETE,OPTIONS,POST'
+		headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
+	  end
+
 	set :environment, Sprockets::Environment.new
 	environment.append_path "assets/stylesheets"
 	environment.append_path "assets/javascripts"
