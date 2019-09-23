@@ -1,4 +1,5 @@
 class RegistrationController < ApplicationController
+	include RegistrationHelper
 	include MailHelper
 	def title
 		"registration"
@@ -20,6 +21,7 @@ class RegistrationController < ApplicationController
 					redirect to('registration/login')
 				elsif a.any?
 					session[:current_user] = a[0]
+					save_if_valide_coordinate(params[:user][:latitude], params[:user][:longitude])
 					flash[:success] = "Connection reussi"
 					redirect "/"
 				end
