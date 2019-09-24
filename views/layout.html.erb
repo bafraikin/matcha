@@ -45,14 +45,13 @@
 									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
-
 								</div>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link icon" id="matcha_like" href="#"><i class="fa fa-star"></i><span>0</span></a>
+								<a class="nav-link icon" id="matcha_like" href="/user/likers"><i class="fa fa-star"></i><span>0</span></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link icon" id="matcha_match" href="#"><i class="fa fa-heart"></i><span>0</span></a>
+								<a class="nav-link icon" id="matcha_match" href="/user/matches"><i class="fa fa-heart"></i><span>0</span></a>
 							</li>		
 							<li class="nav-item">
 								<a class="nav-link icon" id="matcha_conv" href="#"><i class="fa fa-comments"></i><span>0</span></a>
@@ -65,7 +64,9 @@
 		<%= yield %>
 
 		<% if user_logged_in? %>
-			<div id="notif_wrapper">	
+			<div id="notif_wrapper">
+			</div>
+			<div id="messenger">
 			</div>
 			<div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">

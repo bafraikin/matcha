@@ -38,10 +38,6 @@
 		req.send();
 	};
 
-	function add_photo(sidebar, img) {
-		sidebar.append(construct_photo(img));
-	}
-
 	function suppr_loader() {
 
 	}
