@@ -1,6 +1,7 @@
 class UserController < ApplicationController
 	include ShowHelper
 	include UserControllerHelper
+	include GeolocalisationHelper
 	def title
 		"coucou"
 	end
@@ -32,6 +33,12 @@ class UserController < ApplicationController
 			else
 				return true.to_json
 			end
+		end
+
+		post '/geo_update' do
+			block_unsigned
+			settings.log.info(params)
+			save_if_valide_coordinate(params[:latitude], params[:longitude])
 		end
 
 		get '/get_profile_picture/:id' do

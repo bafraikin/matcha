@@ -1,5 +1,5 @@
 class RegistrationController < ApplicationController
-	include RegistrationHelper
+	include GeolocalisationHelper
 	include MailHelper
 	def title
 		"registration"
