@@ -1,4 +1,7 @@
-
+let bool = false;
+function bool_true(){
+    bool = true;
+}
 
 function set_ip() {
     fetch('https://api.ipify.org/?format=json').then(function (response) {
@@ -36,21 +39,22 @@ function initMap() {
         draggable:true,
         title: 'User',
     });
-    marker.addListener('dragend', function() {
-        let csrf = document.querySelector("meta[name=csrf-token]");
-		if (!csrf)
-			return;
-		csrf = csrf.content;
-		const req = new XMLHttpRequest();
-		req.open('POST', '/user/geo_update', true);
-		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
-		req.onreadystatechange = function (event) {
-			if (this.readyState === XMLHttpRequest.DONE) {
-				if (!(this.status === 200 && this.response.match(/true/)))
-					alert(this.response);
-			}
-		};
-		req.send("longitude=" + encodeURI(marker.getPosition().lng()) + "&latitude=" + encodeURI(marker.getPosition().lat()) + "&authenticity_token=" + normalize_data(csrf));
-    });    
+    if (bool)
+        marker.addListener('dragend', function() {
+         let csrf = document.querySelector("meta[name=csrf-token]");
+	    	if (!csrf)
+    			return;
+    		csrf = csrf.content;
+    		const req = new XMLHttpRequest();
+    		req.open('POST', '/user/geo_update', true);
+    		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    		req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
+    		req.onreadystatechange = function (event) {
+    			if (this.readyState === XMLHttpRequest.DONE) {
+	    			if (!(this.status === 200 && this.response.match(/true/)))
+		    			alert(this.response);
+		    	}
+		    };
+	    	req.send("longitude=" + encodeURI(marker.getPosition().lng()) + "&latitude=" + encodeURI(marker.getPosition().lat()) + "&authenticity_token=" + normalize_data(csrf));
+        });    
 }
