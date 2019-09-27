@@ -16,7 +16,7 @@
 		</div>
 	</div>
 
-	<div class="container-fluid d-flex flex-wrap justify-content-center">
+	<div id="user_container" class="container-fluid d-flex flex-wrap justify-content-center">
 		<% @users.each do |user| %>
 			<div class="card general-card to_load mx-5 my-2" >
 				<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
