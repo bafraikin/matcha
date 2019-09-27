@@ -29,8 +29,21 @@ body {
 }
 #messenger {
 	bottom: 0%;
-	position: sticky;
+	position: fixed;
 	height: 50px;
+}
+
+#messenger .card-header {
+	padding: 0;
+}
+
+#messenger .card-footer {
+	padding: 0;
+}
+#messenger .card-body {
+	height: 90px;
+	overflow: auto;
+	padding: 0;
 }
 
 p[id="biography"] {
