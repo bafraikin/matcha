@@ -1,6 +1,7 @@
 class UserController < ApplicationController
 	include ShowHelper
 	include UserControllerHelper
+	include GeolocalisationHelper
 	def title
 		"coucou"
 	end
@@ -19,6 +20,7 @@ class UserController < ApplicationController
 			settings.log.info(params)
 			block_unvalidated
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
+			session_tmp = session[:current_user].clone
 			if (params[:id] == "password")
 				return User.error_password if !User.valid_password?(params[:content])
 				params[:content] = User.hash_password(password: params[:content])
@@ -26,12 +28,18 @@ class UserController < ApplicationController
 			current_user.send(params[:id].to_s + "=", params[:content])
 			error = current_user.save
 			if error.is_a?(Array)
-				session[:current_user] = User.find(id: current_user.id)
+				session[:current_user] = session_tmp
 				return error.to_json
 			else
 				return true.to_json
 			end
 		end
+
+
+		post '/geo_update' do
+			block_unsigned
+			settings.log.info(params)
+			save_if_valide_coordinate(params[:latitude], params[:longitude])
 
 		get '/matches' do
 			block_unsigned
@@ -60,6 +68,7 @@ class UserController < ApplicationController
 			block_unvalidated
 			@users = current_user.all_likers
 			erb:"likers.html"
+
 		end
 
 		get '/get_profile_picture/:id' do
@@ -153,6 +162,7 @@ class UserController < ApplicationController
 			settings.log.info(params)
 			block_unvalidated
 			check_good_params_checkbox
+			session_tmp = session[:current_user].clone
 			if params[:id] == "hashtag"
 				id_hashtag = check_if_valide_hashtag_and_return_id(params[:value])
 				return if params[:value].nil? || id_hashtag == false
@@ -170,7 +180,7 @@ class UserController < ApplicationController
 				end
 				error = current_user.save
 				if error.is_a?(Array)
-					session[:current_user] = User.find(id: current_user.id)
+					session[:current_user] = session_tmp
 					return error.to_json
 				end
 			end

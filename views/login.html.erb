@@ -1,7 +1,12 @@
 <form action="registrate" method="post" accept-charset="utf-8">
 	<input type=hidden name='authenticity_token' value="<%=env['rack.session'][:csrf]%>">
+	<p>email</p>
 	<input type="email" value="" name="user[email]" id="email_matcha"/>
+	<p>password</p>
 	<input type="password" value="" name="user[password]" id=""/>
 	<input type="submit" value="OK" />
+	<input type="hidden" name="user[latitude]" value="">
+	<input type="hidden" name="user[longitude]" value="">
 </form>
 <a href="/forgot_password">Forgot Password ?</a>
+<script onload="set_ip()" charset="utf-8" src="/assets/javascript/geo_loc.js"></script>
