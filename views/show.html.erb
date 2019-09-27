@@ -99,6 +99,7 @@
 				<div id="longitude" name="<%= @user.longitude%>"></div>
 			</div>
 		</div>
+
 		<div>
 			<% if current_user.id == @user.id %>
 				<p class="font-weight-bold">Looking for</p>
@@ -115,3 +116,4 @@
 	<script  charset="utf-8"  <%= if (current_user.id == @user.id) 
 p ("onload='bool_true()'") 
 	end%> src="/assets/javascript/geo_loc.js"></script>
+

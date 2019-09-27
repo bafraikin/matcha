@@ -17,6 +17,14 @@ class User < MatchaBase
 		super
 	end
 
+	def all_matches
+		self.get_node_related_with(link: "MATCH", type_of_node: ["user"]).uniq {|user| user.email}
+	end
+
+	def all_likers
+		self.get_node_related_with(link: "LIKE", type_of_node: ['user'], to_me: true)
+	end
+
 	def self.cant_be_blank_on_creation
 		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
 	end
@@ -26,7 +34,7 @@ class User < MatchaBase
 	end
 
 	def is_valuable?
-		 self.cant_be_empty_for_valuable_account.select do |method|
+		self.cant_be_empty_for_valuable_account.select do |method|
 			self.send(method).then do|result|
 				if result.is_a?(Array) || result.is_a?(String)
 					result.empty?
@@ -79,7 +87,9 @@ class User < MatchaBase
 		rel.any? ? rel = rel[0][0] : return
 		suppress_his_relation_with(id: id)
 		replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
-		Messenger.where(equality: {data: rel.data}).first.collapse
+		if messenger = Messenger.where(equality: {data: rel.data}).first
+			messenger.collapse
+		end
 	end
 
 	def add_like(id:)

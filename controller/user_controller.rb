@@ -35,15 +35,45 @@ class UserController < ApplicationController
 			end
 		end
 
+
 		post '/geo_update' do
 			block_unsigned
 			settings.log.info(params)
 			save_if_valide_coordinate(params[:latitude], params[:longitude])
+
+		get '/matches' do
+			block_unsigned
+			block_unvalidated
+			@users = current_user.all_matches
+			erb:"matches.html"
+		end
+
+		get '/open_message' do
+			block_unsigned
+			block_unvalidated
+			id = params[:id].to_i
+			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
+			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
+			if rel.any?
+				binding.pry
+				user = User.find(id: id)
+				session[:messenger] = prepare_messenger
+				session[:messenger] = add_new_talker(user, rel[0][0].properties[:data])
+				return {type: true, name: user.first_name}.to_json
+			end
+		end
+
+		get	'/likers' do
+			block_unsigned
+			block_unvalidated
+			@users = current_user.all_likers
+			erb:"likers.html"
+
 		end
 
 		get '/get_profile_picture/:id' do
 			id = params[:id]
-			if id && id.to_i > 0
+			if id && id.to_i > 0 || id == "0"
 				id = id.to_i
 				user = User.find(id: id)
 				img = user.profile_picture
@@ -53,6 +83,14 @@ class UserController < ApplicationController
 					false.to_json
 				end
 			end
+		end
+
+		get	'/get_profiles' do
+			settings.log.info(params)
+			block_unsigned
+			block_unvalidated
+			#valid_params_request(params)
+			current_user.find_matchable()
 		end
 
 		get '/destroy' do
@@ -91,6 +129,7 @@ class UserController < ApplicationController
 			return "error" if picture.nil?
 			current_user.define_photo_as_profile_picture(photo: picture)
 		end
+
 
 		post '/delete_photo' do
 			settings.log.info(params)

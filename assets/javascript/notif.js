@@ -17,6 +17,10 @@ const display_notif = function(notif) {
 	}
 }
 
+	function normalize_data(data) {
+		return (data.replace(/\+/g, '%2B'));
+	}
+
 const destroy_it = function() {
 	this.parentNode.removeChild(this);
 }
@@ -42,11 +46,34 @@ const tell_this_notif_what_should_remove_it = function(notif) {
 
 const create_notif = function(notif) {
 	const body = document.createElement("p");
-	body.classList.add("badge");
-	body.classList.add("badge-info");
+	if (window.innerWidth < 600)
+	{
+		body.classList.add("alert");
+		body.classList.add("alert-primary");
+	}
+	else
+	{
+		body.classList.add("badge");
+		body.classList.add("badge-info");
+	}
 	body.innerHTML = notif.type.replace(/_/g, " ");
 	tell_this_notif_what_should_remove_it(body);
 	return (body);
+}
+
+const openMessage = function(id) {
+	const myInit = { method: 'GET',cache: 'default' };
+	let csrf = document.querySelector("meta[name=csrf-token]");
+	if (csrf)
+		csrf = csrf.content
+	else
+		return;
+	fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf), myInit).then((response) => {
+		response.json().then((json) => {
+			if (json.type)
+				;
+		});
+	});
 }
 
 window.onload = () => {

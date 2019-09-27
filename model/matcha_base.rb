@@ -21,7 +21,11 @@ class MatchaBase
 	end
 
 	def destroy
-		query = "MATCH (n)-[r]-() WHERE ID(n) = " + self.id.to_s + " DELETE r,n"
+		query = <<-QUERY
+		MATCH (n) WHERE ID(n) = #{self.id} WITH n 
+		OPTIONAL MATCH (n)-[r]-() WITH r,n
+		DELETE r,n
+		QUERY
 		self.class.perform_request(query: query)
 	end
 
@@ -48,12 +52,12 @@ class MatchaBase
 		self.class.perform_request(query: query, hash: hash)
 	end
 
-	def find_every_node_related(type_of_node: "")
+	def crawl_node_related(type_of_node: "")
 		query = "MATCH (n)-[r*]-(m) WHERE ID(n) = " + self.id.to_s
 		if !type_of_node.to_s.empty? && type_of_node.is_a?(String)
 			query += " AND m:" + type_of_node[/^\w+/]
 		end
-		query+= " ORDER BY m.timestamp RETURN m"
+		query+= " RETURN m ORDER BY m.timestamp"
 		self.class.query_transform(query: query, hash: {})
 	end
 
@@ -126,18 +130,25 @@ class MatchaBase
 	end
 
 
-	def get_node_related_with(link: "", type_of_node: [])
+	def get_node_related_with(link: "", type_of_node: [], to_me: false, to_them: false)
 		unless link.empty?
 			link  = ":" + link 
 		end
-		query = "MATCH (n)-[#{link}]-(m) WHERE "
-		type_of_node.each_with_index do |type, index|
-			query += (index  ==  0) ?  ""  : " OR "
-			query += "m:"  + type 
+		if to_me
+			@query = "MATCH (n)<-[#{link}]-(m) WHERE "
+		elsif to_them
+			@query = "MATCH (n)-[#{link}]->(m) WHERE "
+		else
+			@query = "MATCH (n)-[#{link}]-(m) WHERE "
 		end
-		query+= " AND " if type_of_node.any?
-		query += " ID(n) = " + self.id.to_s + " RETURN m"
-		self.class.query_transform(query: query)
+
+		type_of_node.each_with_index do |type, index|
+			@query += (index  ==  0) ?  ""  : " OR "
+			@query += "m:"  + type 
+		end
+		@query+= " AND " if type_of_node.any?
+		@query += " ID(n) = " + self.id.to_s + " RETURN m"
+		self.class.query_transform(query: @query)
 	end
 
 	def self.create(hash: {})

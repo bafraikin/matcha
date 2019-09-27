@@ -18,4 +18,11 @@ class Message < MatchaBase
 			error_message(array: error)
 		end
 	end
+
+	def add_message(id_user:, body:)
+		message = Message.create(hash: {id_user: id_user, body: body})
+		if message.any? && message[0].is_a?(Message)
+			create_links(id: message[0].id, type: "NEXT_MESSAGE", data: nil)
+		end
+	end
 end

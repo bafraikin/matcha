@@ -27,6 +27,24 @@ body {
 	bottom: 10%;
 	flex-direction: column;
 }
+#messenger {
+	bottom: 0%;
+	position: fixed;
+	height: 50px;
+}
+
+#messenger .card-header {
+	padding: 0;
+}
+
+#messenger .card-footer {
+	padding: 0;
+}
+#messenger .card-body {
+	height: 90px;
+	overflow: auto;
+	padding: 0;
+}
 
 p[id="biography"] {
 	height: 20vh;
@@ -34,16 +52,29 @@ p[id="biography"] {
 	overflow: auto;
 }
 
+
 .grid-container {
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  grid-template-areas: ". text text text ." ". text text text ." ". text text text ." ". checkbox checkbox checkbox ." ". . . . .";
+	max-width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-template-areas: ". text text text ." ". text text text ." ". text text text ." ". checkbox checkbox checkbox ." ". . . . .";
 }
 
 .checkbox { grid-area: checkbox;
 	display: inline;
-	max-width: 500px; }
+max-width: 500px; }
 
 .text { grid-area: text;
-	max-width: 500px; }
+max-width: 500px; }
+
+@media (max-width: 700px) {
+	#notif_wrapper {
+		width: 100%;
+		bottom: 0%;
+		left: unset;
+	}
+
+	#messenger {
+		display: none;
+	}
+}
