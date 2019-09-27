@@ -1,26 +1,4 @@
 
-function send_like(id)
-{
-	const req = new XMLHttpRequest();
-	const csrf = document.querySelector("meta[name=csrf-token]").content
-		if (isNaN(id) && !!csrf)
-			return;
-	req.open('POST', '/user/add_like', true);
-	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
-
-	req.onreadystatechange = function(event) 
-	{
-		if (this.readyState === XMLHttpRequest.DONE)
-		{
-			if (this.status === 200) 
-				console.log("Réponse recu", this);
-			else 
-				console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
-		}
-	}
-	req.send("id=" + id + "&authenticity_token=" + normalize_data(csrf));
-}
 
 (function () {
 	function normalize_data(data) {
@@ -40,11 +18,8 @@ function send_like(id)
 		return (div);
 	}
 
-	function display_photo(object) {
-		const div = document.getElementById('photo');
-		for (img of object) {
-			add_photo(div, img);
-		}
+	const display_profile_picture = function (response) {
+		this.querySelector("img").src = "assets/pictures/" + JSON.parse(response);
 	}
 
 	const load_photo = function() {
@@ -63,45 +38,78 @@ function send_like(id)
 		req.send();
 	};
 
-	function add_photo(sidebar, img) {
-		sidebar.append(construct_photo(img));
-	}
-
 	function suppr_loader() {
 
 	}
 
 	function lazyload() {
-		lazyloadThrottleTimeout = setTimeout(function () {
-			let divs = document.querySelectorAll(".to_load");
-			divs.forEach((div) => {
-				if (!!div)
-					if (window.pageYOffset + window.innerHeight >= document.body.clientHeight - div.offsetHeight) {
-						let tmp = window.pageYOffset;
-						load_photo.bind(div)();
-						/*
-						.then(function (responseText) {
-							let response = JSON.parse(responseText);
-							if (!Array.isArray(response) && !!response.match(/^done$/))
-								suppr_loader();
-							else {
-								display_photo(JSON.parse(responseText));
-								window.scroll(0, tmp);
-								lazyload();
-							}
-						});*/
-					}
-			});
-		}, 1500)
-	};
+		let divs = document.querySelectorAll(".to_load");
+		divs.forEach((div) => {
+			if (!!div)
+				if (window.pageYOffset + window.innerHeight >= find_offset(div)) {
+					let tmp = window.pageYOffset;
+					load_photo.bind(div)();
+				}
+		});
+	}
 
 
+	function get_params_request() {
+		let params = "";
+		let number = document.querySelectorAll(".general-card");
+		const csrf = document.querySelector("meta[name=csrf-token]");
+		const range = document.querySelector("input[type=range]");
+		if (!csrf || !number || !(number.length))
+			return (-1);
+		number = number.length - 1;
+		params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value;
+		return (params);
+	}
+
+	function search_new_profile() {
+		const req = new XMLHttpRequest();
+		let params = get_params_request();
+		if (!isNaN(params))
+			return;
+		req.open('GET', '/user/get_profiles?' + params , true);
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.onreadystatechange = function(event) {
+			if (this.readyState === XMLHttpRequest.DONE)
+				if (this.status === 200)
+					console.log(this.response);
+		}
+		req.send();
+	}
+
+	function load_profile() {
+		let loader = document.querySelector("#main_loader");
+		if (loader)
+			if (window.pageYOffset + window.innerHeight >= loader.offsetTop) {
+				let tmp = window.pageYOffset;
+				search_new_profile();
+			}
+	}
+
+	function find_offset(elem, number = 0) {
+		if (!elem)
+			return (-1);
+		if (elem == document.body)
+		{
+			return (number);
+		}
+		else
+			return (find_offset(elem.parentNode, number + elem.offsetTop));
+	}
 
 	document.addEventListener("scroll", lazyload);
 	window.addEventListener("resize", lazyload);
 	window.addEventListener("orientationChange", lazyload);
 	window.addEventListener('load', lazyload);
-	//  window.addEventListener('load', load_photo);
+
+	document.addEventListener("scroll", load_profile);
+	window.addEventListener("resize", load_profile);
+	window.addEventListener("orientationChange", load_profile);
+	window.addEventListener('load', load_profile);
 })();
 
 function value_converter(meter) {
@@ -110,6 +118,3 @@ function value_converter(meter) {
 	else
 		return (meter).toString() + " m";
 }
-
-
-

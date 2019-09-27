@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
 		<link rel="icon" type="image/png" href="/assets/pictures/favico.png" />	
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
@@ -45,14 +45,13 @@
 									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
-
 								</div>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link icon" id="matcha_like" href="#"><i class="fa fa-star"></i><span>0</span></a>
+								<a class="nav-link icon" id="matcha_like" href="/user/likers"><i class="fa fa-star"></i><span>0</span></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link icon" id="matcha_match" href="#"><i class="fa fa-heart"></i><span>0</span></a>
+								<a class="nav-link icon" id="matcha_match" href="/user/matches"><i class="fa fa-heart"></i><span>0</span></a>
 							</li>		
 							<li class="nav-item">
 								<a class="nav-link icon" id="matcha_conv" href="#"><i class="fa fa-comments"></i><span>0</span></a>
@@ -65,7 +64,22 @@
 		<%= yield %>
 
 		<% if user_logged_in? %>
-			<div id="notif_wrapper">	
+			<div id="notif_wrapper">
+			</div>
+			<div id="messenger">
+				<div id="message_sender_invisible" class="message_sender" style="#display: none">
+					<div class="card">
+						<div class="card-header">
+							First Name user
+						</div>
+						<div class="card-body">
+							Content conversation
+						</div>
+						<div class="card-footer">
+							<input type="text" value="" name="" id=""/>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">

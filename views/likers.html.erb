@@ -1,0 +1,17 @@
+
+
+<div class="container-fluid d-flex flex-wrap justify-content-center">
+	<% @users.each do |user| %>
+		<div class="card general-card to_load mx-5 my-2" >
+			<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
+			<div class="card-body">
+				<h5 class="card-title"><%= user.first_name %></h5>
+				<p class="card-text text-truncate"> <%= user.biography %> </p>
+			</div>
+			<div class="card-footer">	
+				<button onclick="window.location= '/user/show/<%= user.id %>'" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+			</div>
+		</div>
+	<% end %>
+</div>
+<script charset="utf-8" src="/assets/javascript/display_profile.js" type="application/javascript"></script>
