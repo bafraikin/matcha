@@ -202,12 +202,15 @@ class User < MatchaBase
 		interest = "(#{interest})" if self.interest.size > 1
 		query = "MATCH (self:user {email: '#{self.email}'})
 		OPTIONAL MATCH (self)-[:LIKE | :MATCH]->(other:user) 
-		WITH  COLLECT(DISTINCT other) as to_exclude, self"
+		WITH  COLLECT(DISTINCT other) as to_exclude, self, #{self.latitude} AS lat, #{self.longitude} AS lon"
 		query += " MATCH (other:user)"
 		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
+		query +=<<-QUERY
+		AND 2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude)))) < {range}
+		QUERY
 		query += " RETURN other SKIP {skip} LIMIT {limit} "
-		self.class.query_transform(query: query, hash: {limit: limit, skip: skip})
+		self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
 	end
 end
 

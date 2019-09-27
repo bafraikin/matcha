@@ -1,4 +1,5 @@
 
+.DS_Store
 assets/pictures/*
 !assets/pictures/root.png
 !assets/pictures/favico.png

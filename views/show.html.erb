@@ -1,5 +1,3 @@
-<% #if user own profile show form %>
-
 <link rel="stylesheet" href="/assets/stylesheets/profile.css"  media="screen" charset="utf-8">
 
 <%= erb :"_show_img.html", layout: nil%>
@@ -95,17 +93,27 @@
 					<% end %>
 				<% end %>
 			</div>
+			<div>
+				<div id="map"></div>
+				<div id="latitude" name="<%= @user.latitude%>"></div>
+				<div id="longitude" name="<%= @user.longitude%>"></div>
+			</div>
 		</div>
 
 		<div>
 			<% if current_user.id == @user.id %>
 				<p class="font-weight-bold">Looking for</p>
 				<%User.gender_pool.each do |gender| %>
-					<input id="interest" type="checkbox" <%=looking_for_gender(gender: gender) %>> <%= gender%></option>
+					<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> <%= gender%></option>
 				<% end %> 
 			<%end%>
 		</div>
 	</div>
 </div>
+	<!--  if it look stupid but it works it's not stupid !-->
+	<script charset="utf-8" src="/assets/javascript/profile.js"></script>
+	<script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARJwCIX52hoxe50mvSYgszfeaWZE9-jGA&callback=initMap"></script>
+	<script  charset="utf-8"  <%= if (current_user.id == @user.id) 
+p ("onload='bool_true()'") 
+	end%> src="/assets/javascript/geo_loc.js"></script>
 
-<script charset="utf-8" src="/assets/javascript/profile.js"></script>

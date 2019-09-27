@@ -1,6 +1,7 @@
 class UserController < ApplicationController
   include ShowHelper
   include UserControllerHelper
+  include GeolocalisationHelper
   def title
     "coucou"
   end
@@ -228,6 +229,12 @@ class UserController < ApplicationController
         end
       end
     end
+
+    post '/geo_update' do
+      block_unsigned
+      settings.log.info(params)
+      save_if_valide_coordinate(params[:latitude], params[:longitude])
+    end
   end
 
   private
@@ -253,3 +260,4 @@ class UserController < ApplicationController
     end
   end
 end
+

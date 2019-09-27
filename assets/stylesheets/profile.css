@@ -13,3 +13,9 @@ max-width: 450px;
 	display: flex;
 	justify-content: space-between;
 }
+
+#map {
+	height: 30vh;
+	width: 110%;
+	margin-bottom: 2vh;
+}
