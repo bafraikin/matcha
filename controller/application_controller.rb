@@ -1,5 +1,6 @@
 
 class ApplicationController < Sinatra::Base
+	include MessengerHelper
 	register Sinatra::Namespace
 	register Sinatra::Flash
 

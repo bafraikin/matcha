@@ -96,6 +96,7 @@
 				<% end %>
 			</div>
 		</div>
+
 		<div>
 			<% if current_user.id == @user.id %>
 				<p class="font-weight-bold">Looking for</p>
@@ -106,6 +107,5 @@
 		</div>
 	</div>
 </div>
-<% if current_user.id == @user.id %>
-	<script charset="utf-8" src="/assets/javascript/profile.js"></script>
-<% end %>
+
+<script charset="utf-8" src="/assets/javascript/profile.js"></script>

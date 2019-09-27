@@ -1,4 +1,5 @@
-assets/pictures
+
+assets/pictures/*
 !assets/pictures/root.png
 !assets/pictures/favico.png
-!assets/pictures/loader.gif
+!assets/pictures/*.gif

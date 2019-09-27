@@ -10,13 +10,13 @@ class Messenger < MatchaBase
 		[]
 	end
 
-	def collapse
+	def destroy
 		delete_every_node_related(type_of_node: "message")
-		self.destroy
+		super
 	end
 
-	def get_message
-		find_every_node_related(type_of_node: "message")
+	def get_messages
+		crawl_node_related(type_of_node: "message")
 	end
 
 	def create(hash:)
@@ -27,8 +27,21 @@ class Messenger < MatchaBase
 		end
 	end
 
-	def get_message
-		"MATCH (n:message)-[*]-(m:message) ORDER BY m.timestamp RETURN m"
+	def new_message(id_user:, body:)
+		messages = get_messages
+		if messages.size == 0
+			add_message(id_user: id_user, body: body)
+		else
+			messages.last.add_message(id_user: id_user, body: body)
+		end
 	end
 
+	private
+
+	def add_message(id_user:, body:)
+		message = Message.create(hash: {id_user: id_user, body: body})
+		if message.any? && message[0].is_a?(Message)
+			create_links(id: message[0].id, type: "NEXT_MESSAGE", data: nil)
+		end
+	end
 end
