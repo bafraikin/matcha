@@ -19,7 +19,7 @@
 	}
 
 	const display_profile_picture = function (response) {
-		this.querySelector("img").src = "assets/pictures/" + JSON.parse(response)
+		this.querySelector("img").src = "assets/pictures/" + JSON.parse(response);
 	}
 
 	const load_photo = function() {
