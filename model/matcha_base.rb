@@ -21,7 +21,11 @@ class MatchaBase
 	end
 
 	def destroy
-		query = "MATCH (n)-[r]-() WHERE ID(n) = " + self.id.to_s + " DELETE r,n"
+		query = <<-QUERY
+		MATCH (n) WHERE ID(n) = #{self.id} WITH n 
+		OPTIONAL MATCH (n)-[r]-() WITH r,n
+		DELETE r,n
+		QUERY
 		self.class.perform_request(query: query)
 	end
 
@@ -53,7 +57,7 @@ class MatchaBase
 		if !type_of_node.to_s.empty? && type_of_node.is_a?(String)
 			query += " AND m:" + type_of_node[/^\w+/]
 		end
-		query+= " ORDER BY m.timestamp RETURN m"
+		query+= " RETURN m ORDER BY m.timestamp"
 		self.class.query_transform(query: query, hash: {})
 	end
 

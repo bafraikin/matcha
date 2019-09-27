@@ -79,7 +79,7 @@ class User < MatchaBase
 		rel.any? ? rel = rel[0][0] : return
 		create_links(id: id, type: "MATCH", data: data)
 		replace_relation(id: rel.id, new_type: "MATCH", new_data: data)
-		#	Messenger.create(hash: {match_hash: data})
+		Messenger.create(hash: {match_hash: data})
 	end
 
 	def delete_match_with(id:)

@@ -221,8 +221,8 @@ const update_sex = function () {
 		input.addEventListener("click", delete_this_picture);
 	});
 
-	let sex = document.querySelectorAll("option")
+	let sex = document.querySelectorAll("select")
 		sex.forEach(function (sex) { 
-			sex.addEventListener("click", update_sex);
+			sex.addEventListener("change", update_sex);
 		});
 })();

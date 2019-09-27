@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
 		<link rel="icon" type="image/png" href="/assets/pictures/favico.png" />	
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
@@ -67,6 +67,19 @@
 			<div id="notif_wrapper">
 			</div>
 			<div id="messenger">
+				<div id="message_sender_invisible" class="message_sender" style="#display: none">
+					<div class="card">
+						<div class="card-header">
+							First Name user
+						</div>
+						<div class="card-body">
+							Content conversation
+						</div>
+						<div class="card-footer">
+							<input type="text" value="" name="" id=""/>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">

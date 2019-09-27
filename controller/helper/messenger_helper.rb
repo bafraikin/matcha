@@ -1,7 +1,9 @@
 module MessengerHelper
 	def add_new_talker(talker, id_conv)
+		messenger = Messenger.where(equality: {match_hash: id_conv})
+		return session[:messenger] if !(messenger.any? && messenger[0].is_a?(Messenger))
 		session[:messenger][:number] = session[:messenger][:number].to_i + 1
-		session[:messenger][:talker][:"user#{talker.id}"] = id_conv 
+		session[:messenger][:talker][:"user#{talker.id}"] = messenger[0]
 		session[:messenger]
 	end
 

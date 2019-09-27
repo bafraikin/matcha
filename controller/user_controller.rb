@@ -44,7 +44,7 @@ class UserController < ApplicationController
 			block_unsigned
 			block_unvalidated
 			id = params[:id].to_i
-			halt if id == 0 && params[:authenticity_token] != session[:csrf]
+			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
 			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
 			if rel.any?
 				binding.pry
@@ -64,7 +64,7 @@ class UserController < ApplicationController
 
 		get '/get_profile_picture/:id' do
 			id = params[:id]
-			if id && id.to_i > 0
+			if id && id.to_i > 0 || id == "0"
 				id = id.to_i
 				user = User.find(id: id)
 				img = user.profile_picture
