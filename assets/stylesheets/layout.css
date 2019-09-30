@@ -5,6 +5,14 @@ a.icon {
 	margin-left: 10px;
 }
 
+
+
+div.card-footer {
+	display: flex;
+	justify-content: space-around;
+  }
+  
+
 body {
 	padding-top: 56px;
 }

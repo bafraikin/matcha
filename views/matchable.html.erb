@@ -22,6 +22,7 @@
 				<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
 				<div class="card-body">
 					<h5 class="card-title"><%= user.first_name %></h5>
+		
 					<p class="card-text text-truncate"> <%= user.biography %> </p>
 				</div>
 				<div class="card-footer">	
@@ -37,8 +38,10 @@
 			<h5 class="card-title"></h5>
 			<p class="card-text text-truncate"> </p>
 		</div>
-		<div class="card-footer">	
+		<div class="card-footer">
+	
 			<button  type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+					<p class="text-muted" id="distance"> </p>
 		</div>
 	</div>
 

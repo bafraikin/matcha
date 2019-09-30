@@ -2,7 +2,7 @@ class User < MatchaBase
 	extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
 	include BCrypt
 	BCrypt::Engine.cost = 8
-	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable
+	attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable, :distance
 
 	def interest
 		@interest || []
@@ -191,6 +191,10 @@ class User < MatchaBase
 			self.class.error_message(array: error)
 		end
 	end
+#to neo4j
+	def distance_between_user_formula
+		"2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude))))"
+    end
 
 	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0)
 		raise MatchaBase::Error if  self.interest.empty?
@@ -206,10 +210,9 @@ class User < MatchaBase
 		query += " MATCH (other:user)"
 		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
-		query +=<<-QUERY
-		AND 2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude)))) < {range}
-		QUERY
-		query += " RETURN other SKIP {skip} LIMIT {limit} "
+		query += " AND #{distance_between_user_formula} < {range}"
+		query += " WITH other, #{distance_between_user_formula} AS distance"
+		query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance SKIP {skip} LIMIT {limit}"
 		self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
 	end
 end

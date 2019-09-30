@@ -4,6 +4,7 @@
 
 <div class="grid-container"> 
 	<div class="text">
+	
 		<div>
 			<p class="font-weight-bold" >Biographie</p>
 			<% if current_user.id == @user.id %>
@@ -39,6 +40,7 @@
 				<p class="font-weight-bold">email</p>
 				<p class="form-control" id="email" contenteditable='true'><%= h(@user.email) %></p>
 				<input type='submit' value="save">
+			
 			<% end %> 
 		</div>
 
@@ -93,11 +95,6 @@
 					<% end %>
 				<% end %>
 			</div>
-			<div>
-				<div id="map"></div>
-				<div id="latitude" name="<%= @user.latitude%>"></div>
-				<div id="longitude" name="<%= @user.longitude%>"></div>
-			</div>
 		</div>
 
 		<div>
@@ -107,13 +104,22 @@
 					<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> <%= gender%></option>
 				<% end %> 
 			<%end%>
-		</div>
 	</div>
 </div>
-	<!--  if it look stupid but it works it's not stupid !-->
+</div>
+<div class="container text-center">
+	<% if (current_user.id == @user.id) %>
+		<h3>Drag the marker to change you location</h3>
+	<%else%>
+		<%= p ("The user is at #{distance_between_user_calculator()} Km of you ") %>
+	<%end%>
+<div class="d-flex justify-content-center">
+	<div id="map"></div>
+	<div id="latitude" name="<%= @user.latitude%>"></div>
+	<div id="longitude" name="<%= @user.longitude%>"></div>
+</div>
+
 	<script charset="utf-8" src="/assets/javascript/profile.js"></script>
 	<script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARJwCIX52hoxe50mvSYgszfeaWZE9-jGA&callback=initMap"></script>
-	<script  charset="utf-8"  <%= if (current_user.id == @user.id) 
-p ("onload='bool_true()'") 
-	end%> src="/assets/javascript/geo_loc.js"></script>
-
+	<script  charset="utf-8"  <%= p ("onload='bool_true()'") if (current_user.id == @user.id ) %> src="/assets/javascript/geo_loc.js"></script>
+</div>

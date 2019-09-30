@@ -14,6 +14,7 @@ to_fetch = true;
     div = div.cloneNode(true);
     div.querySelector("h5.card-title").innerText = user.first_name;
     div.querySelector("p.text-truncate").innerText = user.biography;
+    div.querySelector("p#distance").innerText = user.distance + " Km";
     div.querySelector("button").onclick = function() { window.location= '/user/show/'+ user.id; }
     div.querySelector("img").id = user.id;
     div.classList.add("to_load");

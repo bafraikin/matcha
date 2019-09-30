@@ -183,6 +183,7 @@ class MatchaBase
 	def self.transform_it(*args)
 		to_return = []
 		args[0].each_with_index do |arg, index|
+			binding.pry
 			model = arg[0].labels.select{|label| Module.constants.include?(label.capitalize)}
 			model.any? ? model = Object.const_get(model[0].capitalize) : next
 			to_return.push(model.new)

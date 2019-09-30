@@ -79,12 +79,14 @@ class UserController < ApplicationController
     end
 
     get	'/get_profiles' do
+      to_return  = [:id, :last_name, :first_name, :biography, :age]
       settings.log.info(params)
       block_unsigned
       block_unvalidated
       if valid_params_request?(params)
-        current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i).map(&:to_hash).to_json
+       @users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i)
       end
+      @users.map! {|user| user.to_hash.slice(*to_return).merge!({distance: user.distance_with_user(user: current_user)})}.to_json
     end
 
     get '/destroy' do
