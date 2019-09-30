@@ -12,6 +12,7 @@ to_fetch = true;
     if (!div)
       return ;
     div = div.cloneNode(true);
+    div.id = "";
     div.querySelector("h5.card-title").innerText = user.first_name;
     div.querySelector("p.text-truncate").innerText = user.biography;
     div.querySelector("p#distance").innerText = user.distance + " Km";

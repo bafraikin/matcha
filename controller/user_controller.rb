@@ -203,6 +203,7 @@ class UserController < ApplicationController
       @pictures.select!{|pic| pic.id != @profile_picture.id}
       @hashtags = Hashtag.all
       @checkboxes =  @user.get_node_related_with(link: "APPRECIATE").map(&:name)
+      @user.distance = current_user.distance_with_user(user: @user)
       erb:'show.html'
     end
 

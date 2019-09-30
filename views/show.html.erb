@@ -111,7 +111,7 @@
 	<% if (current_user.id == @user.id) %>
 		<h3>Drag the marker to change you location</h3>
 	<%else%>
-		<%= p ("The user is at #{distance_between_user_calculator()} Km of you ") %>
+		<p><%= @user.distance %> Km</p>
 	<%end%>
 <div class="d-flex justify-content-center">
 	<div id="map"></div>
