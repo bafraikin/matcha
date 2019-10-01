@@ -16,6 +16,12 @@ max-width: 450px;
 
 #map {
 	height: 30vh;
-	width: 110%;
-	margin-bottom: 2vh;
+	width: 75%;
+	margin-bottom: 5vh;
 }
+
+#legend {
+    padding: 3vw;
+    margin: 3vw;
+  }
+

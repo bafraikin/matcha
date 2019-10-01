@@ -29,6 +29,7 @@ function initMap() {
 
     let map = new google.maps.Map(document.getElementById('map'), {
         zoom: 8,
+        disableDefaultUI : true,
         center: myLatLng,
         mapTypeId: 'terrain' 
     });
@@ -36,7 +37,7 @@ function initMap() {
     let marker = new google.maps.Marker({
         position: myLatLng,
         map: map,
-        draggable:true,
+        draggable: bool,
         title: 'User',
     });
     if (bool)
@@ -51,8 +52,8 @@ function initMap() {
     		req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
     		req.onreadystatechange = function (event) {
     			if (this.readyState === XMLHttpRequest.DONE) {
-	    			if (!(this.status === 200 && this.response.match(/true/)))
-		    			alert(this.response);
+	    			if (this.status === 200 && this.response.match(/true/))
+		    			alert("Votre localisation a bien était changer 🇫🇷");
 		    	}
 		    };
 	    	req.send("longitude=" + encodeURI(marker.getPosition().lng()) + "&latitude=" + encodeURI(marker.getPosition().lat()) + "&authenticity_token=" + normalize_data(csrf));
