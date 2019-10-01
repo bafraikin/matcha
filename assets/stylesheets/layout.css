@@ -20,7 +20,7 @@ body {
 
 #notif_wrapper {
 	display: flex;
-	left: 50%;
+	left: 80%;
 	align-content: end;
 	width: 20vw;
 	position: fixed;
