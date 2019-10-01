@@ -13,3 +13,15 @@ max-width: 450px;
 	display: flex;
 	justify-content: space-between;
 }
+
+#map {
+	height: 30vh;
+	width: 75%;
+	margin-bottom: 5vh;
+}
+
+#legend {
+    padding: 3vw;
+    margin: 3vw;
+  }
+
