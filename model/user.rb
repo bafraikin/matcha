@@ -1,4 +1,5 @@
 class User < MatchaBase
+
   extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
   include BCrypt
   BCrypt::Engine.cost = 8
@@ -229,5 +230,6 @@ class User < MatchaBase
     query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc} SKIP {skip} LIMIT {limit}"
     self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
   end
+
 end
 

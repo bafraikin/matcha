@@ -11,5 +11,4 @@ module GeolocalisationHelper
         current_user.save
         true.to_json
     end
-
 end

@@ -40,7 +40,6 @@ function initMap() {
         draggable: bool,
         title: 'User',
     });
-
     if (bool)
         marker.addListener('dragend', function() {
          let csrf = document.querySelector("meta[name=csrf-token]");
@@ -60,4 +59,3 @@ function initMap() {
 	    	req.send("longitude=" + encodeURI(marker.getPosition().lng()) + "&latitude=" + encodeURI(marker.getPosition().lat()) + "&authenticity_token=" + normalize_data(csrf));
         });    
 }
-

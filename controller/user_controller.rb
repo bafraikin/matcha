@@ -264,5 +264,6 @@ class UserController < ApplicationController
       false
     end
   end
+
 end
 

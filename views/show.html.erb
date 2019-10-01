@@ -95,6 +95,11 @@
 					<% end %>
 				<% end %>
 			</div>
+			<div>
+				<div id="map"></div>
+				<div id="latitude" name="<%= @user.latitude%>"></div>
+				<div id="longitude" name="<%= @user.longitude%>"></div>
+			</div>
 		</div>
 
 		<div>
@@ -102,15 +107,18 @@
 				<p class="font-weight-bold">Looking for</p>
 				<div class="d-flex flex-wrap">
 				<%User.gender_pool.each do |gender| %>
+
 				<div class="d-flex flex-wrap">
 					<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> 
 					<p style="margin: 0; margin-right: 3vw"><%= gender%></p>
 				</div>
+
 				<% end %> 
 				</div>
 			<%end%>
 	</div>
 </div>
+
 </div>
 <div class="container text-center">
 	<% if (current_user.id == @user.id) %>
@@ -128,3 +136,4 @@
 	<script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARJwCIX52hoxe50mvSYgszfeaWZE9-jGA&callback=initMap"></script>
 	<script  charset="utf-8"  <%= p ("onload='bool_true()'") if (current_user.id == @user.id ) %> src="/assets/javascript/geo_loc.js"></script>
 </div>
+
