@@ -108,14 +108,6 @@
 		<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
 		<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
 		<script src="/assets/javascript/conv.js" charset="utf-8"> </script>
-		<script charset="utf-8">
-var Socket = new WebSocket("ws://localhost:4567/user/socket");
-Socket.onopen = function (event) {
-  Socket.send("Voici un texte que le serveur attend de recevoir dès que possible !"); 
-  };
-  Socket.onmessage = function (event) {
-  display_notif(event);
-  };
-		</script>
+		<script charset="utf-8" src="/assets/javascript/worker.js"></script>
 	</body>
 </html>
