@@ -53,7 +53,8 @@ class User < MatchaBase
   end
 
   def self.gender_pool
-    ['man', 'woman', 'chicken'] 
+    # https://en.wikipedia.org/wiki/Non-binary_gender
+    ['Man', 'Woman', 'Genderfluid', 'Agender', 'Demigender'] 
   end
 
   def self.updatable
