@@ -73,10 +73,12 @@ to_fetch = true;
     const csrf = document.querySelector("meta[name=csrf-token]");
     const range = document.querySelector("input[type=range]");
     const limit = document.querySelector("input[type=number]");
-    if (!csrf || !number || !(number.length) || !limit)
+    const toggle = document.querySelector("input[type=checkbox]#ascendant");
+    if (!csrf || !number || !(number.length) || !limit || !toggle) 
       return (-1);
     number = number.length - 1;
-    params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&limit=" + limit.value;
+    console.log(toggle.checked);
+    params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&limit=" + limit.value + "&ascendant=" + toggle.checked;
     return (params);
   }
 
@@ -148,6 +150,13 @@ to_fetch = true;
     if (!main_loader)
       reconstruct_main_loader();
   });
+  document.querySelector("input#ascendant").parentNode.onchange =  function() {
+    const main_loader =  document.querySelector("#main_loader");
+    document.querySelector("#user_container").innerHTML = "";
+    search_new_profile();
+    if (!main_loader)
+      reconstruct_main_loader();
+  };
 })();
 
 function value_converter(meter) {

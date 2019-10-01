@@ -209,8 +209,9 @@ class User < MatchaBase
     "2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude))))"
   end
 
-  def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0)
+  def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true)
     raise MatchaBase::Error if  self.interest.empty?
+    asc = asc ? "" : "DESC"
     args.map!{|arg| "o." + arg}
     equality.each do |k,v|
       args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
@@ -225,7 +226,7 @@ class User < MatchaBase
     query += " AND " + args.join(" AND ")  if args.size > 0
     query += " AND #{distance_between_user_formula} < {range}"
     query += " WITH other, #{distance_between_user_formula} AS distance"
-    query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance SKIP {skip} LIMIT {limit}"
+    query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc} SKIP {skip} LIMIT {limit}"
     self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
   end
 end

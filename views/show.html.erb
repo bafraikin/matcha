@@ -100,16 +100,21 @@
 		<div>
 			<% if current_user.id == @user.id %>
 				<p class="font-weight-bold">Looking for</p>
+				<div class="d-flex flex-wrap">
 				<%User.gender_pool.each do |gender| %>
-					<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> <%= gender%></option>
+				<div class="d-flex flex-wrap">
+					<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> 
+					<p style="margin: 0; margin-right: 3vw"><%= gender%></p>
+				</div>
 				<% end %> 
+				</div>
 			<%end%>
 	</div>
 </div>
 </div>
 <div class="container text-center">
 	<% if (current_user.id == @user.id) %>
-		<h3>Drag the marker to change you location</h3>
+		<h3>Drag the marker to change your location</h3>
 	<%else%>
 		<p><%= @user.distance %> Km</p>
 	<%end%>

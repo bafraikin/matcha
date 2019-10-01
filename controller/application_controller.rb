@@ -99,7 +99,7 @@ class ApplicationController < Sinatra::Base
 		if user_logged_in?
 			@users = current_user.find_matchable
 		end
-		erb:'matchable.html'
+		erb:'matchable.html' 
 	end
 
 	get "/assets/*" do

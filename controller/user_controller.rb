@@ -15,7 +15,7 @@ class UserController < ApplicationController
       end
     end
 
-    post '/update' do
+    post '/update' do b
       block_unsigned
       settings.log.info(params)
       block_unvalidated
@@ -84,7 +84,9 @@ class UserController < ApplicationController
       block_unsigned
       block_unvalidated
       if valid_params_request?(params)
-       @users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i)
+       @users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]))
+      else
+        return [].to_json
       end
       @users.map! {|user| user.to_hash.slice(*to_return).merge!({distance: user.distance_with_user(user: current_user)})}.to_json
     end

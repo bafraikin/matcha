@@ -5,12 +5,13 @@ module UserControllerHelper
 	end
 
   def valid_params_request?(params)
-    params_that_sould_exist = ["range", "skip", "limit",  "authenticity_token"]
-    halt if params.keys - params_that_sould_exist != []
-    halt if !(params["range"].to_i > 100 && params["range"].to_i <= 50000)
-    halt if !(params["skip"].to_i > 0 || params["skip"] == "0")
-    halt if !(params["limit"].to_i > 0)
-    halt if !(params["authenticity_token"] == session["csrf"])
+    params_that_sould_exist = ["range", "skip", "ascendant", "limit",  "authenticity_token"]
+    return false if params.keys - params_that_sould_exist != []
+    return false if !(params["range"].to_i > 100 && params["range"].to_i <= 50000)
+    return false if !(params["skip"].to_i > 0 || params["skip"] == "0")
+    return false if !(params["limit"].to_i > 0)
+    return false if !(params["authenticity_token"] == session["csrf"])
+    return false if !(params["ascendant"] == "true" || params["ascendant"] == "false")
     true
   end
 end
