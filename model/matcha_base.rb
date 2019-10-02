@@ -125,9 +125,9 @@ class MatchaBase
 		query = ""
 		if orientation
 			if to_me
-			query += "MATCH (n)<-[r#{type_of_link}]-(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
+				query += "MATCH (n)<-[r#{type_of_link}]-(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
 			else
-			query += "MATCH (n)-[r#{type_of_link}]->(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
+				query += "MATCH (n)-[r#{type_of_link}]->(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
 			end
 		else
 			query += "MATCH (n)-[r#{type_of_link}]-(m) WHERE ID(n) = {id_1} AND ID(m) = {id_2}"
@@ -181,6 +181,12 @@ class MatchaBase
 		perform_request(query: query)
 	end
 
+	def still_exist?
+		query = "MATCH (n) WHERE ID(n) = #{self.id} RETURN n"
+		result = self.class.query_transform(query: query, hash: {})
+		result[0].any? && result[0].class == self.class && result[0].id == self.id
+	end
+
 	private
 	def self.query_transform(query:, hash: {})
 		transform_it(self.perform_request(query: query, hash: hash).rows)
@@ -218,6 +224,7 @@ class MatchaBase
 		end
 		@to_return
 	end
+
 
 	def self.perform_request(query:, hash: {})
 		puts query.blue + " "  + hash.to_s.yellow

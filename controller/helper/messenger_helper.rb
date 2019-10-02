@@ -31,4 +31,22 @@ module MessengerHelper
 		end
 		session[:messenger]
 	end
+
+	def user_message_to(user_id:, hash:, body:)
+		return false if !is_messenger_ready? || session[:messenger][:talker].nil? || session[:messenger][:talker][:"user#{user_id}"].nil?
+		messenger =  session[:messenger][:talker][:"user#{user_id}"]
+		if messenger.still_exist?
+			if match = current_user.is_match_with(user_id: user_id)
+				if match.properties[:data] == messenger.match_hash
+					messenger.new_message(id_user: current_user.id, body: body)
+					return true
+				end
+			end
+		end
+		false
+	end
+
+	def send_socker_message_to(user_id:, body:)
+
+	end
 end
