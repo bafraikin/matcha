@@ -8,7 +8,6 @@
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
 			</div>
 		<% elsif @profile_picture.src != Picture.root_name %>
-			<button type="button" class="btn btn-outline-success like" onclick="send_like(<%= @user.id  %>)"><i class="fa fa-heart"></i> </button>
 			<button type="button" class="btn btn-outline-info message"><i class="fa fa-comment"></i></button>
 		</div>
 		<div class="card-footer">	
@@ -26,7 +25,6 @@
 					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
 				<% else %>
-					<button type="button" class="btn btn-outline-success like" onclick="send_like(<%= @user.id %>)"><i class="fa fa-heart"></i> </button>
 					<button type="button" class="btn btn-outline-info message"><i class="fa fa-comment"></i></button>
 					<div class="card-footer">	
 						<p class="text-muted">

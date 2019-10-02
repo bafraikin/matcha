@@ -4,7 +4,7 @@ function send_like(id)
 	const csrf = document.querySelector("meta[name=csrf-token]").content
 		if (isNaN(id) && !!csrf)
 			return;
-	req.open('POST', '/user/add_like', true);
+	req.open('POST', '/user/toggle_like', true);
 	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
 
@@ -13,7 +13,7 @@ function send_like(id)
 		if (this.readyState === XMLHttpRequest.DONE)
 		{
 			if (this.status === 200) 
-				console.log("Réponse recu", this);
+				console.log("Réponse recu");
 			else 
 				console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
 		}

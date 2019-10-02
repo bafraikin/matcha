@@ -15,7 +15,7 @@ class UserController < ApplicationController
       end
     end
 
-    post '/update' do b
+    post '/update' do
       block_unsigned
       settings.log.info(params)
       block_unvalidated
@@ -192,6 +192,7 @@ class UserController < ApplicationController
       @user = nil
       if current_user.id != params[:id].to_i
         @user = User.find(id: params[:id].to_i)
+		@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
       else
         @user = current_user
       end
@@ -209,21 +210,24 @@ class UserController < ApplicationController
       erb:'show.html'
     end
 
-    post "/add_like" do
+    post "/toggle_like" do
       block_unsigned
       settings.log.info(params)
       block_unvalidated
       user_to_like = User.find(id: params[:id].to_i)
-      if user_logged_in? && !params[:id].to_s.empty? && user_to_like
+      if !params[:id].to_s.empty? && user_to_like
         notif = nil
-        like = current_user.is_related_with(id: user_to_like.id, type_of_link: "LIKE")
-        if like.empty?
+        likes = current_user.is_related_with(id: user_to_like.id)
+        if likes.empty?
           current_user.add_like(id: user_to_like.id)
           notif = user_to_like.add_notification(type: "SOMEONE_LIKED_YOU")
           send_notif_to(user: user_to_like, notif: notif)
-        elsif like[0][0].start_node_id == current_user.id
-          settings.log.info("LIKE DEUX FOIS")
-          return
+        elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
+			if likes[0][0].type.to_s == "MATCH"
+			current_user.delete_match_with(id: user_to_like.id)
+			else
+			current_user.destroy_relation(id: my_like[0][0].id)
+			end
         else
           current_user.add_match(id: user_to_like.id)
           notif = user_to_like.add_notification(type: "NEW_MATCH")

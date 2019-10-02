@@ -77,7 +77,6 @@ to_fetch = true;
     if (!csrf || !number || !(number.length) || !limit || !toggle) 
       return (-1);
     number = number.length - 1;
-    console.log(toggle.checked);
     params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&limit=" + limit.value + "&ascendant=" + toggle.checked;
     return (params);
   }

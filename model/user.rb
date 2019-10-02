@@ -85,12 +85,13 @@ class User < MatchaBase
   end
 
   def delete_match_with(id:)
-    rel = self.is_related_with(id: id, type_of_link: "MATCH")
+    rel = self.is_related_with(id: id, type_of_link: "MATCH", orientation: true, to_me: true)
     rel.any? ? rel = rel[0][0] : return
     suppress_his_relation_with(id: id)
+	binding.pry
     replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
-    if messenger = Messenger.where(equality: {data: rel.data}).first
-      messenger.collapse
+    if messenger = Messenger.where(equality: {match_hash: rel.properties[:data]}).first
+      messenger.destroy
     end
   end
 
@@ -192,6 +193,10 @@ class User < MatchaBase
     else
       self.class.error_message(array: error)
     end
+  end
+
+  def send_message_to(user:, body:)
+
   end
 
   def distance_with_user(user:)
