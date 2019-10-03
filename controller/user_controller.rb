@@ -8,6 +8,7 @@ class UserController < ApplicationController
 
   namespace '/user' do
     get "/socket" do
+      settings.log.info("coucou")     
       if request.websocket? && user_logged_in?
         new_websocket(user: current_user)
       elsif request.websocket?

@@ -70,7 +70,7 @@
 			</div>
 			<div id="messenger">
 				<div id="message_sender_invisible" class="message_sender" style="#display: none">
-					<div class="card">
+					<div class="card" style="bottom: 500px !important;"> <!-- to delete-->
 						<div class="card-header">
 							First Name user
 						</div>
@@ -78,7 +78,7 @@
 							Content conversation
 						</div>
 						<div class="card-footer">
-							<input type="text" value="" name="" id=""/>
+							<input type="text" value="" name="" id="input_chat"/>
 						</div>
 					</div>
 				</div>
@@ -105,11 +105,13 @@
 		<% end %>
 		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-		<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
 		<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
-		<script src="/assets/javascript/conv.js" charset="utf-8"> </script>
-		<script charset="utf-8" >
-new SharedWorker("./assets/javascript/worker.js")
-		</script>
+		<%if user_logged_in? %>
+			<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
+			<script src="/assets/javascript/conv.js" charset="utf-8"> </script>
+			<script charset="utf-8">
+				new SharedWorker("./assets/javascript/worker.js")
+			</script>
+		<%end%>
 	</body>
 </html>

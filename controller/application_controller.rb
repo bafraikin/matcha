@@ -114,6 +114,9 @@ class ApplicationController < Sinatra::Base
 			ws.onopen do
 				settings.sockets[key] = ws
 			end
+			ws.onmessage do |msg|
+				settings.log.info(msg)
+			end
 			ws.onclose do
 				warn("websocket closed")
 				settings.sockets.delete(key)

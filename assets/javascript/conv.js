@@ -1,4 +1,4 @@
-
+const worker = new SharedWorker("./assets/javascript/worker.js");
 
 const new_message = function (text, receiver) {
 	return JSON.stringify({data: text, receiver: receiver});
@@ -31,4 +31,15 @@ window.onload = () => {
 };
 
 
+ let chat = document.querySelector('#input_chat');
 
+ chat.addEventListener('keypress', function(event){
+	if(event.key != "Enter" || chat.value == "")
+		return;
+	worker.port.postMessage([chat.value, "id = 21"]);
+	chat.value = "";
+	})
+
+	worker.port.onmessage = function (msg) {
+		console.log(msg.data);
+	};
