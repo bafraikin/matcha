@@ -152,7 +152,7 @@ function upload_photo() {
 	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	req.onreadystatechange = function(event) {
 		if (this.readyState === XMLHttpRequest.DONE) {
-			if (this.status === 200 && !this.response.match(/error/)) {
+			if (this.status === 200 && !this.response.match(/error/) && this.response != "") {
 				display_photo_uploaded(this.response);
 			} 
 		}

@@ -73,6 +73,15 @@ class ApplicationController < Sinatra::Base
 		end
 	end
 
+	def halt_unsigned
+			halt if !user_logged_in?
+	end
+
+	def halt_unvalidated
+		halt_unsigned
+		halt if !current_user.is_valuable?
+	end
+
 	def block_unvalidated
 		if current_user.nil? || !current_user.account_validated?
 			flash[:error] = "You need to validate your account"
@@ -89,9 +98,6 @@ class ApplicationController < Sinatra::Base
 
 	get /\/?/ do
 		@users = []
-		if user_logged_in?
-			@users = current_user.find_matchable
-		end
 		erb:'matchable.html' 
 	end
 

@@ -61,20 +61,6 @@ const create_notif = function(notif) {
 	return (body);
 }
 
-const openMessage = function(id) {
-	const myInit = { method: 'GET',cache: 'default' };
-	let csrf = document.querySelector("meta[name=csrf-token]");
-	if (csrf)
-		csrf = csrf.content
-	else
-		return;
-	fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf), myInit).then((response) => {
-		response.json().then((json) => {
-			if (json.type)
-				;
-		});
-	});
-}
 
 window.onload = () => {
 	let like = document.querySelector("#matcha_like");

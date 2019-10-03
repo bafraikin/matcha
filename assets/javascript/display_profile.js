@@ -1,8 +1,7 @@
 
 	const display_profile_picture = function (response) {
-		this.querySelector("img").src = "/assets/pictures/" + JSON.parse(response)
+		this.querySelector("img").src = "/assets/pictures/" + response
 	}
-
 
 	const load_photo = function() {
 		const that = this;
@@ -14,8 +13,8 @@
 		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		req.onreadystatechange = function(event){
 			if (this.readyState === XMLHttpRequest.DONE)
-				if (this.status === 200)
-					display_profile_picture.bind(that)(this.response);
+				if (this.status === 200 && this.response != "")
+					display_profile_picture.bind(that)(JSON.parse(this.response));
 		} 
 		req.send();
 	};

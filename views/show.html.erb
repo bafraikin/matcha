@@ -138,7 +138,7 @@
 		<div id="longitude" name="<%= @user.longitude%>"></div>
 	</div>
 
-	<script charset="utf-8" src="/assets/javascript/profile.js"></script>
+	<script charset="utf-8" src="/assets/javascript/views/show.js"></script>
 	<script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARJwCIX52hoxe50mvSYgszfeaWZE9-jGA&callback=initMap"></script>
 	<script  charset="utf-8"  <%= "onload='bool_true()" if (current_user.id == @user.id ) %> src="/assets/javascript/geo_loc.js"></script>
 </div>
