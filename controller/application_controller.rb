@@ -86,13 +86,6 @@ class ApplicationController < Sinatra::Base
 		!settings.sockets[user.key].nil?
 	end
 
-	def send_notif_to(user:, notif:, from: nil)
-		return if !user.is_a?(User) || !is_connected?(user: user)
-		settings.log.info("sending notif to #{user.key}")
-		notif = notif.to_hash if notif.is_a?(Notification)
-		notif.merge!(from: from.full_name) if from
-		settings.sockets[user.key].send(notif.to_json)
-	end
 
 	get /\/?/ do
 		@users = []
@@ -105,19 +98,5 @@ class ApplicationController < Sinatra::Base
 	get "/assets/*" do
 		env["PATH_INFO"].sub!("/assets", "")
 		settings.environment.call(env)
-	end
-
-	private	
-	def new_websocket(user:)
-		key = user.key
-		request.websocket do |ws|
-			ws.onopen do
-				settings.sockets[key] = ws
-			end
-			ws.onclose do
-				warn("websocket closed")
-				settings.sockets.delete(key)
-			end
-		end
 	end
 end

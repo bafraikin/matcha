@@ -24,14 +24,14 @@ module MessengerHelper
 		session[:messenger]
 	end
 
-	def suppr_talker(talker)
+	def suppr_talker(talker:)
 		session[:messenger][:number] = session[:messenger][:number].to_i - 1
 		if !(session[:messenger][:talker].nil?)
 			session[:messenger][:talker].delete!("user#{talker.id}".to_sym)
 		end
 		session[:messenger]
 	end
-
+	
 	def user_message_to(user_id:, hash:, body:)
 		return false if !is_messenger_ready? || session[:messenger][:talker].nil? || session[:messenger][:talker][:"user#{user_id}"].nil?
 		messenger =  session[:messenger][:talker][:"user#{user_id}"]
@@ -44,9 +44,5 @@ module MessengerHelper
 			end
 		end
 		false
-	end
-
-	def send_socker_message_to(user_id:, body:)
-
 	end
 end

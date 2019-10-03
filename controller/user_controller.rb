@@ -2,8 +2,10 @@ class UserController < ApplicationController
 	include ShowHelper
 	include UserControllerHelper
 	include GeolocalisationHelper
+	include NotifHelper
+	include MessengerHelper
 	def title
-		"coucou"
+		"MATCHA"
 	end
 
 	namespace '/user' do
@@ -18,11 +20,13 @@ class UserController < ApplicationController
 		post '/send_message' do
 			block_unsigned
 			block_unvalidated
-			if user_message_to(user_id: params[:user_id], hash: params[:hash], body: params[:body])
-				send_socket_message_to(user_id: user_id, body: body)
+			user = User.find(id: params[:user_id])
+			halt if !user.is_a?(User)
+			if user_message_to(user: user, hash: params[:hash], body: params[:body])
+				send_socket_message_to(user: user, body: body, params[:hash])
 				return true
 			else
-				session[:messenger] = delete_user_from_messenger(user_id: params[:user_id])
+				session[:messenger] = suppr_talker(talker: user)
 			end
 		end
 
@@ -60,7 +64,6 @@ class UserController < ApplicationController
 			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
 			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
 			if rel.any?
-				binding.pry
 				user = User.find(id: id)
 				session[:messenger] = prepare_messenger
 				session[:messenger] = add_new_talker(user, rel[0][0].properties[:data])
@@ -231,8 +234,7 @@ class UserController < ApplicationController
 				likes = current_user.is_related_with(id: user_to_like.id)
 				if likes.empty?
 					current_user.add_like(id: user_to_like.id)
-					notif = user_to_like.add_notification(type: "SOMEONE_LIKED_YOU")
-					send_notif_to(user: user_to_like, notif: notif)
+					send_notif_like(user_to_receive: user_to_like)
 				elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
 					if likes[0][0].type.to_s == "MATCH"
 						current_user.delete_match_with(id: user_to_like.id)
@@ -241,10 +243,7 @@ class UserController < ApplicationController
 					end
 				else
 					current_user.add_match(id: user_to_like.id)
-					notif = user_to_like.add_notification(type: "NEW_MATCH")
-					notif_current = current_user.add_notification(type: "NEW_MATCH")
-					send_notif_to(user: user_to_like, notif: notif, from: current_user)
-					send_notif_to(user: current_user, notif: notif_current, from: user_to_like)
+					send_notif_match(first_user: current_user, second_user: user_to_like)
 					settings.log.info("NEW MATCH")
 				end
 			end
