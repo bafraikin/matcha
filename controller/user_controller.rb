@@ -21,12 +21,13 @@ class UserController < ApplicationController
 			block_unsigned
 			block_unvalidated
 			user = User.find(id: params[:user_id])
-			halt if !user.is_a?(User)
+			return false.to_json if !user.is_a?(User)
 			if user_message_to(user: user, hash: params[:hash], body: params[:body])
 				send_socket_message_to(user: user, body: body, params[:hash])
-				return true
+				return true.to_json
 			else
 				session[:messenger] = suppr_talker(talker: user)
+				return false.to_json
 			end
 		end
 
@@ -64,11 +65,15 @@ class UserController < ApplicationController
 			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
 			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
 			if rel.any?
+				hash = rel[0][0].properties[:data]
+				messenger = Messenger.where(match_hash: hash)
+				messages = messenger.get_messages if messenger.any? && messenger[0].is_a?(Messenger)
 				user = User.find(id: id)
 				session[:messenger] = prepare_messenger
-				session[:messenger] = add_new_talker(user, rel[0][0].properties[:data])
-				return {type: true, name: user.first_name}.to_json
+				session[:messenger] = add_new_talker(user, hash)
+				return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash)}.to_json
 			end
+			false.to_json
 		end
 
 		get	'/likers' do

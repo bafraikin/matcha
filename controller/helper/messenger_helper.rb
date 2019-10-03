@@ -32,11 +32,11 @@ module MessengerHelper
 		session[:messenger]
 	end
 	
-	def user_message_to(user_id:, hash:, body:)
-		return false if !is_messenger_ready? || session[:messenger][:talker].nil? || session[:messenger][:talker][:"user#{user_id}"].nil?
-		messenger =  session[:messenger][:talker][:"user#{user_id}"]
+	def user_message_to(user:, hash:, body:)
+		return false if !is_messenger_ready? || session[:messenger][:talker].nil? || session[:messenger][:talker][user.key].nil?
+		messenger =  session[:messenger][:talker][user.key]
 		if messenger.still_exist?
-			if match = current_user.is_match_with(user_id: user_id)
+			if match = current_user.is_match_with(user_id: user.id)
 				if match.properties[:data] == messenger.match_hash
 					messenger.new_message(id_user: current_user.id, body: body)
 					return true
