@@ -61,7 +61,7 @@ const create_notif = function(notif) {
 	return (body);
 }
 
-const openMessage = function(id) {
+/*const openMessage = function(id) {
 	const myInit = { method: 'GET',cache: 'default' };
 	let csrf = document.querySelector("meta[name=csrf-token]");
 	if (csrf)
@@ -75,7 +75,7 @@ const openMessage = function(id) {
 		});
 	});
 }
-
+*/
 window.onload = () => {
 	let like = document.querySelector("#matcha_like");
 	let match = document.querySelector("#matcha_match");

@@ -88,7 +88,6 @@ class User < MatchaBase
     rel = self.is_related_with(id: id, type_of_link: "MATCH", orientation: true, to_me: true)
     rel.any? ? rel = rel[0][0] : return
     suppress_his_relation_with(id: id)
-	binding.pry
     replace_relation(id: rel.id, new_type: "LIKE", new_data: nil)
     if messenger = Messenger.where(equality: {match_hash: rel.properties[:data]}).first
       messenger.destroy
