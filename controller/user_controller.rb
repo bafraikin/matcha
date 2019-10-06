@@ -20,6 +20,7 @@ class UserController < ApplicationController
 		post '/send_message' do
 			block_unsigned
 			block_unvalidated
+			binding.pry
 			user = User.find(id: params[:user_id])
 			halt if !user.is_a?(User)
 			if user_message_to(user: user, hash: params[:hash], body: params[:body])

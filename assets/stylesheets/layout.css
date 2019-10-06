@@ -36,9 +36,10 @@ body {
 	flex-direction: column;
 }
 #messenger {
-	bottom: 0%;
+	bottom: 15%;
 	position: fixed;
 	height: 50px;
+	width : 500px;
 }
 
 #messenger .card-header {
@@ -49,7 +50,7 @@ body {
 	padding: 0;
 }
 #messenger .card-body {
-	height: 90px;
+	height: 200px;
 	overflow: auto;
 	padding: 0;
 }

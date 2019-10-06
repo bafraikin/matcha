@@ -1,4 +1,4 @@
-const worker = new SharedWorker("./assets/javascript/worker.js");
+const worker = new SharedWorker("/assets/javascript/worker.js");
 let csrf = document.querySelector("meta[name=csrf-token]").content;
 
 const new_message = function (text, receiver) {
@@ -30,12 +30,32 @@ window.onload = () => {
 			this.classList.remove("active");
 		}
 };
+/*
+const sendMessage = function () {
+	return fetch(url, {
+		method: 'post',
+		headers: {
+			"Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+		},
+		body: 'foo=bar&lorem=ipsum' + normalize_data(csrf),
+	}).then(json)
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+		})
+		.catch(function (error) {
+			console.log('Request failed', error);
+		});
+
+}
+*/
+
 
 const openConv = function () {
-	//let id = document.querySelector id de l'autre
-	if (!csrf)
-		return ;
-	worker.port.postMessage(["1041", normalize_data(csrf)]);
+	//worker.port.postMessage(['start', '1041' , document.querySelector("meta[name=csrf-token]").content])
+	let id = document.querySelector('#user_id');
+	if (!(csrf && id) )
+		return;
+	worker.port.postMessage(['start', id.content, normalize_data(csrf)]);
 };
 
 
@@ -50,5 +70,10 @@ if (chat)
 
 worker.port.onmessage = function (msg) {
 	console.log(msg.data);
-	
+
 };
+
+
+const button_chat = document.querySelector("button[class='btn btn-outline-info message']");
+if (button_chat)
+	button_chat.addEventListener("click", openConv);

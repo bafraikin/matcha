@@ -13,16 +13,23 @@ onconnect = function (e) {
 	const port = e.ports[0];
 	port.start();
 	port.onmessage = function (e) {
+		//getting data 
 		if (e.data[0] && e.data[0] == 'start' && e.data[1] && e.data[2]) {
 			let promise = openMessage(e.data[1], e.data[2]);
 			promise.then((response) => { port.postMessage(response) });
+			// il faut aussi stocker la data reçu
+		}
+		else if (e.data[0] && e.data[0] != 'start' && e.data[1]) {
+			
 		}
 		else
-			connections.forEach(connection => {
+			connections.forEach(connection => { /* send data to all current terminal in case of regulare msg*/
 				connection.postMessage(e.data);
 			});
 	}
 }
+
+
 
 const openMessage = function (id, csrf) {
 	return fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf))
