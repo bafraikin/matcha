@@ -24,7 +24,7 @@ hashtags = Hashtag.all
 	rand(1..4).times { array << hashtags.sample.id}
 	array.uniq!
 
-	p 	matcheur = User.create(hash: {interest: random_interest, biography: Faker::Quotes::Shakespeare.romeo_and_juliet_quote ,first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, password: "coucou123/", sex: User.gender_pool.sample, age: rand(18..35), email: Faker::Internet.unique.email, email_token: SecureRandom.hex, latitude: rand(48.0..48.9), longitude: rand(2.0..3.9)})[0]
+	p 	matcheur = User.create(hash: {interest: random_interest, biography: Faker::Quotes::Shakespeare.romeo_and_juliet_quote ,first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, password: "coucou123/", sex: User.gender_pool.sample, age: rand(18..35), email: Faker::Internet.unique.email, email_token: nil, latitude: rand(48.0..48.9), longitude: rand(2.0..3.9)})[0]
 	array.each {|id| matcheur.create_links(id: id, type: 'appreciate') }
 	pic = Picture.create(hash: {src: file[i]})
 	matcheur.attach_photo(photo: pic[0])

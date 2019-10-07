@@ -55,7 +55,7 @@ const openConv = function () {
 	let id = document.querySelector('#user_id');
 	if (!(csrf && id) )
 		return;
-	worker.port.postMessage(['start', id.content, normalize_data(csrf)]);
+	worker.port.postMessage(['start', id.getAttribute('value'), normalize_data(csrf)]);
 };
 
 
@@ -69,6 +69,8 @@ if (chat)
 	})
 
 worker.port.onmessage = function (msg) {
+	if (msg.data == false)
+		alert("You can't talk with people you didn't match with 😅")
 	console.log(msg.data);
 
 };
