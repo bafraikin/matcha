@@ -18,23 +18,21 @@ class UserController < ApplicationController
 		end
 
 		post '/send_message' do
-			block_unsigned
-			block_unvalidated
-			binding.pry
+			halt_unvalidated
 			user = User.find(id: params[:user_id])
-			halt if !user.is_a?(User)
+			return false.to_json if !user.is_a?(User)
 			if user_message_to(user: user, hash: params[:hash], body: params[:body])
 				send_socket_message_to(user: user, body: body, hash: params[:hash])
-				return true
+				return true.to_json
 			else
 				session[:messenger] = suppr_talker(talker: user)
+				return false.to_json
 			end
 		end
 
 		post '/update' do
-			block_unsigned
+			halt_unvalidated
 			settings.log.info(params)
-			block_unvalidated
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
 			session_tmp = session[:current_user].clone
 			if (params[:id] == "password")
@@ -59,16 +57,18 @@ class UserController < ApplicationController
 		end
 
 		get '/open_message' do
-			block_unsigned
-			block_unvalidated
+			halt_unvalidated
 			id = params[:id].to_i
 			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
 			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
 			if rel.any?
+				hash = rel[0][0].properties[:data]
+				messenger = Messenger.where(match_hash: hash)
+				messages = messenger.get_messages if messenger.any? && messenger[0].is_a?(Messenger)
 				user = User.find(id: id)
 				session[:messenger] = prepare_messenger
-				session[:messenger] = add_new_talker(user, rel[0][0].properties[:data])
-				return {type: true, name: user.first_name}.to_json
+				session[:messenger] = add_new_talker(user, hash)
+				return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash)}.to_json
 			end
 			false.to_json
 		end
@@ -81,6 +81,7 @@ class UserController < ApplicationController
 		end
 
 		get '/get_profile_picture/:id' do
+			halt_unvalidated
 			id = params[:id]
 			if id && id.to_i > 0 || id == "0"
 				id = id.to_i
@@ -95,10 +96,9 @@ class UserController < ApplicationController
 		end
 
 		get	'/get_profiles' do
+			halt_unvalidated
 			to_return  = [:id, :last_name, :first_name, :biography, :age]
 			settings.log.info(params)
-			block_unsigned
-			block_unvalidated
 			if valid_params_request?(params)
 				@users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]))
 			else
@@ -115,7 +115,7 @@ class UserController < ApplicationController
 		end
 
 		post '/add_photo' do
-			block_unsigned
+			halt_unsigned
 			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
 			return "error" if !params[:file]
 			return "error Picture must be lighter" if params[:file].size > 500000
@@ -137,7 +137,7 @@ class UserController < ApplicationController
 		end
 
 		post '/toggle_profile' do
-			block_unsigned
+			halt_unsigned
 			return "error" if current_user.get_node_related_with(type_of_node: ['picture']).size == 0 || params[:id].nil? || params[:id][/\d+/].to_i.to_s.size != params[:id].to_s.size
 			picture = Picture.find(id: params[:id].to_i)
 			return "error" if picture.nil?
@@ -147,7 +147,7 @@ class UserController < ApplicationController
 
 		post '/delete_photo' do
 			settings.log.info(params)
-			block_unsigned
+			halt_unsigned
 			return "error" if params[:src].nil?
 			src = params[:src][/(?<=\/)[^\/]*$/]
 			return "error" if !src || src == Picture.root_name
@@ -172,9 +172,8 @@ class UserController < ApplicationController
 		end
 
 		post '/update_hashtag' do
-			block_unsigned
 			settings.log.info(params)
-			block_unvalidated
+			halt_unvalidated
 			check_good_params_checkbox
 			session_tmp = session[:current_user].clone
 			if params[:id] == "hashtag"
@@ -205,16 +204,14 @@ class UserController < ApplicationController
 			block_unsigned
 			block_unvalidated
 			return if params[:id].nil?
-			@user = nil
-			if current_user.id != params[:id].to_i
-				@user = User.find(id: params[:id].to_i)
-				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
-			else
-				@user = current_user
-			end
+			@user = User.find(id: params[:id].to_i)
 			if !@user
 				redirect "/"
 				halt
+			elsif current_user.id != @user.id
+				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
+			else
+				@user = current_user
 			end
 			block_access_to_not_valuable_account if params[:id].to_i != current_user.id
 			@profile_picture = @user.profile_picture
@@ -227,9 +224,8 @@ class UserController < ApplicationController
 		end
 
 		post "/toggle_like" do
-			block_unsigned
 			settings.log.info(params)
-			block_unvalidated
+			halt_unvalidated
 			user_to_like = User.find(id: params[:id].to_i)
 			if !params[:id].to_s.empty? && user_to_like
 				notif = nil
@@ -252,7 +248,7 @@ class UserController < ApplicationController
 		end
 
 		post '/geo_update' do
-			block_unsigned
+			halt_unsigned
 			settings.log.info(params)
 			save_if_valide_coordinate(params[:latitude], params[:longitude])
 		end

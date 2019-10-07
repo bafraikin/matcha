@@ -73,6 +73,15 @@ class ApplicationController < Sinatra::Base
 		end
 	end
 
+	def halt_unsigned
+			halt if !user_logged_in?
+	end
+
+	def halt_unvalidated
+		halt_unsigned
+		halt if !current_user.is_valuable?
+	end
+
 	def block_unvalidated
 		if current_user.nil? || !current_user.account_validated?
 			flash[:error] = "You need to validate your account"
@@ -86,41 +95,14 @@ class ApplicationController < Sinatra::Base
 		!settings.sockets[user.key].nil?
 	end
 
-	def send_notif_to(user:, notif:, from: nil)
-		return if !user.is_a?(User) || !is_connected?(user: user)
-		settings.log.info("sending notif to #{user.key}")
-		notif = notif.to_hash if notif.is_a?(Notification)
-		notif.merge!(from: from.full_name) if from
-		settings.sockets[user.key].send(notif.to_json)
-	end
 
 	get /\/?/ do
 		@users = []
-		if user_logged_in?
-			@users = current_user.find_matchable
-		end
 		erb:'matchable.html' 
 	end
 
 	get "/assets/*" do
 		env["PATH_INFO"].sub!("/assets", "")
 		settings.environment.call(env)
-	end
-
-	private	
-	def new_websocket(user:)
-		key = user.key
-		request.websocket do |ws|
-			ws.onopen do
-				settings.sockets[key] = ws
-			end
-			ws.onmessage do |msg|
-				settings.log.info(msg)
-			end
-			ws.onclose do
-				warn("websocket closed")
-				settings.sockets.delete(key)
-			end
-		end
 	end
 end

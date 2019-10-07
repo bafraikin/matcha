@@ -1,5 +1,4 @@
 class User < MatchaBase
-
   extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
   include BCrypt
   BCrypt::Engine.cost = 8
@@ -34,6 +33,15 @@ class User < MatchaBase
     [:interest, :first_name, :sex, :age, :pictures, :biography]
   end
 
+  def is_match_with(user_id:)
+	  match = self.is_related_with(id: user_id, type_of_link: "MATCH")
+	  if match.any?
+		  return match[0][0]
+	  else
+		  return false
+	  end
+  end
+
   def is_valuable?
     self.cant_be_empty_for_valuable_account.select do |method|
       self.send(method).then do|result|
@@ -65,7 +73,6 @@ class User < MatchaBase
   def self.hash_password(password:)
     BCrypt::Password.create(password)
   end
-
 
   def full_name
     self.first_name + " " + self.last_name
@@ -192,10 +199,6 @@ class User < MatchaBase
     else
       self.class.error_message(array: error)
     end
-  end
-
-  def send_message_to(user:, body:)
-
   end
 
   def distance_with_user(user:)
