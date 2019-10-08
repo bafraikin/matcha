@@ -1,35 +1,9 @@
-const worker = new SharedWorker("/assets/javascript/worker.js");
 let csrf = document.querySelector("meta[name=csrf-token]").content;
 
 const new_message = function (text, receiver) {
 	return JSON.stringify({ data: text, receiver: receiver });
 }
 
-const send_text = function () {
-	if (!this.parentNode)
-		return;
-	const input = this.parentNode.querySelector("input");
-	const csrf = document.querySelector("meta[name=csrf-token]").content
-	if (!input || input.value === "" || !csrf || !Socket)
-		console.log("coucou");
-
-}
-
-window.onload = () => {
-	const button = document.querySelector("#matcha_conv")
-	if (button)
-		button.onclick = function () {
-			const input = document.createElement("input");
-			const button = document.createElement("button");
-			button.innerText = "envoyer";
-			const div = document.createElement("div");
-			div.append(input);
-			div.append(button);
-			button.onclick = send_text;
-			document.body.append(div);
-			this.classList.remove("active");
-		}
-};
 /*
 const sendMessage = function () {
 	return fetch(url, {
@@ -65,6 +39,25 @@ const openMessage = function(id) {
 	});
 }
 
+const createBannerUser = function(exemple, user) {
+	const clone = exemple.cloneNode(true);
+	clone.querySelector("img").src= '/assets/pictures/' + user.src;
+	clone.querySelector("div span").innerHTML= user.first;
+	clone.classList.remove('invisible');
+	return clone;
+};
+
+const displayMatchReadyForChat = function(data) {
+	const div = document.getElementById('possible_conv_match');
+	const exemple = document.getElementById('exemple_possible_conv');
+	const img = div.querySelector('img#loader_conv');
+	if (!div || !data.forEach || !exemple)
+		return;
+	img.parentNode.removeChild(img);
+	data.forEach((user) => {
+		div.appendChild(createBannerUser(exemple, user));
+	})
+}
 
 const openConv = function () {
 	//worker.port.postMessage(['start', '1041' , document.querySelector("meta[name=csrf-token]").content])
@@ -84,12 +77,6 @@ if (chat)
 		chat.value = "";
 	})
 
-worker.port.onmessage = function (msg) {
-	if (msg.data == false)
-		alert("You can't talk with people you didn't match with 😅")
-	console.log(msg.data);
-
-};
 
 
 const button_chat = document.querySelector("button[class='btn btn-outline-info message']");

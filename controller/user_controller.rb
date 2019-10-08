@@ -1,280 +1,288 @@
 class UserController < ApplicationController
-	include ShowHelper
-	include UserControllerHelper
-	include GeolocalisationHelper
-	include NotifHelper
-	include MessengerHelper
-	def title
-		"MATCHA"
-	end
+  include ShowHelper
+  include UserControllerHelper
+  include GeolocalisationHelper
+  include NotifHelper
+  include MessengerHelper
+  def title
+    "MATCHA"
+  end
 
-	namespace '/user' do
-		get "/socket" do
-			if request.websocket? && user_logged_in?
-				new_websocket(user: current_user)
-			elsif request.websocket?
-				request.websocket {}
-			end
-		end
+  namespace '/user' do
+    get "/socket" do
+      if request.websocket? && user_logged_in?
+        new_websocket(user: current_user)
+      elsif request.websocket?
+        request.websocket {}
+      end
+    end
 
-		post '/send_message' do
-			halt_unvalidated
-			user = User.find(id: params[:user_id])
-			return false.to_json if !user.is_a?(User)
-			if user_message_to(user: user, hash: params[:hash], body: params[:body])
-				send_socket_message_to(user: user, body: body, hash: params[:hash])
-				return true.to_json
-			else
-				session[:messenger] = suppr_talker(talker: user)
-				return false.to_json
-			end
-		end
+    post '/send_message' do
+      halt_unvalidated
+      user = User.find(id: params[:user_id])
+      return false.to_json if !user.is_a?(User)
+      if user_message_to(user: user, hash: params[:hash], body: params[:body])
+        send_socket_message_to(user: user, body: body, hash: params[:hash])
+        return true.to_json
+      else
+        session[:messenger] = suppr_talker(talker: user)
+        return false.to_json
+      end
+    end
 
-		post '/update' do
-			halt_unsigned
-			settings.log.info(params)
-			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
-			session_tmp = session[:current_user].clone
-			if (params[:id] == "password")
-				return User.error_password if !User.valid_password?(params[:content])
-				params[:content] = User.hash_password(password: params[:content])
-			end 
-			current_user.send(params[:id].to_s + "=", params[:content])
-			error = current_user.save
-			if error.is_a?(Array)
-				session[:current_user] = session_tmp
-				return error.to_json
-			else
-				return true.to_json
-			end
-		end
+    post '/update' do
+      halt_unsigned
+      settings.log.info(params)
+      return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
+      session_tmp = session[:current_user].clone
+      if (params[:id] == "password")
+        return User.error_password if !User.valid_password?(params[:content])
+        params[:content] = User.hash_password(password: params[:content])
+      end 
+      current_user.send(params[:id].to_s + "=", params[:content])
+      error = current_user.save
+      if error.is_a?(Array)
+        session[:current_user] = session_tmp
+        return error.to_json
+      else
+        return true.to_json
+      end
+    end
 
-		get '/matches' do
-			block_unsigned
-			block_unvalidated
-			@users = current_user.all_matches
-			erb:"matches.html"
-		end
+    get '/matches' do
+      block_unsigned
+      block_unvalidated
+      @users = current_user.all_matches
+      erb:"matches.html"
+    end
 
-		get '/open_message' do
-			halt_unvalidated
-			id = params[:id].to_i
-			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
-			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
-			if rel.any?
-				hash = rel[0][0].properties[:data]
-				messenger = Messenger.where(match_hash: hash)
-				messages = messenger.get_messages if messenger.any? && messenger[0].is_a?(Messenger)
-				user = User.find(id: id)
-				session[:messenger] = prepare_messenger
-				session[:messenger] = add_new_talker(user, hash)
-				return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash)}.to_json
-			end
-			false.to_json
-		end
+    get '/matches_hashes' do
+      halt_unsigned
+      halt_unvalidated
+      @users = current_user.all_matches_with_hash
+      @users *= 10
+      return @users.to_json
+    end
 
-		get	'/likers' do
-			block_unsigned
-			block_unvalidated
-			@users = current_user.all_likers
-			erb:"likers.html"
-		end
+    get '/open_message' do
+      halt_unvalidated
+      id = params[:id].to_i
+      halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
+      rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
+      if rel.any?
+        hash = rel[0][0].properties[:data]
+        messenger = Messenger.where(match_hash: hash)
+        messages = messenger.get_messages if messenger.any? && messenger[0].is_a?(Messenger)
+        user = User.find(id: id)
+        session[:messenger] = prepare_messenger
+        session[:messenger] = add_new_talker(user, hash)
+        return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash)}.to_json
+      end
+      false.to_json
+    end
 
-		get '/get_profile_picture/:id' do
-			halt_unvalidated
-			id = params[:id]
-			if id && id.to_i > 0 || id == "0"
-				id = id.to_i
-				user = User.find(id: id)
-				img = user.profile_picture
-				if img
-					return img.src.to_json
-				else
-					false.to_json
-				end
-			end
-		end
+    get	'/likers' do
+      block_unsigned
+      block_unvalidated
+      @users = current_user.all_likers
+      erb:"likers.html"
+    end
 
-		get	'/get_profiles' do
-			halt_unvalidated
-			to_return  = [:id, :last_name, :first_name, :biography, :age]
-			settings.log.info(params)
-			if valid_params_request?(params)
-				@users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]))
-			else
-				return [].to_json
-			end
-			@users.map! {|user| user.to_hash.slice(*to_return).merge!({distance: user.distance_with_user(user: current_user)})}.to_json
-		end
+    get '/get_profile_picture/:id' do
+      halt_unvalidated
+      id = params[:id]
+      if id && id.to_i > 0 || id == "0"
+        id = id.to_i
+        user = User.find(id: id)
+        img = user.profile_picture
+        if img
+          return img.src.to_json
+        else
+          false.to_json
+        end
+      end
+    end
 
-		get '/destroy' do
-			block_unsigned
-			current_user.destroy
-			session.clear
-			redirect "/"
-		end
+    get	'/get_profiles' do
+      halt_unvalidated
+      to_return  = [:id, :last_name, :first_name, :biography, :age]
+      settings.log.info(params)
+      if valid_params_request?(params)
+        @users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]))
+      else
+        return [].to_json
+      end
+      @users.map! {|user| user.to_hash.slice(*to_return).merge!({distance: user.distance_with_user(user: current_user)})}.to_json
+    end
 
-		post '/add_photo' do
-			halt_unsigned
-			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
-			return "error" if !params[:file]
-			return "error Picture must be lighter" if params[:file].size > 500000
-			type = params[:file].slice(0,50)[/jpeg|png|jpg/]
-			file = Base64.decode64(params[:file][(params[:file].index(",")+1)..])
-			return "error wrong picture type" if !type
-			if name = create_file(data: file, type: type)
-				pic = Picture.create(hash: {src: name})
-				return "error" if !pic.any? || !pic[0].is_a?(Picture)
-				current_user.attach_photo(photo: pic[0])
-				if current_user.profile_picture.src == Picture.root_name
-					current_user.define_photo_as_profile_picture(photo: pic[0])
-					current_user.update_valuable
-				end
-				name
-			else
-				"error"
-			end
-		end
+    get '/destroy' do
+      block_unsigned
+      current_user.destroy
+      session.clear
+      redirect "/"
+    end
 
-		post '/toggle_profile' do
-			halt_unsigned
-			return "error" if current_user.get_node_related_with(type_of_node: ['picture']).size == 0 || params[:id].nil? || params[:id][/\d+/].to_i.to_s.size != params[:id].to_s.size
-			picture = Picture.find(id: params[:id].to_i)
-			return "error" if picture.nil?
-			current_user.define_photo_as_profile_picture(photo: picture)
-		end
+    post '/add_photo' do
+      halt_unsigned
+      return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
+      return "error" if !params[:file]
+      return "error Picture must be lighter" if params[:file].size > 500000
+      type = params[:file].slice(0,50)[/jpeg|png|jpg/]
+      file = Base64.decode64(params[:file][(params[:file].index(",")+1)..])
+      return "error wrong picture type" if !type
+      if name = create_file(data: file, type: type)
+        pic = Picture.create(hash: {src: name})
+        return "error" if !pic.any? || !pic[0].is_a?(Picture)
+        current_user.attach_photo(photo: pic[0])
+        if current_user.profile_picture.src == Picture.root_name
+          current_user.define_photo_as_profile_picture(photo: pic[0])
+          current_user.update_valuable
+        end
+        name
+      else
+        "error"
+      end
+    end
+
+    post '/toggle_profile' do
+      halt_unsigned
+      return "error" if current_user.get_node_related_with(type_of_node: ['picture']).size == 0 || params[:id].nil? || params[:id][/\d+/].to_i.to_s.size != params[:id].to_s.size
+      picture = Picture.find(id: params[:id].to_i)
+      return "error" if picture.nil?
+      current_user.define_photo_as_profile_picture(photo: picture)
+    end
 
 
-		post '/delete_photo' do
-			settings.log.info(params)
-			halt_unsigned
-			return "error" if params[:src].nil?
-			src = params[:src][/(?<=\/)[^\/]*$/]
-			return "error" if !src || src == Picture.root_name
-			return "error" if !(pictures = current_user.pictures).map(&:src).include?(src)
-			pic = pictures.select{|pic| pic.src == src}
-			if pictures.size > 1 && (rel = current_user.is_related_with(id: pic[0].id))
-				if rel.any?
-					rel = rel[0][0]
-				else
-					return "error"
-				end
-				if rel.type.to_s == "PROFILE_PICTURE"
-					current_user.define_photo_as_profile_picture(photo: pictures.select{|pic| pic.src != src}[0])
-				end
-			else
-				current_user.root_photo_is_now_profile_picture
-				current_user.update_valuable
-			end
-			pic[0].destroy
-			FileUtils.rm("./assets/pictures/" + pic[0].src)
-			"true"
-		end
+    post '/delete_photo' do
+      settings.log.info(params)
+      halt_unsigned
+      return "error" if params[:src].nil?
+      src = params[:src][/(?<=\/)[^\/]*$/]
+      return "error" if !src || src == Picture.root_name
+      return "error" if !(pictures = current_user.pictures).map(&:src).include?(src)
+      pic = pictures.select{|pic| pic.src == src}
+      if pictures.size > 1 && (rel = current_user.is_related_with(id: pic[0].id))
+        if rel.any?
+          rel = rel[0][0]
+        else
+          return "error"
+        end
+        if rel.type.to_s == "PROFILE_PICTURE"
+          current_user.define_photo_as_profile_picture(photo: pictures.select{|pic| pic.src != src}[0])
+        end
+      else
+        current_user.root_photo_is_now_profile_picture
+        current_user.update_valuable
+      end
+      pic[0].destroy
+      FileUtils.rm("./assets/pictures/" + pic[0].src)
+      "true"
+    end
 
-		post '/update_hashtag' do
-			settings.log.info(params)
-			halt_unvalidated
-			check_good_params_checkbox
-			session_tmp = session[:current_user].clone
-			if params[:id] == "hashtag"
-				id_hashtag = check_if_valide_hashtag_and_return_id(params[:value])
-				return if params[:value].nil? || id_hashtag == false
-				if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
-					current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
-				else
-					current_user.suppress_his_relation_with(id: id_hashtag)
-				end
-			else
-				halt if !check_if_valide_gender?(params[:value])
-				if current_user.interest.include? params[:value]
-					current_user.interest.delete(params[:value])
-				else
-					current_user.interest.push(params[:value])
-				end
-				error = current_user.save
-				if error.is_a?(Array)
-					session[:current_user] = session_tmp
-					return error.to_json
-				end
-			end
-			return true.to_json
-		end
+    post '/update_hashtag' do
+      settings.log.info(params)
+      halt_unvalidated
+      check_good_params_checkbox
+      session_tmp = session[:current_user].clone
+      if params[:id] == "hashtag"
+        id_hashtag = check_if_valide_hashtag_and_return_id(params[:value])
+        return if params[:value].nil? || id_hashtag == false
+        if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
+          current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
+        else
+          current_user.suppress_his_relation_with(id: id_hashtag)
+        end
+      else
+        halt if !check_if_valide_gender?(params[:value])
+        if current_user.interest.include? params[:value]
+          current_user.interest.delete(params[:value])
+        else
+          current_user.interest.push(params[:value])
+        end
+        error = current_user.save
+        if error.is_a?(Array)
+          session[:current_user] = session_tmp
+          return error.to_json
+        end
+      end
+      return true.to_json
+    end
 
-		get '/show/:id' do
-			block_unsigned
-			block_unvalidated
-			return if params[:id].nil?
-			@user = User.find(id: params[:id].to_i)
-			if !@user
-				redirect "/"
-				halt
-			elsif current_user.id != @user.id
-				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
-			else
-				@user = current_user
-			end
-			block_access_to_not_valuable_account if params[:id].to_i != current_user.id
-			@profile_picture = @user.profile_picture
-			@pictures = @user.get_node_related_with(link: "BELONGS_TO", type_of_node: ['picture'])
-			@pictures.select!{|pic| pic.id != @profile_picture.id}
-			@hashtags = Hashtag.all
-			@checkboxes =  @user.get_node_related_with(link: "APPRECIATE").map(&:name)
-			@user.distance = current_user.distance_with_user(user: @user)
-			erb:'show.html'
-		end
+    get '/show/:id' do
+      block_unsigned
+      block_unvalidated
+      return if params[:id].nil?
+      @user = User.find(id: params[:id].to_i)
+      if !@user
+        redirect "/"
+        halt
+      elsif current_user.id != @user.id
+        @like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
+      else
+        @user = current_user
+      end
+      block_access_to_not_valuable_account if params[:id].to_i != current_user.id
+      @profile_picture = @user.profile_picture
+      @pictures = @user.get_node_related_with(link: "BELONGS_TO", type_of_node: ['picture'])
+      @pictures.select!{|pic| pic.id != @profile_picture.id}
+      @hashtags = Hashtag.all
+      @checkboxes =  @user.get_node_related_with(link: "APPRECIATE").map(&:name)
+      @user.distance = current_user.distance_with_user(user: @user)
+      erb:'show.html'
+    end
 
-		post "/toggle_like" do
-			settings.log.info(params)
-			halt_unvalidated
-			user_to_like = User.find(id: params[:id].to_i)
-			if !params[:id].to_s.empty? && user_to_like
-				notif = nil
-				likes = current_user.is_related_with(id: user_to_like.id)
-				if likes.empty?
-					current_user.add_like(id: user_to_like.id)
-					send_notif_like(user_to_receive: user_to_like)
-				elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
-					if likes[0][0].type.to_s == "MATCH"
-						current_user.delete_match_with(id: user_to_like.id)
-					else
-						current_user.destroy_relation(id: my_like[0][0].id)
-					end
-				else
-					current_user.add_match(id: user_to_like.id)
-					send_notif_match(first_user: current_user, second_user: user_to_like)
-					settings.log.info("NEW MATCH")
-				end
-			end
-		end
+    post "/toggle_like" do
+      settings.log.info(params)
+      halt_unvalidated
+      user_to_like = User.find(id: params[:id].to_i)
+      if !params[:id].to_s.empty? && user_to_like
+        notif = nil
+        likes = current_user.is_related_with(id: user_to_like.id)
+        if likes.empty?
+          current_user.add_like(id: user_to_like.id)
+          send_notif_like(user_to_receive: user_to_like)
+        elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
+          if likes[0][0].type.to_s == "MATCH"
+            current_user.delete_match_with(id: user_to_like.id)
+          else
+            current_user.destroy_relation(id: my_like[0][0].id)
+          end
+        else
+          current_user.add_match(id: user_to_like.id)
+          send_notif_match(first_user: current_user, second_user: user_to_like)
+          settings.log.info("NEW MATCH")
+        end
+      end
+    end
 
-		post '/geo_update' do
-			halt_unsigned
-			settings.log.info(params)
-			save_if_valide_coordinate(params[:latitude], params[:longitude])
-		end
-	end
+    post '/geo_update' do
+      halt_unsigned
+      settings.log.info(params)
+      save_if_valide_coordinate(params[:latitude], params[:longitude])
+    end
+  end
 
-	private
-	def good_name_picture
-		pics = Dir["./assets/pictures/picuser#{current_user.id}*"]
-		max_number = pics.max_by{|name| name[/\d+/].to_i}
-		good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
-		"userpic#{current_user.id}#{good_number}"
-	end
+  private
+  def good_name_picture
+    pics = Dir["./assets/pictures/picuser#{current_user.id}*"]
+    max_number = pics.max_by{|name| name[/\d+/].to_i}
+    good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
+    "userpic#{current_user.id}#{good_number}"
+  end
 
-	def create_file(data:, type:)
-		name = good_name_picture + ".#{type}"
-		file = File.open("./assets/pictures/" + name, "w+")
-		if file
-			size = file.write(data)
-			if size = data.size
-				name
-			else
-				false
-			end
-		else
-			false
-		end
-	end
+  def create_file(data:, type:)
+    name = good_name_picture + ".#{type}"
+    file = File.open("./assets/pictures/" + name, "w+")
+    if file
+      size = file.write(data)
+      if size = data.size
+        name
+      else
+        false
+      end
+    else
+      false
+    end
+  end
 
 end

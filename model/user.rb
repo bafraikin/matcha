@@ -21,6 +21,7 @@ class User < MatchaBase
     self.get_node_related_with(link: "MATCH", type_of_node: ["user"]).uniq {|user| user.email}
   end
 
+
   def all_likers
     self.get_node_related_with(link: "LIKE", type_of_node: ['user'], to_me: true)
   end
@@ -34,12 +35,12 @@ class User < MatchaBase
   end
 
   def is_match_with(user_id:)
-	  match = self.is_related_with(id: user_id, type_of_link: "MATCH")
-	  if match.any?
-		  return match[0][0]
-	  else
-		  return false
-	  end
+    match = self.is_related_with(id: user_id, type_of_link: "MATCH")
+    if match.any?
+      return match[0][0]
+    else
+      return false
+    end
   end
 
   def is_valuable?
@@ -236,6 +237,14 @@ class User < MatchaBase
     query += " WITH other, #{distance_between_user_formula} AS distance"
     query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc} SKIP {skip} LIMIT {limit}"
     self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
+  end
+
+  def all_matches_with_hash
+    query =<<QUERY 
+    MATCH (n:user)-[r:MATCH]->(m:user) WHERE ID(n) = #{self.id} WITH r,m
+    MATCH (m)-[:PROFILE_PICTURE]-(k) RETURN {hash: r.data, first: m.first_name, user_id: ID(m)  ,picture:k.src}
+QUERY
+    self.class.perform_request(query: query).rows.flatten
   end
 
 end
