@@ -18,7 +18,23 @@ fetch('/user/matches_hashes').then((resp) => {
 	});
 });
 
-const handleMessage = function (port ,message) {
+const fetch_json = function (response) {
+	return response.json()
+}
+
+const check_status = function (response) {
+	if (response.status >= 200 && response.status < 300) {
+		return Promise.resolve(response)
+	} else {
+		return Promise.reject(new Error(response.statusText))
+	}
+}
+
+function normalize_data(data) {
+	return (data.replace(/\+/g, '%2B'));
+}
+
+const handleMessage = function (port, message) {
 	if (!(message && message.data && message.data.type))
 		return;
 	let objet = message.data;
@@ -28,8 +44,12 @@ const handleMessage = function (port ,message) {
 			{
 				let promise = openMessage(objet.user_id, objet.csrf);
 				promise.then((data) =>  {
-					if (data)
-					port.postMessage(response)
+					if (!data)
+					return;
+					data['src'] = objet.src;
+					current_conversation.push(data);
+					data['type'] = "open_conv";
+					port.postMessage(data);
 					});	
 			}
 			break;
@@ -63,30 +83,3 @@ const openMessage = function (id, csrf) {
 			return false;
 		});
 };
-
-
-
-
-/*
- *** my lib 
- */
-
-
-const fetch_json = function (response) {
-	return response.json()
-}
-
-const check_status = function (response) {
-	if (response.status >= 200 && response.status < 300) {
-		return Promise.resolve(response)
-	} else {
-		return Promise.reject(new Error(response.statusText))
-	}
-}
-
-function normalize_data(data) {
-	return (data.replace(/\+/g, '%2B'));
-}
-/*
- *** end of lib
- */

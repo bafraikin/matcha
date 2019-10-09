@@ -40,7 +40,6 @@ const displayNewModalChat = function(objet) {
 	}
 	messenger.appendChild(toDisplay);
 }
-//displayNewModalChat({first_name: "Baptiste", hash_conv: "bdgd", src: "assets/pictures/cocou.jpg",  messages: [{user_id: "" }]}); to_test
 
 // to test
 //

@@ -76,7 +76,7 @@ class UserController < ApplicationController
         user = User.find(id: id)
         session[:messenger] = prepare_messenger
         session[:messenger] = add_new_talker(user, hash)
-        return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash) }.to_json
+        return {first_name: user.first_name, hash_conv: hash, messages: messages.map!(&:to_hash) }.to_json
       end
       false.to_json
     end

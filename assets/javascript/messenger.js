@@ -46,7 +46,7 @@ const createBannerUser = function(exemple, user) {
 	clone.querySelector(".card-text").innerHTML= "LAST MESSAGE";
 	clone.id = "";
 	clone.classList.remove('invisible');
-	clone.addEventListener('click', () => openConv(user.user_id));
+	clone.addEventListener('click', () => openConv(user));
 	return clone;
 };
 
@@ -62,10 +62,10 @@ const displayMatchReadyForChat = function(data) {
 	})
 }
 
-const openConv = function (user_id) {
-	if (!(csrf && user_id) )
+const openConv = function (user) {
+	if (!(csrf && user && user.user_id && user.src) )
 		return;
-	worker.port.postMessage({type: 'onpen_conv', user_id: user_id, csrf: normalize_data(csrf)});
+	worker.port.postMessage({type: 'onpen_conv', user_id: user.user_id, src: user.src,  csrf: normalize_data(csrf)});
 };
 
 

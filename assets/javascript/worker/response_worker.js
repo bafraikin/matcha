@@ -7,6 +7,10 @@ worker.port.onmessage = function (resp) {
 		case "all_match":
 			displayMatchReadyForChat(json.data);
 			break;
+		case "open_conv":
+			console.log(json);
+			displayNewModalChat(json);
+			break;
 		default:
 			console.log(json);
 	}
