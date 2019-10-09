@@ -1,134 +1,141 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
-    <link rel="icon" type="image/png" href="/assets/pictures/favico.png" />	
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" charset="utf-8">
-    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
-    <% if user_logged_in? %>
-      <script charset="utf-8">
-        const worker = new SharedWorker("/assets/javascript/worker/worker.js");
-      </script>
-      <script charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
-    <% end %>
-    <title> <%= title %> </title>
-  </head>
-  <body>
-    <% flash.keys.each do |type| %>
-      <div data-alert class="flash <%= type %> alert-box radius">
-        <%= flash[type] %>
-        <a href="#" class="close" onclick="this.parentNode.hidden = true">&times;</a>
-      </div>
-    <% end %>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="/">MATCHA</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <% unless user_logged_in? %>
-              <li class="nav-item">
-                <a class="nav-link" href="/registration/sign_up" target="_top">Cree toi ton compte de matcheur fou</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/registration/login" target="_top">Connecte toi le matcheur fou</a>
-              </li>
-            <% else %>
-              <li class="nav-item">
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle icon" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-user"></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
-                  <a class="dropdown-item" href="/registration/sign_out">Logout</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
-                </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle icon" href="#" id="matcha_like" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-star"><span>0</span></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="matcha_like">
-                  <a class="dropdown-item"  href="/user/likers"> Who likes you </a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="/user/my_likes">Who I like</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link icon" id="matcha_match" href="/user/matches"><i class="fa fa-heart"></i><span>0</span></a>
-              </li>		
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle icon" id="matcha_conv" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-comments"></i><span>0</span></a>
-                <div id="possible_conv_match" class="dropdown-menu" aria-labelledby="matcha_conv">
-                  <div id="exemple_possible_conv" class="invisible">
-                    <div>
-                      <img src="" /><span>name</span>
-                    </div>
-                    <span></span>
-                  </div>
-                  <img class="dropdown-item"  id="loader_conv" src="/assets/pictures/main_loader.gif" alt=""/>
-                </div>
-              </li>		
-            <% end %>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <%= yield %>
-    <% if user_logged_in? %>
-      <div id="notif_wrapper">
-      </div>
-      <div id="messenger">
-        <div id="exemple_chat_modal" class="card invisible">
-          <div class="card-header">
-            <span id=first_name></span>
-            <a href="#" onclick='closeDiscussion.bind(this.parentNode.parentNode)();'>X</a>
-          </div>
-          <div id="chat_body" class="card-body">
-          </div>
-          <div class="card-footer">
-            <span class="invisible">hash</span>
-            <input type="text" value="" name="" id="input_chat"/>
-          </div>
-        </div>
-      </div>
-      <div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="signOutLabel">Voulez vous vraiment supprimer votre compte</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              cette action est irreversible
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger" onclick="window.location = '/user/destroy';">Delete</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
-    <% if user_logged_in? %>
-      <script src="/assets/javascript/notif.js" charset="utf-8"> </script>
-      <script src="/assets/javascript/messenger.js" charset="utf-8"></script>
-      <script src="/assets/javascript/views/layout.js" charset="utf-8"></script>
-    <% end %>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<meta name="csrf-token" content="<%=env['rack.session'][:csrf]%>">
+		<link rel="icon" type="image/png" href="/assets/pictures/favico.png" />	
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" charset="utf-8">
+		<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
+		<% if user_logged_in? %>
+			<script charset="utf-8">
+				const worker = new SharedWorker("/assets/javascript/worker/worker.js");
+			</script>
+			<script charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
+		<% end %>
+		<title> <%= title %> </title>
+	</head>
+	<body>
+		<% flash.keys.each do |type| %>
+			<div data-alert class="flash <%= type %> alert-box radius">
+				<%= flash[type] %>
+				<a href="#" class="close" onclick="this.parentNode.hidden = true">&times;</a>
+			</div>
+		<% end %>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<div class="container">
+				<a class="navbar-brand" href="/">MATCHA</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarResponsive">
+					<ul class="navbar-nav ml-auto">
+						<% unless user_logged_in? %>
+							<li class="nav-item">
+								<a class="nav-link" href="/registration/sign_up" target="_top">Cree toi ton compte de matcheur fou</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/registration/login" target="_top">Connecte toi le matcheur fou</a>
+							</li>
+						<% else %>
+							<li class="nav-item">
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle icon" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fa fa-user"></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+									<a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
+									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
+								</div>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle icon" href="#" id="matcha_like" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fa fa-star"><span>0</span></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="matcha_like">
+									<a class="dropdown-item"  href="/user/likers"> Who likes you </a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="/user/my_likes">Who I like</a>
+								</div>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link icon" id="matcha_match" href="/user/matches"><i class="fa fa-heart"></i><span>0</span></a>
+							</li>		
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle icon" id="matcha_conv" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fa fa-comments"></i><span>0</span></a>
+								<div id="possible_conv_match" class="dropdown-menu" aria-labelledby="matcha_conv">
+									<div id="exemple_possible_conv" class="invisible card mb-3" style="max-width: 540px;">
+										<div class="row no-gutters">
+											<div class="col-md-4">
+												<img class="card-img">
+											</div>
+											<div class="col-md-8">
+												<div class="card-body">
+													<h5 class="card-title"></h5>
+													<p class="card-text text-muted text-truncate">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+												</div>
+											</div>
+										</div>
+									</div>
+									<img class="dropdown-item"  id="loader_conv" src="/assets/pictures/main_loader.gif" alt=""/>
+								</div>
+							</li>		
+						<% end %>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<%= yield %>
+		<% if user_logged_in? %>
+			<div id="notif_wrapper">
+			</div>
+			<div id="messenger">
+				<div id="exemple_chat_modal" class="card invisible">
+					<div class="card-header">
+						<span id=first_name></span>
+						<a href="#" onclick='closeDiscussion.bind(this.parentNode.parentNode)();'>X</a>
+					</div>
+					<div id="chat_body" class="card-body">
+					</div>
+					<div class="card-footer">
+						<span class="invisible">hash</span>
+						<input type="text" value="" name="" id="input_chat"/>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="signOut" tabindex="-1" role="dialog" aria-labelledby="signOutLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="signOutLabel">Voulez vous vraiment supprimer votre compte</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							cette action est irreversible
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-danger" onclick="window.location = '/user/destroy';">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% end %>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/js/bootstrap4-toggle.min.js"></script>
+		<% if user_logged_in? %>
+			<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
+			<script src="/assets/javascript/messenger.js" charset="utf-8"></script>
+			<script src="/assets/javascript/views/layout.js" charset="utf-8"></script>
+		<% end %>
+	</body>
 </html>

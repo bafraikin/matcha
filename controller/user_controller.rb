@@ -71,12 +71,12 @@ class UserController < ApplicationController
       rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
       if rel.any?
         hash = rel[0][0].properties[:data]
-        messenger = Messenger.where(match_hash: hash)
-        messages = messenger.get_messages if messenger.any? && messenger[0].is_a?(Messenger)
+        messenger = Messenger.where(equality: {match_hash: hash})
+        messages = messenger[0].get_messages if messenger.any? && messenger[0].is_a?(Messenger)
         user = User.find(id: id)
         session[:messenger] = prepare_messenger
         session[:messenger] = add_new_talker(user, hash)
-        return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash)}.to_json
+        return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash) }.to_json
       end
       false.to_json
     end

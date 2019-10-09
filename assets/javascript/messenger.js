@@ -42,8 +42,11 @@ const openMessage = function(id) {
 const createBannerUser = function(exemple, user) {
 	const clone = exemple.cloneNode(true);
 	clone.querySelector("img").src= '/assets/pictures/' + user.src;
-	clone.querySelector("div span").innerHTML= user.first;
+	clone.querySelector(".card-title").innerHTML= user.first_name;
+	clone.querySelector(".card-text").innerHTML= "LAST MESSAGE";
+	clone.id = "";
 	clone.classList.remove('invisible');
+	clone.addEventListener('click', () => openConv(user.user_id));
 	return clone;
 };
 
@@ -51,7 +54,7 @@ const displayMatchReadyForChat = function(data) {
 	const div = document.getElementById('possible_conv_match');
 	const exemple = document.getElementById('exemple_possible_conv');
 	const img = div.querySelector('img#loader_conv');
-	if (!div || !data.forEach || !exemple)
+	if (!div || !data.forEach || !exemple || data.length == 0 || !img)
 		return;
 	img.parentNode.removeChild(img);
 	data.forEach((user) => {
@@ -59,12 +62,10 @@ const displayMatchReadyForChat = function(data) {
 	})
 }
 
-const openConv = function () {
-	//worker.port.postMessage(['start', '1041' , document.querySelector("meta[name=csrf-token]").content])
-	let id = document.querySelector('#user_id');
-	if (!(csrf && id) )
+const openConv = function (user_id) {
+	if (!(csrf && user_id) )
 		return;
-	worker.port.postMessage(['start', id.getAttribute('value'), normalize_data(csrf)]);
+	worker.port.postMessage({type: 'onpen_conv', user_id: user_id, csrf: normalize_data(csrf)});
 };
 
 
@@ -76,8 +77,6 @@ if (chat)
 		worker.port.postMessage([chat.value, "id = 21"]);
 		chat.value = "";
 	})
-
-
 
 const button_chat = document.querySelector("button[class='btn btn-outline-info message']");
 if (button_chat)

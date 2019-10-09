@@ -1,4 +1,18 @@
 
+.invisible {
+	display: none;
+}
+
+#possible_conv_match {
+	max-height: 23vh;
+	overflow: auto;
+}
+
+#possible_conv_match.card-body {
+display: block!important;
+}
+
+
 a.icon {
 	background-color: grey;
 	border-radius: 15px;
@@ -38,8 +52,8 @@ body {
 	position: fixed;
 	height: 0px;
 	/*width: 100%; */
- display: flex;
- right: 0%;
+	display: flex;
+	right: 0%;
 }
 
 #messenger .card-body{
@@ -47,9 +61,9 @@ body {
 }
 
 #messenger .card {
- bottom: 25vh;
- height: 25vh;
- margin-left: 1vw;
+	bottom: 25vh;
+	height: 25vh;
+	margin-left: 1vw;
 }
 
 #message_sender_invisible {

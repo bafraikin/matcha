@@ -47,7 +47,7 @@ const displayNewModalChat = function(objet) {
 const askForChatterToWorker = function () {
 	if (!worker)
 		return;
-	worker.port.postMessage(JSON.stringify({type: "give_me_match"}));
+	worker.port.postMessage({type: "give_me_match"});
 }
 
 window.onload = () => {
