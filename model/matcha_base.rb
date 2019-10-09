@@ -6,7 +6,7 @@ Dir[__dir__ + "/../lib/*.rb"].each {|file| require file }
 
 class MatchaBase 
 	extend ValidatorHelper
-	@@adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://localhost:7474')
+	@@adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://e3r4p17.42.fr:7474')
 	@@session = Neo4j::Core::CypherSession.new(@@adaptor) 
 	class Error < StandardError; end
 

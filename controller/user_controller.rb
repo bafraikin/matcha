@@ -19,6 +19,7 @@ class UserController < ApplicationController
 
     post '/send_message' do
       halt_unvalidated
+      halt_unvaluable
       user = User.find(id: params[:user_id])
       return false.to_json if !user.is_a?(User)
       if user_message_to(user: user, hash: params[:hash], body: params[:body])
@@ -52,6 +53,7 @@ class UserController < ApplicationController
     get '/matches' do
       block_unsigned
       block_unvalidated
+      halt_unvaluable
       @users = current_user.all_matches
       erb:"matches.html"
     end
@@ -59,6 +61,7 @@ class UserController < ApplicationController
     get '/matches_hashes' do
       halt_unsigned
       halt_unvalidated
+      halt_unvaluable
       @users = current_user.all_matches_with_hash
       @users *= 10
       return @users.to_json
@@ -66,6 +69,7 @@ class UserController < ApplicationController
 
     get '/open_message' do
       halt_unvalidated
+      halt_unvaluable
       id = params[:id].to_i
       halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
       rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
@@ -84,12 +88,14 @@ class UserController < ApplicationController
     get	'/likers' do
       block_unsigned
       block_unvalidated
+      halt_unvaluable
       @users = current_user.all_likers
       erb:"likers.html"
     end
 
     get '/get_profile_picture/:id' do
       halt_unvalidated
+      halt_unvaluable
       id = params[:id]
       if id && id.to_i > 0 || id == "0"
         id = id.to_i
@@ -105,6 +111,7 @@ class UserController < ApplicationController
 
     get	'/get_profiles' do
       halt_unvalidated
+      halt_unvaluable
       to_return  = [:id, :last_name, :first_name, :biography, :age]
       settings.log.info(params)
       if valid_params_request?(params)
@@ -234,6 +241,7 @@ class UserController < ApplicationController
     post "/toggle_like" do
       settings.log.info(params)
       halt_unvalidated
+      halt_unvaluable
       user_to_like = User.find(id: params[:id].to_i)
       if !params[:id].to_s.empty? && user_to_like
         notif = nil

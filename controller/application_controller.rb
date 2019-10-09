@@ -77,9 +77,12 @@ class ApplicationController < Sinatra::Base
 			halt if !user_logged_in?
 	end
 
+	def halt_unvaluable
+		halt if !current_user.is_valuable?
+	end
+
 	def halt_unvalidated
 		halt_unsigned
-		halt if !current_user.is_valuable?
 	end
 
 	def block_unvalidated
