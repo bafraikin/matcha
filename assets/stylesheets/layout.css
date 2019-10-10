@@ -9,7 +9,12 @@
 }
 
 #possible_conv_match.card-body {
-display: block!important;
+	display: block!important;
+}
+
+textarea {
+	resize: none;
+	height: unset;
 }
 
 

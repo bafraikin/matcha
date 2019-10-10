@@ -8,8 +8,13 @@ worker.port.onmessage = function (resp) {
 			displayMatchReadyForChat(json.data);
 			break;
 		case "open_conv":
-			console.log(json);
 			displayNewModalChat(json);
+			break;
+		case "NEW_MATCH":
+			display_notif(json);
+			break;
+		case "SOMEONE_LIKED_YOU":
+			display_notif(json);
 			break;
 		default:
 			console.log(json);

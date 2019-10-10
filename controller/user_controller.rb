@@ -88,6 +88,13 @@ class UserController < ApplicationController
       erb:"likers.html"
     end
 
+    get	'/my_likes' do
+      block_unsigned
+      block_unvalidated
+      @users = current_user.my_likes
+      erb:"likers.html"
+    end
+
     get '/get_profile_picture/:id' do
       halt_unvalidated
       id = params[:id]
@@ -211,6 +218,7 @@ class UserController < ApplicationController
     get '/show/:id' do
       block_unsigned
       block_unvalidated
+      headers "Cache-Control" => "no-cache"
       return if params[:id].nil?
       @user = User.find(id: params[:id].to_i)
       if !@user

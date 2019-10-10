@@ -10,10 +10,10 @@
 		<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
 		<% if user_logged_in? %>
-			<script charset="utf-8">
+			<script async defer charset="utf-8">
 				const worker = new SharedWorker("/assets/javascript/worker/worker.js");
 			</script>
-			<script charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
+			<script async defer charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
 		<% end %>
 		<title> <%= title %> </title>
 	</head>
@@ -105,7 +105,7 @@
 					</div>
 					<div class="card-footer">
 						<span class="invisible">hash</span>
-						<input type="text" value="" name="" id="input_chat"/>
+                                                <textarea class="form-control" name="" id="input_chat"></textarea>
 					</div>
 				</div>
 			</div>

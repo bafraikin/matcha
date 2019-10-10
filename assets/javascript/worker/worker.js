@@ -27,12 +27,16 @@ const stream_to_front = function(to_stream) {
 
 
 const react_to_event= function(event_ws) {
-	if (!(event_ws && event_ws.is_Trusted && event_ws.data != ""))
+	console.log(event_ws);
+	if (!(event_ws && event_ws.isTrusted && event_ws.data != ""))
 		return;
 	json = JSON.parse(event_ws.data);
 	switch (json.type) {
 		case 'NEW_MATCH':
 			get_match();
+			stream_to_front(json);
+			break;
+		case 'SOMEONE_LIKED_YOU':
 			stream_to_front(json);
 			break;
 		case undefined:

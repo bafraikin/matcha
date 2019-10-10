@@ -1,10 +1,9 @@
 
 const display_notif = function(notif) {
-	const object = JSON.parse(notif.data);
-	switch (object.type) {
+	switch (notif.type) {
 		case 'SOMEONE_LIKED_YOU':
 			console.log("tu plais a quelqu'un petit coquin");
-			create_notif_like(object);
+			create_notif_like(notif);
 			break;
 		case 'NEW_MATCH':
 			console.log("nouveau match");
@@ -13,7 +12,7 @@ const display_notif = function(notif) {
 			console.log("nouveau message");
 			break;
 		default:
-			console.log("something strange happen", object.type);
+			console.log("something strange happen", notif);
 	}
 }
 
