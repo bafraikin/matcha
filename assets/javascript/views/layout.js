@@ -15,7 +15,7 @@ const sendMessageToWorker = function()
 }
 
 const displayChatMessages = function() {
-	console.log('everything goes well');
+	console.log("everything goes well");
 }
 
 const closeDiscussion = function() {
@@ -24,6 +24,7 @@ const closeDiscussion = function() {
 
 // {first_name:, hash_conv:, messages: [{}], src:}
 const displayNewModalChat = function(objet) {
+	console.log(objet);
 	const exemple  = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
 	let toDisplay = exemple.cloneNode(true);
