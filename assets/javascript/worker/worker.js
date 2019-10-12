@@ -1,76 +1,52 @@
 let connections = [];
 let all_match = {};
 let current_conversation = [];
-
 const Socket = new WebSocket("ws://localhost:4567/user/socket");
+
 Socket.onopen = function (event) {
 	Socket.send("websocket instantie");
 };
-Socket.onmessage = function (event) {
-	display_notif(event);
+
+Socket.onmessage = function (event_ws) {
+	react_to_event(event_ws);
 };
 
-fetch('/user/matches_hashes').then((resp) => {
-	resp.text().then(text => {
-		if (text == "")
-			return;
-		all_match =JSON.parse(text);
+const get_match  = function() {
+	fetch('/user/matches_hashes').then((resp) => {
+		resp.text().then(text => {
+			if (text == "")
+				return;
+			all_match =JSON.parse(text);
+		});
 	});
-});
+}
 
-const handleMessage = function (port ,message) {
-	if (!(message && message.data && message.data.type))
+const stream_to_front = function(to_stream) {
+	connections.forEach(port => port.postMessage(to_stream));
+};
+
+
+const react_to_event= function(event_ws) {
+	console.log(event_ws);
+	if (!(event_ws && event_ws.isTrusted && event_ws.data != ""))
 		return;
-	let objet = message.data;
-	switch (objet.type) {
-		case 'onpen_conv':
-			if (objet.user_id && objet.csrf)
-			{
-				let promise = openMessage(objet.user_id, objet.csrf);
-				promise.then((data) =>  {
-					if (data)
-					port.postMessage(response)
-					});	
-			}
+	json = JSON.parse(event_ws.data);
+	switch (json.type) {
+		case 'NEW_MATCH':
+			get_match();
+			stream_to_front(json);
 			break;
-		case 'give_me_match':
-			port.postMessage({type: "all_match", data: all_match});
+		case 'SOMEONE_LIKED_YOU':
+			stream_to_front(json);
+			break;
+		case undefined:
+			console.log('something_bad');
 			break;
 		default:
-			connections.forEach(connection => connection.postMessage(objet.type));
+			console.log(json);
 	}
+
 }
-
-//sharedworker est initialiser sur conv.js
-onconnect = function (e) {
-	connections.push(e.ports[0]);
-	const port = e.ports[0];
-	port.start();
-	port.onmessage = function(message) {
-		handleMessage(port, message);
-	}
-}
-
-
-
-const openMessage = function (id, csrf) {
-	return fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf))
-		.then(check_status)
-		.then(fetch_json)
-		.then(function (data) {
-			return data;
-		}).catch(function (error) {
-			return false;
-		});
-};
-
-
-
-
-/*
- *** my lib 
- */
-
 
 const fetch_json = function (response) {
 	return response.json()
@@ -87,6 +63,54 @@ const check_status = function (response) {
 function normalize_data(data) {
 	return (data.replace(/\+/g, '%2B'));
 }
-/*
- *** end of lib
- */
+
+const handleMessage = function (port, message) {
+	if (!(message && message.data && message.data.type))
+		return;
+	let objet = message.data;
+	switch (objet.type) {
+		case 'onpen_conv':
+			if ((objet.user_id || objet.user_id === 0) && objet.csrf)
+			{
+				let promise = openMessage(objet.user_id, objet.csrf);
+				promise.then((data) =>  {
+					if (!data)
+						return;
+					data['src'] = objet.src;
+					data['user_id'] = objet.user_id;
+					current_conversation.push(data);
+					data['type'] = "open_conv";
+					port.postMessage(data);
+				});	
+			}
+			break;
+		case 'give_me_match':
+			port.postMessage({type: "all_match", data: all_match});
+			break;
+		default:
+			connections.forEach(connection => connection.postMessage(objet.type));
+	}
+}
+
+onconnect = function (e) {
+	connections.push(e.ports[0]);
+	const port = e.ports[0];
+	port.start();
+	port.onmessage = function(message) {
+		handleMessage(port, message);
+	}
+}
+
+const openMessage = function (id, csrf) {
+	return fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf))
+		.then(check_status)
+		.then(fetch_json)
+		.then(function (data) {
+			return data;
+		}).catch(function (error) {
+			return false;
+		});
+};
+
+
+get_match();

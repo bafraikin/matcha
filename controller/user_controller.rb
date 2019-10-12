@@ -80,7 +80,7 @@ class UserController < ApplicationController
         user = User.find(id: id)
         session[:messenger] = prepare_messenger
         session[:messenger] = add_new_talker(user, hash)
-        return {name: user.first_name, hash_conversation: hash, messages: messages.map!(&:to_hash) }.to_json
+        return {first_name: user.first_name, hash_conv: hash, messages: messages.map!(&:to_hash) }.to_json
       end
       false.to_json
     end
@@ -90,6 +90,13 @@ class UserController < ApplicationController
       block_unvalidated
       halt_unvaluable
       @users = current_user.all_likers
+      erb:"likers.html"
+    end
+
+    get	'/my_likes' do
+      block_unsigned
+      block_unvalidated
+      @users = current_user.my_likes
       erb:"likers.html"
     end
 
@@ -218,6 +225,7 @@ class UserController < ApplicationController
     get '/show/:id' do
       block_unsigned
       block_unvalidated
+      headers "Cache-Control" => "no-cache"
       return if params[:id].nil?
       @user = User.find(id: params[:id].to_i)
       if !@user

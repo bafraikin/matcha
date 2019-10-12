@@ -26,6 +26,10 @@ class User < MatchaBase
     self.get_node_related_with(link: "LIKE", type_of_node: ['user'], to_me: true)
   end
 
+  def my_likes
+    self.get_node_related_with(link: "LIKE", type_of_node: ['user'], to_them: true)
+  end
+
   def self.cant_be_blank_on_creation
     [:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
   end

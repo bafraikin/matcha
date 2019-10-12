@@ -4,7 +4,7 @@
 
 <% if current_user.id != @user.id %>	
 	<div class="form-group" onclick="send_like(<%= @user.id %>)">
-		<input id="like" type="checkbox" <%= @liked ? "checked" : "" %> data-toggle="toggle" data-on="❤️" data-off="💔">
+		<input id="like" type="checkbox" <%= @like ? "checked" : "" %> data-toggle="toggle" data-on="❤️" data-off="💔">
 	</div>
 <% end %>
 
