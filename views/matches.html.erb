@@ -1,15 +1,18 @@
 
+
+
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/matchable.css">
 <div class="container-fluid d-flex flex-wrap justify-content-center">
 	<% @users.each do |user| %>
 		<div class="card general-card to_load mx-5 my-2" >
-			<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
+			<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user[:user_id] %>"/>
 			<div class="card-body">
-				<h5 class="card-title"><%= user.first_name %></h5>
-				<p class="card-text text-truncate"> <%= user.biography %> </p>
+				<h5 class="card-title"><%= user[:first_name] %></h5>
+				<p class="card-text text-truncate"> <%= user[:biography] %> </p>
 			</div>
 			<div class="card-footer">	
-				<button onclick="window.location= '/user/show/<%= user.id %>'" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
-				<button onclick="openMessage(<%= user.id %>)" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-comments"></i></button>
+				<button onclick="window.location= '/user/show/<%= user[:user_id] %>'" type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
+				<button onclick='openConv(<%= user.to_json %>)' type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-comments"></i></button>
 			</div>
 		</div>
 	<% end %>

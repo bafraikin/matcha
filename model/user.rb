@@ -246,7 +246,7 @@ class User < MatchaBase
   def all_matches_with_hash
     query =<<QUERY 
     MATCH (n:user)-[r:MATCH]->(m:user) WHERE ID(n) = #{self.id} WITH r,m
-    MATCH (m)-[:PROFILE_PICTURE]-(k) RETURN {hash_conv: r.data, first_name: m.first_name, user_id: ID(m), src: k.src}
+    MATCH (m)-[:PROFILE_PICTURE]-(k) RETURN {hash_conv: r.data, biography: m.biography ,first_name: m.first_name, user_id: ID(m), src: k.src}
 QUERY
     self.class.perform_request(query: query).rows.flatten
   end

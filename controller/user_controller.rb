@@ -54,7 +54,7 @@ class UserController < ApplicationController
       block_unsigned
       block_unvalidated
       halt_unvaluable
-      @users = current_user.all_matches
+      @users = current_user.all_matches_with_hash
       erb:"matches.html"
     end
 

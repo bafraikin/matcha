@@ -8,11 +8,7 @@ file = Dir[__dir__ + '/../assets/pictures/user*.png']
 file.map!{|f| f[/(?<=\/)[^\/]*$/]}
 def random_interest
 	interest = User.gender_pool
-	if rand(1..2) == 2
-		interest
-	else
-		[interest.sample]
-	end
+	interest.sample(rand(1..interest.length))
 end
 
 Hashtag.create
