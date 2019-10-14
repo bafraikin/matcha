@@ -184,7 +184,7 @@ class MatchaBase
 	def still_exist?
 		query = "MATCH (n) WHERE ID(n) = #{self.id} RETURN n"
 		result = self.class.query_transform(query: query, hash: {})
-		result[0].any? && result[0].class == self.class && result[0].id == self.id
+		result.any? && result[0].class == self.class && result[0].id == self.id
 	end
 
 	private

@@ -7,7 +7,7 @@ module NotifHelper
 		notif.merge!(from: from.full_name) if from
 		settings.sockets[user.key].send(notif.to_json)
 	end
-	
+
 	def new_websocket(user:)
 		key = user.key
 		request.websocket do |ws|
@@ -27,9 +27,10 @@ module NotifHelper
 		if is_connected?(user: user)
 			message = {type: "MESSAGE", body: body, hash: hash}
 			settings.sockets[user.key].send(message.to_json)
-		end
-		if notif.is_a?(Notification)
-			setting.sockets[user.key].send(notif.to_hash.to_json)
+			if notif.is_a?(Notification)
+				binding.pry
+				settings.sockets[user.key].send(notif.to_hash.to_json)
+			end
 		end
 	end
 
