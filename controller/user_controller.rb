@@ -18,7 +18,6 @@ class UserController < ApplicationController
     end
 
     post '/send_message' do
-      halt_unvalidated
       halt_unvaluable
       user = User.find(id: params[:user_id])
       return false.to_json if !user.is_a?(User)
@@ -51,16 +50,12 @@ class UserController < ApplicationController
     end
 
     get '/matches' do
-      block_unsigned
-      block_unvalidated
-      halt_unvaluable
+		block_unvaluable
       @users = current_user.all_matches_with_hash
       erb:"matches.html"
     end
 
     get '/matches_hashes' do
-      halt_unsigned
-      halt_unvalidated
       halt_unvaluable
       @users = current_user.all_matches_with_hash
       @users *= 10
@@ -68,7 +63,6 @@ class UserController < ApplicationController
     end
 
     get '/open_message' do
-      halt_unvalidated
       halt_unvaluable
       id = params[:id].to_i
       halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
@@ -86,22 +80,18 @@ class UserController < ApplicationController
     end
 
     get	'/likers' do
-      block_unsigned
-      block_unvalidated
-      halt_unvaluable
+      block_unvaluable
       @users = current_user.all_likers
       erb:"likers.html"
     end
 
     get	'/my_likes' do
-      block_unsigned
-      block_unvalidated
+      block_unvaluable
       @users = current_user.my_likes
       erb:"likers.html"
     end
 
     get '/get_profile_picture/:id' do
-      halt_unvalidated
       halt_unvaluable
       id = params[:id]
       if id && id.to_i > 0 || id == "0"
@@ -117,7 +107,6 @@ class UserController < ApplicationController
     end
 
     get	'/get_profiles' do
-      halt_unvalidated
       halt_unvaluable
       to_return  = [:id, :last_name, :first_name, :biography, :age]
       settings.log.info(params)
@@ -195,7 +184,7 @@ class UserController < ApplicationController
 
     post '/update_hashtag' do
       settings.log.info(params)
-      halt_unvalidated
+      halt_unsigned
       check_good_params_checkbox
       session_tmp = session[:current_user].clone
       if params[:id] == "hashtag"
@@ -223,8 +212,7 @@ class UserController < ApplicationController
     end
 
     get '/show/:id' do
-      block_unsigned
-      block_unvalidated
+      block_unvaluable
       headers "Cache-Control" => "no-cache"
       return if params[:id].nil?
       @user = User.find(id: params[:id].to_i)
@@ -248,7 +236,6 @@ class UserController < ApplicationController
 
     post "/toggle_like" do
       settings.log.info(params)
-      halt_unvalidated
       halt_unvaluable
       user_to_like = User.find(id: params[:id].to_i)
       if !params[:id].to_s.empty? && user_to_like

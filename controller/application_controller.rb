@@ -49,13 +49,6 @@ class ApplicationController < Sinatra::Base
 		!session[:current_user].nil?
 	end
 
-	def block_unsigned
-		if !user_logged_in?
-			flash[:error] = "You need to sign in"
-			redirect "/"
-			halt
-		end
-	end
 
 	def block_logged_in
 		if user_logged_in?
@@ -77,17 +70,37 @@ class ApplicationController < Sinatra::Base
 			halt if !user_logged_in?
 	end
 
+	def halt_unvalidated
+		halt_unsigned
+		halt if !current_user.is_validated?
+	end
+
 	def halt_unvaluable
+		halt_unvalidated
 		halt if !current_user.is_valuable?
 	end
 
-	def halt_unvalidated
-		halt_unsigned
+	def block_unsigned
+		if !user_logged_in?
+			flash[:error] = "You need to sign in"
+			redirect "/"
+			halt
+		end
 	end
 
 	def block_unvalidated
-		if current_user.nil? || !current_user.account_validated?
+		block_unsigned
+		if !current_user.account_validated?
 			flash[:error] = "You need to validate your account"
+			redirect "/"
+			halt
+		end
+	end
+
+	def block_unvaluable
+		block_unvalidated
+		if !current_user.is_valuable?
+			flash[:error] = "Please add more info on your account before"
 			redirect "/"
 			halt
 		end
