@@ -10,13 +10,7 @@ const addCariotToInput = function()
 	}
 }
 
-const sendMessageToWorker = function()
-{
-	if (!this || !worker || !csrf)
-		return;
-	let input = this.querySelector('textarea');
 
-}
 
 const displayChatMessages = function() {
 	console.log("everything goes well");
@@ -28,21 +22,15 @@ const closeDiscussion = function() {
 
 // {first_name:, hash_conv:, messages: [{}], src:}
 const displayNewModalChat = function(objet) {
-	console.log(objet);
 	const exemple  = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
-	toDisplay.id = "";
+	toDisplay.id = objet.user_id;
 	toDisplay.querySelector(".card-header span#first_name").innerHTML = objet.first_name;
 	toDisplay.querySelector(".card-footer span").innerHTML = objet.hash_conv;
 	toDisplay.querySelector(".card-body").innerHTML = displayChatMessages(objet.messages);
-	toDisplay.querySelector(".card-footer textarea").onkeypress = function(key) {
-		if (!key.shiftKey && key.charCode == 13)
-			sendMessageToWorker.bind(toDisplay)();
-		else if (key.charCode == 13)
-			addCariotToInput.bind(this)();
-	}
+	toDisplay.querySelector(".card-footer textarea").onkeypress = HandleKeyPressChat;
 	messenger.appendChild(toDisplay);
 }
 

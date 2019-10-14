@@ -8,26 +8,25 @@ Socket.onopen = function (event) {
 };
 
 Socket.onmessage = function (event_ws) {
-	react_to_event(event_ws);
+	react_to_socket(event_ws);
 };
 
-const get_match  = function() {
+const get_match = function () {
 	fetch('/user/matches_hashes').then((resp) => {
 		resp.text().then(text => {
 			if (text == "")
 				return;
-			all_match =JSON.parse(text);
+			all_match = JSON.parse(text);
 		});
 	});
 }
 
-const stream_to_front = function(to_stream) {
+const stream_to_front = function (to_stream) {
 	connections.forEach(port => port.postMessage(to_stream));
 };
 
 
-const react_to_event= function(event_ws) {
-	console.log(event_ws);
+const react_to_socket = function (event_ws) {
 	if (!(event_ws && event_ws.isTrusted && event_ws.data != ""))
 		return;
 	json = JSON.parse(event_ws.data);
@@ -64,28 +63,52 @@ function normalize_data(data) {
 	return (data.replace(/\+/g, '%2B'));
 }
 
+const open_conv = function (port,objet) {
+	if ((objet.user_id || objet.user_id === 0) && objet.csrf) {
+		let promise = openMessage(objet.user_id, objet.csrf);
+		promise.then((data) => {
+			if (!data)
+				return;
+			data['src'] = objet.src;
+			data['user_id'] = objet.user_id;
+			current_conversation.push(data);
+			data['type'] = "open_conv";
+			port.postMessage(data);
+		});
+	}
+}
+
+const sendMessage = function (objet) {
+	return fetch("/user/send_message", {
+		method: 'post',
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest',
+			"Content-type":  "application/json ; charset=UTF-8",
+			"X-CSRF-Token": objet.csrf
+		},
+		body: JSON.stringify({hash: objet.hash_conv, user_id: objet.user_id, body: encodeURI(objet.body)}),
+	}).then(fetch_json)
+		.then(function (data) {
+			console.log("YES");
+		})
+		.catch(function (error) {
+			console.log('Request failed', error);
+		});
+
+}
 const handleMessage = function (port, message) {
 	if (!(message && message.data && message.data.type))
 		return;
 	let objet = message.data;
 	switch (objet.type) {
 		case 'onpen_conv':
-			if ((objet.user_id || objet.user_id === 0) && objet.csrf)
-			{
-				let promise = openMessage(objet.user_id, objet.csrf);
-				promise.then((data) =>  {
-					if (!data)
-						return;
-					data['src'] = objet.src;
-					data['user_id'] = objet.user_id;
-					current_conversation.push(data);
-					data['type'] = "open_conv";
-					port.postMessage(data);
-				});	
-			}
+			open_conv(port, objet)
 			break;
 		case 'give_me_match':
-			port.postMessage({type: "all_match", data: all_match});
+			port.postMessage({ type: "all_match", data: all_match });
+			break;
+		case 'SEND_MESSAGE':
+			sendMessage(objet);
 			break;
 		default:
 			connections.forEach(connection => connection.postMessage(objet.type));
@@ -96,7 +119,7 @@ onconnect = function (e) {
 	connections.push(e.ports[0]);
 	const port = e.ports[0];
 	port.start();
-	port.onmessage = function(message) {
+	port.onmessage = function (message) {
 		handleMessage(port, message);
 	}
 }

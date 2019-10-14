@@ -19,10 +19,13 @@ class UserController < ApplicationController
 
     post '/send_message' do
       halt_unvaluable
-      user = User.find(id: params[:user_id])
+      request.body.rewind
+      @param = JSON.parse request.body.read
+      binding.pry
+      user = User.find(id: @param[:user_id])
       return false.to_json if !user.is_a?(User)
-      if user_message_to(user: user, hash: params[:hash], body: params[:body])
-        send_socket_message_to(user: user, body: body, hash: params[:hash])
+      if user_message_to(user: user, hash: @param[:hash], body: @param[:body])
+        send_socket_message_to(user: user, body: body, hash: @param[:hash])
         return true.to_json
       else
         session[:messenger] = suppr_talker(talker: user)
