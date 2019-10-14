@@ -212,9 +212,10 @@ class UserController < ApplicationController
     end
 
     get '/show/:id' do
-      block_unvaluable
       headers "Cache-Control" => "no-cache"
+      block_unsigned
       return if params[:id].nil?
+	  block_unvaluable if params[:id].to_i != current_user.id
       @user = User.find(id: params[:id].to_i)
       if !@user
         redirect "/"
