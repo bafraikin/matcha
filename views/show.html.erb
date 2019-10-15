@@ -2,124 +2,130 @@
 
 <%= erb :"_show_img.html", layout: nil%>
 
-<% if current_user.id != @user.id %>	
-	<div class="form-group" onclick="send_like(<%= @user.id %>)">
-		<input id="like" type="checkbox" <%= @like ? "checked" : "" %> data-toggle="toggle" data-on="❤️" data-off="💔">
+
+<div class="container text-center">
+
+	<div class="d-inline-flex">	
+		<% if current_user.id != @user.id %>	
+			<div class="form-group" onclick="send_like(<%= @user.id %>)">
+				<input id="like" type="checkbox" <%= @like ? "checked" : "" %> data-toggle="toggle" data-on="❤️" data-off="💔">
+			</div>
+		<% end %>
+		<div>
+			<p>popularity-score</p>
+			<p class="text-muted">
+			<%= @user.popularity_score %>
+			</p>
+		</div>
 	</div>
-<% end %>
 
-<div class="grid-container"> 
-	<div class="text">
+	<div>
+		<p class="font-weight-bold" >Biographie</p>
+		<% if current_user.id == @user.id %>
+			<p class="form-control" id="biography" contenteditable='true'><%= h(@user.biography) %></p>
+			<input type='submit' value="save">
+		<% else %>
+			<p><%= h(@user.biography) %></p>
+		<% end %> 
+	</div>
 
-		<div>
-			<p class="font-weight-bold" >Biographie</p>
-			<% if current_user.id == @user.id %>
-				<p class="form-control" id="biography" contenteditable='true'><%= h(@user.biography) %></p>
-				<input type='submit' value="save">
-			<% else %>
-				<p><%= h(@user.biography) %></p>
-			<% end %> 
-		</div>
+	<div>
+		<p class="font-weight-bold" >First name</p>
+		<% if current_user.id == @user.id %>
+			<p class="form-control" id="first_name" contenteditable='true'><%= h(@user.first_name) %></p>
+			<input type='submit' value="save">
+		<% else %>
+			<p><%= h(@user.first_name) %></p>
+		<% end %> 
+	</div>
 
-		<div>
-			<p class="font-weight-bold" >First name</p>
-			<% if current_user.id == @user.id %>
-				<p class="form-control" id="first_name" contenteditable='true'><%= h(@user.first_name) %></p>
-				<input type='submit' value="save">
-			<% else %>
-				<p><%= h(@user.first_name) %></p>
-			<% end %> 
-		</div>
+	<div>
+		<p class="font-weight-bold">Last name</p>
+		<% if current_user.id == @user.id %>
+			<p class="form-control" id="last_name" contenteditable='true'><%= h(@user.last_name) %></p>
+			<input type='submit' value="save">
+		<% else %>
+			<p><%= h(@user.last_name) %></p>
+		<% end %> 
+	</div>
 
-		<div>
-			<p class="font-weight-bold">Last name</p>
-			<% if current_user.id == @user.id %>
-				<p class="form-control" id="last_name" contenteditable='true'><%= h(@user.last_name) %></p>
-				<input type='submit' value="save">
-			<% else %>
-				<p><%= h(@user.last_name) %></p>
-			<% end %> 
-		</div>
+	<div>
+		<% if current_user.id == @user.id %>
+			<p class="font-weight-bold">email</p>
+			<p class="form-control" id="email" contenteditable='true'><%= h(@user.email) %></p>
+			<input type='submit' value="save">
 
-		<div>
-			<% if current_user.id == @user.id %>
-				<p class="font-weight-bold">email</p>
-				<p class="form-control" id="email" contenteditable='true'><%= h(@user.email) %></p>
-				<input type='submit' value="save">
+		<% end %> 
+	</div>
 
-			<% end %> 
-		</div>
+	<div>
+		<% if current_user.id == @user.id %>
 
-		<div>
-			<% if current_user.id == @user.id %>
+			<p class="font-weight-bold">Set new password</p>
+			<p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);" contenteditable='true'></p>
+			<br>
+			<input type='submit' value="save">
 
-				<p class="font-weight-bold">Set new password</p>
-				<p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);" contenteditable='true'></p>
-				<br>
-				<input type='submit' value="save">
+		<% end %>
+	</div>
 
+	<div>
+		<p class="font-weight-bold">age</p>
+		<% if current_user.id == @user.id %>
+			<p class="form-control" id="age" contenteditable='true'><%= h(@user.age) %></p>
+			<input type='submit' value="save">
+		<% else %>
+			<p><%= h(@user.age) %></p>
+		<% end %> 
+	</div>
+
+	<!-- ici commence les option a choix!-->
+
+	<div>
+		<p class="font-weight-bold">Sexe</p>
+		<% if current_user.id == @user.id %>
+			<select>
+				<%User.gender_pool.each do |gender| %>
+					<option value="<%= gender %>" <%= "selected" if gender == @user.sex  %>> <%= gender%></option>
+				<% end %> 
+			</select>
+		<% else %>
+			<p><%= h(@user.sex) %></p>
+		<% end %> 
+	</div>
+</div>
+<div  class="container text-center">
+	<div id='hashtag' >
+		<p class="font-weight-bold">list d'interet</p>
+		<div class="d-flex flex-wrap">
+			<% @hashtags.each do |hashtag| %>
+				<% if current_user.id == @user.id %>
+					<div class="d-flex flex-wrap">
+						<input id="hashtag" type="checkbox" <%= checkbox_methode(hashtag: hashtag, checkbox: @checkboxes) %> > 
+						<p style="margin: 0; margin-right: 3vw;"><%=hashtag.name %></p>
+					</div>
+				<% else %>
+					<p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
+				<% end %>
 			<% end %>
 		</div>
-
-		<div>
-			<p class="font-weight-bold">age</p>
-			<% if current_user.id == @user.id %>
-				<p class="form-control" id="age" contenteditable='true'><%= h(@user.age) %></p>
-				<input type='submit' value="save">
-			<% else %>
-				<p><%= h(@user.age) %></p>
-			<% end %> 
-		</div>
-
-		<!-- ici commence les option a choix!-->
-
-		<div>
-			<p class="font-weight-bold">Sexe</p>
-			<% if current_user.id == @user.id %>
-				<select>
-					<%User.gender_pool.each do |gender| %>
-						<option value="<%= gender %>" <%= "selected" if gender == @user.sex  %>> <%= gender%></option>
-					<% end %> 
-				</select>
-			<% else %>
-				<p><%= h(@user.sex) %></p>
-			<% end %> 
-		</div>
 	</div>
-	<div  class="checkbox">
-		<div id='hashtag' >
-			<p class="font-weight-bold">list d'interet</p>
+
+	<div>
+		<% if current_user.id == @user.id %>
+			<p class="font-weight-bold">Looking for</p>
 			<div class="d-flex flex-wrap">
-				<% @hashtags.each do |hashtag| %>
-					<% if current_user.id == @user.id %>
-						<div class="d-flex flex-wrap">
-							<input id="hashtag" type="checkbox" <%= checkbox_methode(hashtag: hashtag, checkbox: @checkboxes) %> > 
-							<p style="margin: 0; margin-right: 3vw;"><%=hashtag.name %></p>
-						</div>
-					<% else %>
-						<p><%= showoff_hashtag(hashtag: hashtag, checkbox: @checkboxes) %></p>
-					<% end %>
-				<% end %>
+				<%User.gender_pool.each do |gender| %>
+
+					<div class="d-flex flex-wrap">
+						<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> 
+						<p style="margin: 0; margin-right: 3vw"><%= gender%></p>
+					</div>
+
+				<% end %> 
 			</div>
-		</div>
-
-		<div>
-			<% if current_user.id == @user.id %>
-				<p class="font-weight-bold">Looking for</p>
-				<div class="d-flex flex-wrap">
-					<%User.gender_pool.each do |gender| %>
-
-						<div class="d-flex flex-wrap">
-							<input id="interest" type="checkbox" <%= looking_for_gender(gender: gender) %>> 
-							<p style="margin: 0; margin-right: 3vw"><%= gender%></p>
-						</div>
-
-					<% end %> 
-				</div>
-			<%end%>
-		</div>
+		<%end%>
 	</div>
-
 </div>
 <div class="container text-center">
 	<% if (current_user.id == @user.id) %>

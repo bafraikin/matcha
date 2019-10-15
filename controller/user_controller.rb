@@ -4,17 +4,23 @@ class UserController < ApplicationController
 	include GeolocalisationHelper
 	include NotifHelper
 	include MessengerHelper
+
 	def title
 		"MATCHA"
 	end
 
 	namespace '/user' do
-		get "/socket" do
+		get '/socket' do
 			if request.websocket? && user_logged_in?
 				new_websocket(user: current_user)
 			elsif request.websocket?
-				request.websocket {}
+				request.websocket{}
 			end
+		end
+
+		get '/get_notif' do
+			halt_unvaluable
+			current_user.get_notifs.map(&:to_hash).to_json
 		end
 
 		post '/send_message' do
@@ -33,7 +39,7 @@ class UserController < ApplicationController
 		end
 
 		post '/update' do
-			halt_validated
+			halt_unvalidated
 			settings.log.info(params)
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
 			session_tmp = session[:current_user].clone
@@ -143,8 +149,10 @@ class UserController < ApplicationController
 					current_user.define_photo_as_profile_picture(photo: pic[0])
 					current_user.update_valuable
 				end
+				current_user.update_popularity_score(to_add: 10)
 				name
 			else
+				current_user.update_popularity_score(to_add: -50)
 				"error"
 			end
 		end
@@ -177,11 +185,13 @@ class UserController < ApplicationController
 				end
 			else
 				current_user.root_photo_is_now_profile_picture
+				current_user.update_popularity_score(to_add: -15)
 				current_user.update_valuable
 			end
 			pic[0].destroy
 			FileUtils.rm("./assets/pictures/" + pic[0].src)
-			"true"
+			current_user.update_popularity_score(to_add: -10)
+			true.to_json
 		end
 
 		post '/update_hashtag' do
@@ -194,8 +204,10 @@ class UserController < ApplicationController
 				return if params[:value].nil? || id_hashtag == false
 				if (current_user.is_related_with(id: id_hashtag, type_of_link: "APPRECIATE") == [])
 					current_user.create_links(id: id_hashtag, type: "APPRECIATE", data: nil)
+					current_user.update_popularity_score(to_add: 2)
 				else
 					current_user.suppress_his_relation_with(id: id_hashtag)
+					current_user.update_popularity_score(to_add: 2)
 				end
 			else
 				halt if !check_if_valide_gender?(params[:value])
@@ -224,6 +236,7 @@ class UserController < ApplicationController
 				halt
 			elsif current_user.id != @user.id
 				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
+				@user.update_popularity_score(to_add: 1)
 			else
 				@user = current_user
 			end
@@ -246,12 +259,15 @@ class UserController < ApplicationController
 				likes = current_user.is_related_with(id: user_to_like.id)
 				if likes.empty?
 					current_user.add_like(id: user_to_like.id)
+					user_to_like.update_popularity_score(to_add: 10)
 					send_notif_like(user_to_receive: user_to_like)
 				elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
 					if likes[0][0].type.to_s == "MATCH"
 						current_user.delete_match_with(id: user_to_like.id)
+					user_to_like.update_popularity_score(to_add: -25)
 					else
 						current_user.destroy_relation(id: my_like[0][0].id)
+					user_to_like.update_popularity_score(to_add: -10)
 					end
 				else
 					current_user.add_match(id: user_to_like.id)

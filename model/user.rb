@@ -2,7 +2,7 @@ class User < MatchaBase
   extend UserHelper, UserHelper::Validator, UserHelper::DisplayError
   include BCrypt
   BCrypt::Engine.cost = 8
-  attr_accessor :first_name, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable, :distance
+  attr_accessor :first_name, :popularity_score, :biography, :last_name, :sex, :id, :age, :email, :password, :reset_token, :email_token, :interest, :longitude, :latitude, :timestamp, :valuable, :distance
 
   def interest
     @interest || []
@@ -12,9 +12,31 @@ class User < MatchaBase
     []
   end
 
+  def self.default_value
+	  {popularity_score: 20, valuable: false}
+  end
+
   def destroy
     pictures.map(&:destroy)
     super
+  end
+
+  def get_notifs
+	  query =<<QUERY
+	  MATCH (n:user {email: "#{self.email}"}) WITH n
+MATCH (n)--(m:notification) WITH m
+MATCH (m)--(d:notification) WHERE d.seen = false RETURN d ORDER BY d.timestamp
+QUERY
+    self.class.query_transform(query: query)
+  end
+
+  def set_notif_as_seen
+	  query =<<QUERY
+	  MATCH (n:user {email: "fraikin.baptiste@gmail.com"}) WITH n
+MATCH (n)--(m:notification) WITH m
+MATCH (m)--(d:notification) WHERE d.seen = false SET d.seen = true
+QUERY
+    self.class.query_transform(query: query)
   end
 
   def all_matches
@@ -45,6 +67,11 @@ class User < MatchaBase
     else
       return false
     end
+  end
+
+  def update_popularity_score(to_add:)
+	  self.popularity_score += to_add
+	  self.save
   end
 
   def is_valuable?
@@ -183,7 +210,7 @@ class User < MatchaBase
   end
 
   def self.create(hash: {})
-    hash[:valuable] = false
+	  hash.merge!(default_value)
     unless (error = validator(hash: hash)).any?
       user = super(hash: hash.merge!(password: hash_password(password: hash[:password])))
       user[0].build_attachement if user.any?
@@ -239,7 +266,7 @@ class User < MatchaBase
     query += " AND " + args.join(" AND ")  if args.size > 0
     query += " AND #{distance_between_user_formula} < {range}"
     query += " WITH other, #{distance_between_user_formula} AS distance"
-    query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc} SKIP {skip} LIMIT {limit}"
+	query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc}, other.popularity_score #{asc} SKIP {skip} LIMIT {limit}"
     self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
   end
 
