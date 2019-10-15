@@ -33,7 +33,7 @@ class UserController < ApplicationController
 		end
 
 		post '/update' do
-			halt_validated
+			halt_unvalidated
 			settings.log.info(params)
 			return if params[:id].nil? || params[:content].nil? || !User.attributes.include?(params[:id].to_sym) || !User.updatable.include?(params[:id])
 			session_tmp = session[:current_user].clone

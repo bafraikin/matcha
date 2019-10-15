@@ -42,7 +42,7 @@ const sendMessageToWorker = function () {
 	if (!this.parentNode.querySelector)
 		return;
 	const span = this.parentNode.querySelector('span');
-	worker.port.postMessage({type: "SEND_MESSAGE", user_id: div.id, body: this.innerHTML, hash_conv: span.innerHTML, csrf: csrf });
+	worker.port.postMessage({type: "SEND_MESSAGE", user_id: div.id, body: this.value, hash_conv: span.innerHTML, csrf: csrf });
 }
 
 const HandleKeyPressChat = function (event) {
@@ -50,6 +50,10 @@ const HandleKeyPressChat = function (event) {
 		return;
 	else if (event.key == 'Enter')
 		sendMessageToWorker.bind(this)();
+}
+
+const Update_chat = function (object){
+	console.log(object);
 }
 
 

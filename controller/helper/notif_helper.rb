@@ -28,7 +28,6 @@ module NotifHelper
 			message = {type: "MESSAGE", body: body, hash: hash}
 			settings.sockets[user.key].send(message.to_json)
 			if notif.is_a?(Notification)
-				binding.pry
 				settings.sockets[user.key].send(notif.to_hash.to_json)
 			end
 		end

@@ -78,22 +78,24 @@ const open_conv = function (port,objet) {
 	}
 }
 
-const sendMessage = function (objet) {
-	return fetch("/user/send_message", {
-		method: 'post',
-		headers: {
-			'X-Requested-With': 'XMLHttpRequest',
-			"Content-type":  "application/json ; charset=UTF-8",
-			"X-CSRF-Token": objet.csrf
-		},
-		body: JSON.stringify({hash: objet.hash_conv, user_id: objet.user_id, body: encodeURI(objet.body)}),
-	}).then(fetch_json)
-		.then(function (data) {
-			console.log("YES");
-		})
-		.catch(function (error) {
-			console.log('Request failed', error);
+const sendMessage = async function (objet) {
+	try {
+		const response = await fetch("/user/send_message", {
+			method: 'post',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+				"Content-type": "application/json ; charset=UTF-8",
+				"X-CSRF-Token": objet.csrf
+			},
+			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: encodeURI(objet.body) }),
 		});
+		const data = await fetch_json(response);
+		objet['type'] = "MESSAGE";
+		stream_to_front(objet);
+	}
+	catch (error) {
+		console.log('Request failed', error);
+	}
 
 }
 const handleMessage = function (port, message) {
