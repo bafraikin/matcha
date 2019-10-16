@@ -128,7 +128,8 @@ class UserController < ApplicationController
 		end
 
 		post '/add_photo' do
-			halt_unsigned
+			binding.pry
+			halt_unvalidated
 			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
 			return "error" if !params[:file]
 			return "error Picture must be lighter" if params[:file].size > 500000
@@ -270,7 +271,7 @@ class UserController < ApplicationController
 
 	private
 	def good_name_picture
-		pics = Dir["./assets/pictures/picuser#{current_user.id}*"]
+		pics = Dir["./assets/pictures/userpic#{current_user.id}*"]
 		max_number = pics.max_by{|name| name[/\d+/].to_i}
 		good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
 		"userpic#{current_user.id}#{good_number}"
