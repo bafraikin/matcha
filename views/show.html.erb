@@ -2,16 +2,17 @@
 
 <%= erb :"_show_img.html", layout: nil%>
 
-
 <div class="container text-center">
-
-	<div class="d-inline-flex">	
+	<div class="d-flex justify-content-around">	
 		<% if current_user.id != @user.id %>	
+			<div>
+				<p class="text-muted text-justify">block or unblock this user with <span style="cursor: pointer" onclick="reportUser(<%= @user.id %>)">this link</span></p>
+			</div>
 			<div class="form-group" onclick="send_like(<%= @user.id %>)">
 				<input id="like" type="checkbox" <%= @like ? "checked" : "" %> data-toggle="toggle" data-on="❤️" data-off="💔">
 			</div>
 		<% end %>
-		<div>
+		<div class="flex-column">
 			<p>popularity-score</p>
 			<p class="text-muted">
 			<%= @user.popularity_score %>

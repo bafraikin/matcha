@@ -20,7 +20,31 @@ class UserController < ApplicationController
 
 		get '/get_notif' do
 			halt_unvaluable
-			current_user.get_notifs.map(&:to_hash).to_json
+			current_user.set_notif_as_seen.map(&:to_hash).to_json
+		end
+
+		post '/report_photo' do
+			halt_unvaluable
+			request.body.rewind
+			@param = JSON.parse request.body.read
+
+		end
+
+		get '/blocked' do
+			block_unvaluable
+			@users = current_user.blocked_user
+			erb:"blocked.html"
+		end
+
+		post '/report_user' do
+			halt_unvaluable
+			request.body.rewind
+			@param = JSON.parse request.body.read
+			user = User.find(id: @param["user_id"].to_i)
+			if user.is_a?(User)
+				current_user.toggle_block_user(user: user)
+				settings.log.info("user blocked")
+			end
 		end
 
 		post '/send_message' do
@@ -237,6 +261,7 @@ class UserController < ApplicationController
 			elsif current_user.id != @user.id
 				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
 				@user.update_popularity_score(to_add: 1)
+				send_notif_view_to(user: @user)
 			else
 				@user = current_user
 			end
@@ -264,10 +289,10 @@ class UserController < ApplicationController
 				elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
 					if likes[0][0].type.to_s == "MATCH"
 						current_user.delete_match_with(id: user_to_like.id)
-					user_to_like.update_popularity_score(to_add: -25)
+						user_to_like.update_popularity_score(to_add: -25)
 					else
 						current_user.destroy_relation(id: my_like[0][0].id)
-					user_to_like.update_popularity_score(to_add: -10)
+						user_to_like.update_popularity_score(to_add: -10)
 					end
 				else
 					current_user.add_match(id: user_to_like.id)
@@ -289,7 +314,7 @@ class UserController < ApplicationController
 		pics = Dir["./assets/pictures/picuser#{current_user.id}*"]
 		max_number = pics.max_by{|name| name[/\d+/].to_i}
 		good_number = max_number.to_s.match(/#{current_user.id}(\d+)/).to_a[1].to_i + 1
-		"userpic#{current_user.id}#{good_number}"
+		"picuser#{current_user.id}#{good_number}"
 	end
 
 	def create_file(data:, type:)
