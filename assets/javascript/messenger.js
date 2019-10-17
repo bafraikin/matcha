@@ -1,4 +1,5 @@
 let csrf = document.querySelector("meta[name=csrf-token]").content;
+let id_user = document.querySelector('#user_id').attributes.name.value;
 
 const new_message = function (text, receiver) {
 	return JSON.stringify({ data: text, receiver: receiver });
@@ -42,7 +43,7 @@ const sendMessageToWorker = function () {
 	if (!this.parentNode.querySelector)
 		return;
 	const span = this.parentNode.querySelector('span');
-	worker.port.postMessage({type: "SEND_MESSAGE", user_id: div.id, body: this.value, hash_conv: span.innerHTML, csrf: csrf });
+	worker.port.postMessage({ type: "SEND_MESSAGE", user_id: div.id, body: this.value, hash_conv: span.id, csrf: csrf });
 }
 
 const HandleKeyPressChat = function (event) {
@@ -52,8 +53,19 @@ const HandleKeyPressChat = function (event) {
 		sendMessageToWorker.bind(this)();
 }
 
-const Update_chat = function (object){
-	console.log(object);
+const Update_chat = function (object) {
+	let chat_body = document.querySelector("span[id='" + object.hash_conv + "']").parentNode.parentNode.querySelector('#chat_body');
+	let elem = document.createElement('p');
+	if (object.id_user == id_user) {
+		elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-left", "bg-warning", "text-black");
+		elem.id = "badge_chat_left";
+	}
+	else {
+		elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-right", "bg-primary", "text-white");
+		elem.id = "badge_chat_right";
+	}
+	elem.innerText = decodeURI(object.body);
+	chat_body.appendChild(elem);
 }
 
 

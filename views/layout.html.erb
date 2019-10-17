@@ -10,10 +10,11 @@
 		<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.5.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
 		<% if user_logged_in? %>
-			<script async defer charset="utf-8">
+			<div id="user_id" name="<%= current_user.id %>"></div>
+			<script async charset="utf-8">
 				const worker = new SharedWorker("/assets/javascript/worker/worker.js");
 			</script>
-			<script async defer charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
+			<script async charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
 		<% end %>
 		<title> <%= title %> </title>
 	</head>

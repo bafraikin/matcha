@@ -23,9 +23,7 @@
 				<% if  current_user.id == @user.id %>	
 					<button type="button" class="btn btn-info profile_picture"><i class="fa fa-star"></i> </button>
 					<button type="button" class="btn btn-danger delete_picture"><i class="fa fa-trash"></i></button>
-				<% else %>
-					<button type="button" class="btn btn-outline-info message"><i class="fa fa-comment"></i></button>
-					<div class="card-footer">	
+				<% else %>					<div class="card-footer">	
 						<p class="text-muted">
 						report this picture with <a href="#" class="text-reset">this link</a>.
 						</p>

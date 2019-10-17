@@ -18,7 +18,7 @@ function send_like(id)
 				console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
 		}
 	}
-	req.send("id=" + id + "&authenticity_token=" + normalize_data(csrf));
+	req.send("id=" + encodeURI(id) + "&authenticity_token=" + normalize_data(csrf));
 }
 
 function  handle_file() {
@@ -64,7 +64,7 @@ const update = function () {
 				alert(this.response);
 		}
 	}
-	req.send("id=" + id + "&content=" + content +  "&authenticity_token=" + normalize_data(csrf));
+	req.send("id=" + encodeURI(id) + "&content=" + encodeURI(content) +  "&authenticity_token=" + normalize_data(csrf));
 }
 
 
@@ -180,7 +180,7 @@ const update_checkbox = function () {
 				alert(this.response);
 		}
 	};
-	req.send( "id=" + encodeURI(id) + "&value=" + this.value + "&authenticity_token=" + normalize_data(csrf));
+	req.send( "id=" + encodeURI(id) + "&value=" + encodeURI(this.value) + "&authenticity_token=" + normalize_data(csrf));
 };
 
 const update_sex = function () {

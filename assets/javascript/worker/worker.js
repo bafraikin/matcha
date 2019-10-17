@@ -89,7 +89,6 @@ const sendMessage = async function (objet) {
 			},
 			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: encodeURI(objet.body) }),
 		});
-		const data = await fetch_json(response);
 		objet['type'] = "MESSAGE";
 		stream_to_front(objet);
 	}
@@ -112,6 +111,8 @@ const handleMessage = function (port, message) {
 		case 'SEND_MESSAGE':
 			sendMessage(objet);
 			break;
+		case 'get_message': 
+		break;
 		default:
 			connections.forEach(connection => connection.postMessage(objet.type));
 	}
@@ -126,15 +127,16 @@ onconnect = function (e) {
 	}
 }
 
-const openMessage = function (id, csrf) {
-	return fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf))
-		.then(check_status)
-		.then(fetch_json)
-		.then(function (data) {
-			return data;
-		}).catch(function (error) {
-			return false;
-		});
+const openMessage = async function (id, csrf) {
+	try {
+		const response = await fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf));
+		const response_1 = await check_status(response);
+		const data = await fetch_json(response_1);
+		return data;
+	}
+	catch (error) {
+		return false;
+	}
 };
 
 

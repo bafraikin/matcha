@@ -1,10 +1,6 @@
-
-
-const addCariotToInput = function() 
-{
+const addCariotToInput = function () {
 	console.log("coucoiu");
-	if (this) 
-	{
+	if (this) {
 		console.log(this);
 		this.value += '\n';
 	}
@@ -12,24 +8,40 @@ const addCariotToInput = function()
 
 
 
-const displayChatMessages = function() {
-	console.log("everything goes well");
+const displayChatMessages = function (message_json, id, to_add) {
+	let i = 0;
+	let messages = [];
+	while (message_json[i]) {
+		let elem = document.createElement('p');
+		if (message_json[i].id_user == id) {
+			elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-left", "bg-warning", "text-black");
+			elem.id = "badge_chat_left";
+		}
+		else {
+			elem.classList.add("py-1", "px-1", "rounded",  "text-justify", "float-right", "bg-primary", "text-white");
+			elem.id = "badge_chat_right";
+		}
+		elem.innerText = decodeURI(message_json[i].body);
+		messages.push(elem);
+		i++;
+	}
+	messages.forEach(message => to_add.appendChild(message));
 }
 
-const closeDiscussion = function() {
+const closeDiscussion = function () {
 	this.parentNode.removeChild(this);
 }
 
 // {first_name:, hash_conv:, messages: [{}], src:}
-const displayNewModalChat = function(objet) {
-	const exemple  = document.querySelector("#exemple_chat_modal");
+const displayNewModalChat = function (objet) {
+	const exemple = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
 	toDisplay.id = objet.user_id;
 	toDisplay.querySelector(".card-header span#first_name").innerHTML = objet.first_name;
-	toDisplay.querySelector(".card-footer span").innerHTML = objet.hash_conv;
-	toDisplay.querySelector(".card-body").innerHTML = displayChatMessages(objet.messages);
+	toDisplay.querySelector(".card-footer span").id = objet.hash_conv;
+	displayChatMessages(objet.messages, objet.user_id, toDisplay.querySelector(".card-body"));
 	toDisplay.querySelector(".card-footer textarea").onkeypress = HandleKeyPressChat;
 	messenger.appendChild(toDisplay);
 }
@@ -39,7 +51,7 @@ const displayNewModalChat = function(objet) {
 const askForChatterToWorker = function () {
 	if (!worker)
 		return;
-	worker.port.postMessage({type: "give_me_match"});
+	worker.port.postMessage({ type: "give_me_match" });
 }
 
 window.onload = () => {

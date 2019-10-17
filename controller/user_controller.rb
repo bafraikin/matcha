@@ -128,7 +128,6 @@ class UserController < ApplicationController
 		end
 
 		post '/add_photo' do
-			binding.pry
 			halt_unvalidated
 			return "error 5 picture is a max" if current_user.get_node_related_with( type_of_node: ["picture"]).size >= 5
 			return "error" if !params[:file]
