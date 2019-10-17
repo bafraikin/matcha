@@ -50,6 +50,7 @@
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 									<a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
 									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
+									<a class="dropdown-item" href="/user/blocked">Users you are blocking</a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
 								</div>
@@ -87,6 +88,14 @@
 									<img class="dropdown-item"  id="loader_conv" src="/assets/pictures/main_loader.gif" alt=""/>
 								</div>
 							</li>		
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle icon" href="#" id="matcha_notif" onclick="getNotif.bind(this)()" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fa fa-address-book"><span>0</span></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="matcha_notif">
+									<img class="dropdown-item"  id="loader_conv" src="/assets/pictures/main_loader.gif" alt=""/>
+								</div>
+							</li>
 						<% end %>
 					</ul>
 				</div>

@@ -16,8 +16,14 @@ worker.port.onmessage = function (resp) {
 		case "SOMEONE_LIKED_YOU":
 			display_notif(json);
 			break;
-		case "MESSAGE":
-			Update_chat(json);
+		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
+			display_notif(json);
+			break;
+		case 'NEW_MESSAGE':
+			display_notif(json);
+			break;
+		case 'MESSAGE':
+			Update_chat(json);;
 			break;
 		default:
 			console.log(json);

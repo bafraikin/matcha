@@ -1,4 +1,3 @@
-
 module NotifHelper
 	def send_notif_to(user:, notif:, from: nil)
 		return if !user.is_a?(User) || !is_connected?(user: user)
@@ -43,5 +42,10 @@ module NotifHelper
 	def send_notif_like(user_to_receive:)
 		notif = user_to_receive.add_notification(type: "SOMEONE_LIKED_YOU")
 		send_notif_to(user: user_to_receive, notif: notif)
+	end
+
+	def send_notif_view_to(user:)
+		notif = user.add_notification(type: "SOMEONE_HAS_SAW_YOUR_PROFILE")
+		send_notif_to(user: user, notif: notif)
 	end
 end

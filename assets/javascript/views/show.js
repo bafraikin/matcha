@@ -2,8 +2,8 @@ function send_like(id)
 {
 	const req = new XMLHttpRequest();
 	const csrf = document.querySelector("meta[name=csrf-token]").content
-		if (isNaN(id) && !!csrf)
-			return;
+	if (isNaN(id) && !!csrf)
+		return;
 	req.open('POST', '/user/toggle_like', true);
 	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
@@ -28,6 +28,21 @@ function  handle_file() {
 	let files = input.files;
 	if (files.length > 1 || files[0].size > 50000000 || !files[0].type.match(/(jpeg|jpg|png)/))
 		dont_send_it(button);
+}
+
+const reportUser = async function(id) {
+	if (!(!isNaN(id) && csrf))
+		return;
+	const myInit = { method: 'POST',
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest',
+			"Content-type": "application/json ; charset=UTF-8",
+			"X-CSRF-Token": csrf
+		},
+		body: JSON.stringify({user_id: id}),
+	};
+	const response = await fetch('/user/report_user', myInit);
+	debugger;
 }
 
 function dont_send_it(button) {
@@ -92,8 +107,8 @@ function getBase64(file) {
 
 function toggle_profile() {
 	const csrf = document.querySelector("meta[name=csrf-token]")
-		if (!csrf || !csrf.content || !this || !this.parentNode || this.classList.contains('btn-secondary') || !this.parentNode.parentNode)
-			return ;
+	if (!csrf || !csrf.content || !this || !this.parentNode || this.classList.contains('btn-secondary') || !this.parentNode.parentNode)
+		return ;
 	let button = this;
 	let img = this.parentNode.parentNode.querySelector('img');
 	if (!img || !img.id || isNaN(img.id))
@@ -121,8 +136,8 @@ function toggle_profile() {
 
 function delete_this_picture() {
 	const csrf = document.querySelector("meta[name=csrf-token]")
-		if (!csrf || !csrf.content || !this || !this.parentNode || !this.parentNode.parentNode)
-			return ;
+	if (!csrf || !csrf.content || !this || !this.parentNode || !this.parentNode.parentNode)
+		return ;
 	const div = this.parentNode.parentNode;
 	const img = div.querySelector('img');
 	if (!img)
@@ -144,8 +159,8 @@ function delete_this_picture() {
 function upload_photo() {
 	let photo = document.querySelector('input[type=file]').files[0];
 	const csrf = document.querySelector("meta[name=csrf-token]")
-		if (!csrf || !csrf.content || !photo)
-			return;
+	if (!csrf || !csrf.content || !photo)
+		return;
 	let req = new XMLHttpRequest();
 	req.open("POST", '/user/add_photo', true);
 	req.overrideMimeType("text/plain;");
@@ -161,7 +176,7 @@ function upload_photo() {
 		.then((data) => {
 			req.send('file=' +  normalize_data(data) + "&authenticity_token=" + normalize_data(csrf.content));
 		})
-	.catch(error => console.error(error));
+		.catch(error => console.error(error));
 }
 
 const update_checkbox = function () {
@@ -222,7 +237,7 @@ const update_sex = function () {
 	});
 
 	let sex = document.querySelectorAll("select")
-		sex.forEach(function (sex) { 
-			sex.addEventListener("change", update_sex);
-		});
+	sex.forEach(function (sex) { 
+		sex.addEventListener("change", update_sex);
+	});
 })();
