@@ -25,6 +25,10 @@ class User < MatchaBase
 		self.get_node_related_with(link: "BLOCK", type_of_node: ["user"], to_them: true)
 	end
 
+	def hashtags
+		self.get_node_related_with(link: "APPRECIATE", type_of_node: ["hashtag"], to_them: true)
+	end
+
 	def toggle_block_user(user:)
 		blocked = self.blocked_user
 		unless blocked.map(&:id).include?(user.id)
@@ -265,12 +269,12 @@ QUERY
 		"2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude))))"
 	end
 
-	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true, hashtags:)
+	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true, hashtags:, sort_by:)
 		raise MatchaBase::Error if  self.interest.empty?
 		asc = asc ? "" : "DESC"
-		args.map!{|arg| "o." + arg}
+		args.map!{|arg| "other." + arg}
 		equality.each do |k,v|
-			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
+			args << v.is_a?(String) ? "other." + k.to_s + " = '" + v.to_s + "' " :  "other." + k.to_s + " = " + v.to_s + " " 
 		end
 		interest = self.interest.map{|sex| "other.sex = '#{sex}'"}.join(' OR ')
 		interest = "(#{interest})" if self.interest.size > 1
@@ -283,8 +287,8 @@ QUERY
 		query += " AND " + args.join(" AND ")  if args.size > 0
 		query += " AND #{distance_between_user_formula} < {range}"
 		query += "OPTIONAL MATCH (other)-[r:APPRECIATE]->(tag:hashtag) WHERE tag.name IN #{hashtags}"
-		query += " WITH count(r) AS number_preference, other, #{distance_between_user_formula} AS distance"
-		query += " RETURN other{.*, number: number_preference, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY number_preference DESC, distance #{asc}, other.popularity_score #{asc} SKIP {skip} LIMIT {limit}"
+		query += " WITH count(r) AS interest, other, #{distance_between_user_formula} AS distance, other.popularity_score AS popularity_score, other.age AS age"
+		query += " RETURN other{.*, number: interest, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY #{sort_by} #{asc} SKIP {skip} LIMIT {limit}"
 		self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
 	end
 

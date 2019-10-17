@@ -140,15 +140,15 @@ class UserController < ApplicationController
 
 		get	'/get_profiles' do
 			halt_unvaluable
-			to_return  = [:id, :last_name, :first_name, :biography, :age]
+			to_return  = [:distance, :id, :last_name, :first_name, :biography, :age]
 			@hashtags = Hashtag.all
 			settings.log.info(params)
 			if valid_params_request?(params)
-				@users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]), hashtags: @hashtags)
+				@users =  current_user.find_matchable("age >= #{params['min']}", "age <= #{params['max']}", range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]), hashtags: @hashtags, sort_by: params["sort"])
 			else
 				return [].to_json
 			end
-			@users.map! {|user| user.to_hash.slice(*to_return).merge!({distance: user.distance_with_user(user: current_user)})}.to_json
+			@users.map! {|user| user.to_hash.slice(*to_return)}.to_json
 		end
 
 		get '/destroy' do
