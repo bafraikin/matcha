@@ -89,6 +89,7 @@ const open_conv = function (port,objet) {
 
 const sendMessage = async function (objet) {
 	try {
+		objet.body  = encodeURI(objet.body);
 		const response = await fetch("/user/send_message", {
 			method: 'post',
 			headers: {
@@ -96,9 +97,9 @@ const sendMessage = async function (objet) {
 				"Content-type": "application/json ; charset=UTF-8",
 				"X-CSRF-Token": objet.csrf
 			},
-			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: encodeURI(objet.body) }),
+			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: objet.body }),
 		});
-		objet['type'] = "MESSAGE";
+		objet['type'] = "MESSAGE";		
 		stream_to_front(objet);
 	}
 	catch (error) {

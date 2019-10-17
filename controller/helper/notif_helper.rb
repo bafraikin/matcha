@@ -20,11 +20,11 @@ module NotifHelper
 		end
 	end
 
-	def send_socket_message_to(user:, body:, hash:)
+	def send_socket_message_to(user:, body:, hash_conv:)
 		return if !user.is_a?(User)
 		notif = user.add_notification(type: "NEW_MESSAGE")
 		if is_connected?(user: user)
-			message = {type: "MESSAGE", body: body, hash: hash}
+			message = {type: "MESSAGE", body: body, hash_conv: hash_conv, user_id: user.id.to_s }
 			settings.sockets[user.key].send(message.to_json)
 			if notif.is_a?(Notification)
 				settings.sockets[user.key].send(notif.to_hash.to_json)

@@ -53,19 +53,24 @@ const HandleKeyPressChat = function (event) {
 		sendMessageToWorker.bind(this)();
 }
 
-const Update_chat = function (object) {
-	let chat_body = document.querySelector("span[id='" + object.hash_conv + "']").parentNode.parentNode.querySelector('#chat_body');
+const Update_chat = function (objet) {
+	let isChatOpen = document.querySelector("span[id='" + objet.hash_conv + "']");
+	if (!isChatOpen)
+		return;
+	let chat_body = isChatOpen.parentNode.parentNode.querySelector('#chat_body');
 	let elem = document.createElement('p');
-	if (object.id_user == id_user) {
+	if (objet.user_id == id_user) {
 		elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-left", "bg-warning", "text-black");
 		elem.id = "badge_chat_left";
 	}
 	else {
+		isChatOpen.parentNode.querySelector('textarea').value = "";
 		elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-right", "bg-primary", "text-white");
 		elem.id = "badge_chat_right";
 	}
-	elem.innerText = decodeURI(object.body);
+	elem.innerText = decodeURI(objet.body);
 	chat_body.appendChild(elem);
+	chat_body.scrollTo(0, chat_body.scrollHeight);
 }
 
 

@@ -54,7 +54,7 @@ class UserController < ApplicationController
 			user = User.find(id: @param["user_id"].to_i)
 			return false.to_json if !user.is_a?(User)
 			if user_message_to(user: user, hash: @param["hash"], body: @param["body"])
-				send_socket_message_to(user: user, body: body, hash: @param["hash"])
+				send_socket_message_to(user: user, body: @param["body"], hash_conv: @param["hash"])
 				return true.to_json
 			else
 				session[:messenger] = suppr_talker(talker: user)
