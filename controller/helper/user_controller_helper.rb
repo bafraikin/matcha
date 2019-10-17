@@ -17,7 +17,7 @@ module UserControllerHelper
 		params_that_sould_exist.each {| param| 
 			if param[/hashtag/]
 				return false if !["false", "true"].include?(params[param])
-				@hashtags << param[/(?<=_).*/] if params[param] == "true"
+				@hashtags <<  "#" + param[/(?<=_).*/] if params[param] == "true"
 			end
 		}
 		true
