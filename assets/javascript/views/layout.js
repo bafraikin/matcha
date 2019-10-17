@@ -34,8 +34,17 @@ const displayNewModalChat = function(objet) {
 	messenger.appendChild(toDisplay);
 }
 
-// to test
-//
+const getNotif = function() {
+	fetch("/user/get_notif").then((resp) => resp.text().then((text) => {
+		if (!(this && text && text != ""))
+			return;
+		const json = JSON.parse(text);
+		const div = this.parentNode.querySelector("div");
+		div.innerHTML = "";
+		json.forEach(elem => div.innerHTML += '<p style="text-justify text-uppercase">' + elem.typei.replace(/_/g, " ") + '</p>' + "<hr/>");
+	}));
+}
+
 const askForChatterToWorker = function () {
 	if (!worker)
 		return;

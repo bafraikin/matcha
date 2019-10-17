@@ -11,6 +11,12 @@ const display_notif = function(notif) {
 		case 'NEW_MESSAGE':
 			console.log("nouveau message");
 			break;
+		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
+			console.log("someone saw")
+			break;
+		case 'MESSAGE':
+			console.log("message");
+			break;
 		default:
 			console.log("something strange happen", notif);
 	}

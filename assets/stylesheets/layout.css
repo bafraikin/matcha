@@ -3,9 +3,14 @@
 	display: none;
 }
 
-#possible_conv_match {
+.dropdown-menu {
 	max-height: 23vh;
-	overflow: auto;
+	overflow: hidden auto;
+	width: 11vw;
+}
+
+.dropdown-menu p{
+	font-size: 0.9vw;
 }
 
 #possible_conv_match.card-body {

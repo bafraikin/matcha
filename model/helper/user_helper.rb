@@ -8,6 +8,10 @@ module UserHelper
 			end
 		end
 
+		def valid_popularity_score?(number)
+			number.is_a?(Integer)
+		end
+
 		def valid_email?(string)
 			if string.nil? || string[/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i].nil?
 				false
