@@ -114,6 +114,7 @@ class ApplicationController < Sinatra::Base
 
 	get /\/?/ do
 		@users = []
+		@hashtags = Hashtag.all
 		erb:'matchable.html' 
 	end
 

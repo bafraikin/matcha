@@ -14,8 +14,14 @@
 			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="1000">
 		</div>
 		<div class="form-group">
-		<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
+			<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
 		</div>
+		<div class="form-group" id="hashtags">
+			<% @hashtags.each do |hash| %>
+				<input value="<%= hash.name %>" type="checkbox" data-toggle="toggle" data-on="<%=hash.name%>" data-off="<%=hash.name%>">
+			<% end %>
+		</div>
+		<button type="button" id="submit" class=" my-3 btn btn-primary btn-lg btn-block">SEARCH</button>
 	</div>
 
 	<div id="user_container" class="container-fluid d-flex flex-wrap justify-content-center">
@@ -24,7 +30,7 @@
 				<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
 				<div class="card-body">
 					<h5 class="card-title"><%= user.first_name %></h5>
-		
+
 					<p class="card-text text-truncate"> <%= user.biography %> </p>
 				</div>
 				<div class="card-footer">	
@@ -41,9 +47,9 @@
 			<p class="card-text text-truncate"> </p>
 		</div>
 		<div class="card-footer">
-	
+
 			<button  type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
-					<p class="text-muted" id="distance"> </p>
+			<p class="text-muted" id="distance"> </p>
 		</div>
 	</div>
 

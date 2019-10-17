@@ -265,7 +265,7 @@ QUERY
 		"2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude))))"
 	end
 
-	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true)
+	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true, hashtags:)
 		raise MatchaBase::Error if  self.interest.empty?
 		asc = asc ? "" : "DESC"
 		args.map!{|arg| "o." + arg}
@@ -279,11 +279,12 @@ QUERY
 	OPTIONAL MATCH (self)<-[:BLOCK]-(exclude_either:user)
 	WITH  COLLECT(DISTINCT other) as to_exclude, COLLECT(DISTINCT exclude_either) as other_to_exclude, self, #{self.latitude} AS lat, #{self.longitude} AS lon"
 		query += " MATCH (other:user)"
-		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND NOT other IN other_to_exclude AND other.valuable = true"
+		query += " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND NOT other IN other_to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
 		query += " AND #{distance_between_user_formula} < {range}"
-		query += " WITH other, #{distance_between_user_formula} AS distance"
-		query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc}, other.popularity_score #{asc} SKIP {skip} LIMIT {limit}"
+		query += "OPTIONAL MATCH (other)-[r:APPRECIATE]->(tag:hashtag) WHERE tag.name IN #{hashtags}"
+		query += " WITH count(r) AS number_preference, other, #{distance_between_user_formula} AS distance"
+		query += " RETURN other{.*, number: number_preference, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY number_preference DESC, distance #{asc}, other.popularity_score #{asc} SKIP {skip} LIMIT {limit}"
 		self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
 	end
 

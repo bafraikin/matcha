@@ -141,9 +141,10 @@ class UserController < ApplicationController
 		get	'/get_profiles' do
 			halt_unvaluable
 			to_return  = [:id, :last_name, :first_name, :biography, :age]
+			@hashtags = Hashtag.all
 			settings.log.info(params)
 			if valid_params_request?(params)
-				@users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]))
+				@users =  current_user.find_matchable(range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]), hashtags: @hashtags)
 			else
 				return [].to_json
 			end
