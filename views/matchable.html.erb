@@ -10,16 +10,33 @@
 			<input type="number" class="form-control" value=7 aria-label="Username" aria-describedby="basic-addon1">
 		</div>
 		<div class="form-group">
-			<label for="formControlRange">Distance prefere en (metre) <span>1 km</span></label>
-			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="1000">
+			<label for="formControlRange">Distance prefere en (metre) <span>25 km</span></label>
+			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="25000">
 		</div>
-		<div class="form-group">
-			<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
-		</div>
-		<div class="form-group" id="hashtags">
+		<div class="form-group d-flex flex-wrap justify-content-between" id="hashtags">
 			<% @hashtags.each do |hash| %>
 				<input value="<%= hash.name %>" type="checkbox" data-toggle="toggle" data-on="<%=hash.name%>" data-off="<%=hash.name%>">
 			<% end %>
+		</div>
+		<div class="d-flex flex-column justify-content-center" data-toggle="buttons">
+			<p class="font-weight-bold text-center">ORDONNER PAR</p>
+			<div class="btn-group btn-group-toggle">	
+				<label class="btn btn-secondary active">
+					<input type="radio" name="options" id="option1" autocomplete="off" checked> Distance
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="options" id="option2" autocomplete="off"> Interet
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="options" id="option3" autocomplete="off"> Age
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="options" id="option3" autocomplete="off"> Popularite
+				</label>
+			</div>
+			<div class="my-3 w-50 btn-group btn-group-toggle" style="margin: 0 25% 0 25%">	
+				<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
+			</div>
 		</div>
 		<button type="button" id="submit" class=" my-3 btn btn-primary btn-lg btn-block">SEARCH</button>
 	</div>
