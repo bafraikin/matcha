@@ -288,6 +288,7 @@ class UserController < ApplicationController
 					send_notif_like(user_to_receive: user_to_like)
 				elsif (my_like = likes.select {|like| like[0].start_node_id == current_user.id}).any?
 					if likes[0][0].type.to_s == "MATCH"
+						send_notif_unmatch(first_user: current_user, second_user: user_to_like)
 						current_user.delete_match_with(id: user_to_like.id)
 						user_to_like.update_popularity_score(to_add: -25)
 					else

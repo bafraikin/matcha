@@ -48,4 +48,11 @@ module NotifHelper
 		notif = user.add_notification(type: "SOMEONE_HAS_SAW_YOUR_PROFILE")
 		send_notif_to(user: user, notif: notif)
 	end
+
+	def send_notif_unmatch(first_user:, second_user:)
+		notif = first_user.add_notification(type: "UNMATCH")
+		notif_current = second_user.add_notification(type: "UNMATCH")
+		send_notif_to(user: second_user, notif: notif, from: first_user)
+		send_notif_to(user: first_user, notif: notif_current, from: second_user)
+	end
 end

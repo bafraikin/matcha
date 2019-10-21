@@ -37,7 +37,7 @@ const displayMatchReadyForChat = function (data) {
 }
 
 const sendMessageToWorker = function () {
-	if (!this || !worker || !csrf || !this.parentNode || !this.parentNode.parentNode)
+	if (!this || !worker || !csrf || !this.parentNode || !this.parentNode.parentNode || !/\S/.test(this.value))
 		return;
 	const div = this.parentNode.parentNode;
 	if (!this.parentNode.querySelector)
@@ -51,6 +51,14 @@ const HandleKeyPressChat = function (event) {
 		return;
 	else if (event.key == 'Enter')
 		sendMessageToWorker.bind(this)();
+}
+
+const Unmatched_chat = function (objet) {
+	let isChatOpen = document.querySelector("span[id='" + objet.hash_conv + "']");
+	if (!isChatOpen)
+		return;
+	let chat_body = isChatOpen.parentNode.parentNode;
+	debugger;
 }
 
 const Update_chat = function (objet) {

@@ -47,6 +47,9 @@ const react_to_socket = function (event_ws) {
 		case 'MESSAGE':
 			stream_to_front(json);
 			break;
+		case 'UNMATCH':
+			stream_to_front(json);
+			break;
 		case undefined:
 			console.log('something_bad');
 			break;

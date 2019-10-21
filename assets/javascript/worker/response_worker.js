@@ -23,7 +23,10 @@ worker.port.onmessage = function (resp) {
 			display_notif(json);
 			break;
 		case 'MESSAGE':
-			Update_chat(json);;
+			Update_chat(json);
+			break;
+		case 'UNMATCH':
+			Unmatched_chat(json);
 			break;
 		default:
 			console.log(json);

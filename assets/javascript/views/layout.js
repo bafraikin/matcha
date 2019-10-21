@@ -1,13 +1,3 @@
-const addCariotToInput = function () {
-	console.log("coucoiu");
-	if (this) {
-		console.log(this);
-		this.value += '\n';
-	}
-}
-
-
-
 const displayChatMessages = function (message_json, id, to_add) {
 	let i = 0;
 	let messages = [];
