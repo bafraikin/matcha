@@ -49,7 +49,7 @@
 								</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 									<a class="dropdown-item" id="profile" href="/user/show/<%=current_user.id %>"> Profile </a>
-									<a class="dropdown-item" href="/registration/sign_out">Logout</a>
+									<a class="dropdown-item" onclick="worker.terminate()" href="/registration/sign_out">Logout</a>
 									<a class="dropdown-item" href="/user/blocked">Users you are blocking</a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" data-toggle="modal" data-target="#signOut" href="#signOut">Delete account</a>
