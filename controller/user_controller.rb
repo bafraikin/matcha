@@ -23,6 +23,12 @@ class UserController < ApplicationController
 			current_user.set_notif_as_seen.map(&:to_hash).to_json
 		end
 
+		get '/viewers' do
+			block_unvaluable
+			@users = current_user.users_that_looked_my_profile
+			erb:"list_users.html"
+		end
+
 		post '/report_photo' do
 			halt_unvaluable
 			request.body.rewind
@@ -33,7 +39,7 @@ class UserController < ApplicationController
 		get '/blocked' do
 			block_unvaluable
 			@users = current_user.blocked_user
-			erb:"blocked.html"
+			erb:"list_users.html"
 		end
 
 		post '/report_user' do
@@ -114,13 +120,13 @@ class UserController < ApplicationController
 		get	'/likers' do
 			block_unvaluable
 			@users = current_user.all_likers
-			erb:"likers.html"
+			erb:"list_users.html"
 		end
 
 		get	'/my_likes' do
 			block_unvaluable
 			@users = current_user.my_likes
-			erb:"likers.html"
+			erb:"list_users.html"
 		end
 
 		get '/get_profile_picture/:id' do
@@ -263,6 +269,7 @@ class UserController < ApplicationController
 				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
 				@user.update_popularity_score(to_add: 1)
 				send_notif_view_to(user: @user)
+				current_user.has_view(user: @user)
 			else
 				@user = current_user
 			end
@@ -282,7 +289,7 @@ class UserController < ApplicationController
 			user_to_like = User.find(id: params[:id].to_i)
 			if !params[:id].to_s.empty? && user_to_like
 				notif = nil
-				likes = current_user.is_related_with(id: user_to_like.id)
+				likes = current_user.is_related_with(id: user_to_like.id, type_of_link: "LIKE")
 				if likes.empty?
 					current_user.add_like(id: user_to_like.id)
 					user_to_like.update_popularity_score(to_add: 10)

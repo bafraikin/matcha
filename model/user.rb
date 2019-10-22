@@ -21,6 +21,14 @@ class User < MatchaBase
 		super
 	end
 
+	def has_view(user:)
+			create_links(id: user.id, type: "HAS_VIEW", data: nil)
+	end
+
+	def users_that_looked_my_profile
+		self.get_node_related_with(link: "HAS_VIEW", type_of_node: ["user"], to_me: true)
+	end
+
 	def blocked_user
 		self.get_node_related_with(link: "BLOCK", type_of_node: ["user"], to_them: true)
 	end
