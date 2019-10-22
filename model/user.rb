@@ -21,8 +21,20 @@ class User < MatchaBase
 		super
 	end
 
+	def has_view(user:)
+			create_links(id: user.id, type: "HAS_VIEW", data: nil)
+	end
+
+	def users_that_looked_my_profile
+		self.get_node_related_with(link: "HAS_VIEW", type_of_node: ["user"], to_me: true)
+	end
+
 	def blocked_user
 		self.get_node_related_with(link: "BLOCK", type_of_node: ["user"], to_them: true)
+	end
+
+	def hashtags
+		self.get_node_related_with(link: "APPRECIATE", type_of_node: ["hashtag"], to_them: true)
 	end
 
 	def toggle_block_user(user:)
@@ -265,12 +277,12 @@ QUERY
 		"2 * 6371 * asin(sqrt(haversin(radians(lat - other.latitude))+ cos(radians(lat))* cos(radians(other.latitude))* haversin(radians(lon - other.longitude))))"
 	end
 
-	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true)
+	def find_matchable(*args, range: 0.5, equality: {}, limit: 7, skip: 0, asc: true, hashtags:, sort_by:)
 		raise MatchaBase::Error if  self.interest.empty?
 		asc = asc ? "" : "DESC"
-		args.map!{|arg| "o." + arg}
+		args.map!{|arg| "other." + arg}
 		equality.each do |k,v|
-			args << v.is_a?(String) ? "o." + k.to_s + " = '" + v.to_s + "' " :  "o." + k.to_s + " = " + v.to_s + " " 
+			args << v.is_a?(String) ? "other." + k.to_s + " = '" + v.to_s + "' " :  "other." + k.to_s + " = " + v.to_s + " " 
 		end
 		interest = self.interest.map{|sex| "other.sex = '#{sex}'"}.join(' OR ')
 		interest = "(#{interest})" if self.interest.size > 1
@@ -279,11 +291,12 @@ QUERY
 	OPTIONAL MATCH (self)<-[:BLOCK]-(exclude_either:user)
 	WITH  COLLECT(DISTINCT other) as to_exclude, COLLECT(DISTINCT exclude_either) as other_to_exclude, self, #{self.latitude} AS lat, #{self.longitude} AS lon"
 		query += " MATCH (other:user)"
-		query+= " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND NOT other IN other_to_exclude AND other.valuable = true"
+		query += " WHERE " + interest + " AND '#{self.sex}' IN other.interest AND NOT self = other AND NOT other IN to_exclude AND NOT other IN other_to_exclude AND other.valuable = true"
 		query += " AND " + args.join(" AND ")  if args.size > 0
 		query += " AND #{distance_between_user_formula} < {range}"
-		query += " WITH other, #{distance_between_user_formula} AS distance"
-		query += " RETURN other{.*, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY distance #{asc}, other.popularity_score #{asc} SKIP {skip} LIMIT {limit}"
+		query += "OPTIONAL MATCH (other)-[r:APPRECIATE]->(tag:hashtag) WHERE tag.name IN #{hashtags}"
+		query += " WITH count(r) AS interest, other, #{distance_between_user_formula} AS distance, other.popularity_score AS popularity_score, other.age AS age"
+		query += " RETURN other{.*, number: interest, distance:distance, id: ID(other), label: labels(other)[0] } ORDER BY #{sort_by} #{asc} SKIP {skip} LIMIT {limit}"
 		self.class.query_transform(query: query, hash: {limit: limit, skip: skip, range: range})
 	end
 

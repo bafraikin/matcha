@@ -10,12 +10,45 @@
 			<input type="number" class="form-control" value=7 aria-label="Username" aria-describedby="basic-addon1">
 		</div>
 		<div class="form-group">
-			<label for="formControlRange">Distance prefere en (metre) <span>1 km</span></label>
-			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="1000">
+			<label for="formControlRange">Distance prefere en (metre) <span>25 km</span></label>
+			<input type="range" onchange="this.parentNode.querySelector('span').innerText = value_converter(this.value)" class="form-control-range" id="formControlRange" min="100" max="50000" value="25000">
 		</div>
-		<div class="form-group">
-		<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
+		<div class="form-group d-flex flex-wrap justify-content-between" id="hashtags">
+			<% @hashtags.each do |hash| %>
+				<input value="<%= hash.name %>" type="checkbox" data-toggle="toggle" <%= "checked" if @hashtag_user.include?(hash.name) %> data-on="<%=hash.name%>" data-off="<%=hash.name%>">
+			<% end %>
 		</div>
+
+		<div class="form-group d-flex justify-content-between" id="hashtags">
+			<label>age minimum</label>
+			<input type="number" value="22" name="min" min="18" max="98" id=""/>
+			<input type="number" value="40" name="max" min="18" max="98" id=""/>
+			<label>age maximum</label>
+		</div>
+
+
+
+		<div class="d-flex flex-column justify-content-center" data-toggle="buttons">
+			<p class="font-weight-bold text-center">ORDONNER PAR</p>
+			<div class="btn-group btn-group-toggle">	
+				<label class="btn btn-secondary active">
+					<input type="radio" name="distance" id="option1" autocomplete="off" checked> Distance
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="interest" id="option2" autocomplete="off"> Interet
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="age" id="option3" autocomplete="off"> Age
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="popularity_score" id="option4" autocomplete="off"> Popularite
+				</label>
+			</div>
+			<div class="my-3 w-50 btn-group btn-group-toggle" style="margin: 0 25% 0 25%">	
+				<input id="ascendant" type="checkbox" checked data-toggle="toggle" data-on="🥐" data-off="🥐🥐🥐">
+			</div>
+		</div>
+		<button type="button" id="submit" class=" my-3 btn btn-primary btn-lg btn-block">SEARCH</button>
 	</div>
 
 	<div id="user_container" class="container-fluid d-flex flex-wrap justify-content-center">
@@ -24,7 +57,6 @@
 				<img loading="lazy" class="card-img-top loader" src="/assets/pictures/loader" id="<%= user.id %>"/>
 				<div class="card-body">
 					<h5 class="card-title"><%= user.first_name %></h5>
-		
 					<p class="card-text text-truncate"> <%= user.biography %> </p>
 				</div>
 				<div class="card-footer">	
@@ -41,9 +73,9 @@
 			<p class="card-text text-truncate"> </p>
 		</div>
 		<div class="card-footer">
-	
+
 			<button  type="button" class="btn btn-outline-info message"><i style="font-size: 1.5rem;font-weight: bolder;" class="fa fa-angle-double-right"></i></button>
-					<p class="text-muted" id="distance"> </p>
+			<p class="text-muted" id="distance"> </p>
 		</div>
 	</div>
 

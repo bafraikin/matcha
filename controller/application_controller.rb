@@ -17,7 +17,6 @@ class ApplicationController < Sinatra::Base
 		headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
 		headers['Access-Control-Allow-Origin'] = 'https://api.ipify.org/?format=json'
 		headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
-
 	  end
 	  
 	  options '*' do
@@ -114,6 +113,8 @@ class ApplicationController < Sinatra::Base
 
 	get /\/?/ do
 		@users = []
+		@hashtags = Hashtag.all
+		@hashtag_user = user_logged_in? ? current_user.hashtags.map(&:name) : []
 		erb:'matchable.html' 
 	end
 

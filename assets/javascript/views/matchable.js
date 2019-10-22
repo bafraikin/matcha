@@ -74,10 +74,15 @@ to_fetch = true;
 		const range = document.querySelector("input[type=range]");
 		const limit = document.querySelector("input[type=number]");
 		const toggle = document.querySelector("input[type=checkbox]#ascendant");
-		if (!csrf || !number || !(number.length) || !limit || !toggle) 
+		const hashtags = document.querySelectorAll("#hashtags input[type=checkbox]")
+		const sort = document.querySelector("label.active input[type=radio]");
+		const  min = document.querySelector("input[type=number][name=min]");
+		const  max = document.querySelector("input[type=number][name=max]");
+		if (!csrf || !number || !(number.length) || !limit || !toggle || !hashtags || !sort || !min || !max) 
 			return (-1);
 		number = number.length - 1;
-		params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&limit=" + limit.value + "&ascendant=" + toggle.checked;
+		params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&sort="+ sort.name  + "&limit=" + limit.value + "&ascendant=" + toggle.checked  + "&min=" + min.value + "&max=" + max.value;
+		hashtags.forEach(hash => params += "&hashtag_" + hash.value.slice(1) + "=" + hash.checked)
 		return (params);
 	}
 
@@ -156,6 +161,13 @@ to_fetch = true;
 		if (!main_loader)
 			reconstruct_main_loader();
 	};
+	document.querySelector("button#submit").addEventListener("click", function() {
+		const main_loader =  document.querySelector("#main_loader");
+		document.querySelector("#user_container").innerHTML = "";
+		search_new_profile();
+		if (!main_loader)
+			reconstruct_main_loader();
+	})
 })();
 
 function value_converter(meter) {

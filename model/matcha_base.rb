@@ -142,11 +142,11 @@ class MatchaBase
 			link  = ":" + link 
 		end
 		if to_me
-			@query = "MATCH (n)<-[#{link}]-(m) WHERE "
+			@query = "MATCH (n)<-[r#{link}]-(m) WHERE "
 		elsif to_them
-			@query = "MATCH (n)-[#{link}]->(m) WHERE "
+			@query = "MATCH (n)-[r#{link}]->(m) WHERE "
 		else
-			@query = "MATCH (n)-[#{link}]-(m) WHERE "
+			@query = "MATCH (n)-[r#{link}]-(m) WHERE "
 		end
 
 		type_of_node.each_with_index do |type, index|
@@ -154,7 +154,7 @@ class MatchaBase
 			@query += "m:"  + type 
 		end
 		@query+= " AND " if type_of_node.any?
-		@query += " ID(n) = " + self.id.to_s + " RETURN m"
+		@query += " ID(n) = " + self.id.to_s + " RETURN m ORDER BY r.timestamp"
 		self.class.query_transform(query: @query)
 	end
 
