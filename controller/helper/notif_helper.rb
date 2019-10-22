@@ -1,8 +1,9 @@
 module NotifHelper
-	def send_notif_to(user:, notif:, from: nil)
+	def send_notif_to(user:, notif:, from: nil, hash_conv: nil)
 		return if !user.is_a?(User) || !is_connected?(user: user)
 		settings.log.info("sending notif to #{user.key}")
 		notif = notif.to_hash if notif.is_a?(Notification)
+		notif.merge!(hash_conv: hash_conv) if hash_conv
 		notif.merge!(from: from.full_name) if from
 		settings.sockets[user.key].send(notif.to_json)
 	end
@@ -49,10 +50,9 @@ module NotifHelper
 		send_notif_to(user: user, notif: notif)
 	end
 
-	def send_notif_unmatch(first_user:, second_user:)
-		notif = first_user.add_notification(type: "UNMATCH")
-		notif_current = second_user.add_notification(type: "UNMATCH")
-		send_notif_to(user: second_user, notif: notif, from: first_user)
-		send_notif_to(user: first_user, notif: notif_current, from: second_user)
+	def send_notif_unmatch(first_user:, second_user:, hash_conv:)
+		notif = Notification.new(type: "UNMATCH")
+		send_notif_to(user: second_user, notif: notif, hash_conv: hash_conv)
+		send_notif_to(user: first_user, notif: notif, hash_conv: hash_conv)
 	end
 end

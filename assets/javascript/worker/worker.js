@@ -1,15 +1,22 @@
 let connections = [];
 let all_match = {};
 let current_conversation = [];
-const Socket = new WebSocket("ws://localhost:4567/user/socket");
+let socket;
 
-Socket.onopen = function (event) {
-	Socket.send("websocket instantie");
+const set_socket = function() {
+	if (!socket)
+	{
+socket =new WebSocket("ws://localhost:4567/user/socket");
+
+socket.onopen = function (event) {
+	socket.send("websocket instantie");
 };
 
-Socket.onmessage = function (event_ws) {
+socket.onmessage = function (event_ws) {
 	react_to_socket(event_ws);
 };
+	}
+}
 
 const get_match = function () {
 	fetch('/user/matches_hashes').then((resp) => {
@@ -133,6 +140,8 @@ const handleMessage = function (port, message) {
 
 onconnect = function (e) {
 	connections.push(e.ports[0]);
+	if (navigator.userAgent.match(/firefox/i))
+		set_socket();
 	const port = e.ports[0];
 	port.start();
 	port.onmessage = function (message) {
@@ -151,6 +160,7 @@ const openMessage = async function (id, csrf) {
 		return false;
 	}
 };
+set_socket();
 
 
 get_match();
