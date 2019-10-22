@@ -58,8 +58,9 @@ class UserController < ApplicationController
 			request.body.rewind
 			@param = JSON.parse request.body.read
 			user = User.find(id: @param["user_id"].to_i)
+			binding.pry
 			return false.to_json if !user.is_a?(User)
-			if user_message_to(user: user, hash: @param["hash"], body: @param["body"]) && !current_user.is_there_a_block_beetwen_us?(user: user)
+			if   !current_user.is_there_a_block_beetwen_us?(user: user) && user_message_to(user: user, hash: @param["hash"], body: @param["body"])
 				send_socket_message_to(user: user, body: @param["body"], hash_conv: @param["hash"])
 				return true.to_json
 			else

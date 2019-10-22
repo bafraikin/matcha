@@ -43,7 +43,7 @@ const getNotif = function() {
 		const json = JSON.parse(text);
 		const div = this.parentNode.querySelector("div");
 		div.innerHTML = "";
-		json.forEach(elem => div.innerHTML += '<p style="text-justify text-uppercase">' + elem.typei.replace(/_/g, " ") + '</p>' + "<hr/>");
+		json.forEach(elem => div.innerHTML += '<p style="text-justify text-uppercase">' + elem.type.replace(/_/g, " ") + '</p>' + "<hr/>");
 	}));
 }
 

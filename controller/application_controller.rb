@@ -127,7 +127,6 @@ class ApplicationController < Sinatra::Base
 		!settings.sockets[user.key].nil?
 	end
 
-
 	get /\/?/ do
 		@users = []
 		@hashtags = Hashtag.all
