@@ -8,6 +8,9 @@ const display_notif = function(notif) {
 		case 'NEW_MATCH':
 			console.log("nouveau match");
 			break;
+		case 'ERROR':
+			notif_error(notif);
+			break;
 		case 'NEW_MESSAGE':
 			console.log("nouveau message");
 			break;
@@ -29,6 +32,26 @@ const display_notif = function(notif) {
 const destroy_it = function() {
 	this.parentNode.removeChild(this);
 }
+
+const notif_error = function(notif) {
+	const wrapper = document.querySelector("#notif_wrapper");
+	notif = create_notif(notif);
+	if (!(notif && wrapper))
+		return;
+	notif.classList = "";
+	if (window.innerWidth < 600)
+	{
+		notif.classList.add("alert");
+		notif.classList.add("alert-danger");
+	}
+	else
+	{
+		notif.classList.add("badge");
+		notif.classList.add("badge-danger");
+	}
+	wrapper.append(notif);
+}
+
 
 const create_notif_like = function(notif) {
 	const wrapper = document.querySelector("#notif_wrapper");

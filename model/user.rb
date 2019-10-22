@@ -21,6 +21,11 @@ class User < MatchaBase
 		super
 	end
 
+	def is_there_a_block_beetwen_us?(user:)
+		block = self.is_related_with(id: user.id, type_of_link: "BLOCK")
+		block.any?
+	end
+
 	def has_view(user:)
 			create_links(id: user.id, type: "HAS_VIEW", data: nil)
 	end
@@ -39,6 +44,7 @@ class User < MatchaBase
 
 	def toggle_block_user(user:)
 		blocked = self.blocked_user
+		delete_match_with(id: user.id) if is_match_with(user_id: user.id) != false
 		unless blocked.map(&:id).include?(user.id)
 			self.suppress_his_relation_with(id: user.id)
 			self.create_links(id: user.id, type: "BLOCK", data: nil)

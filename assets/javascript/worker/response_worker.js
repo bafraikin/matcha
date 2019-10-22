@@ -16,6 +16,9 @@ worker.port.onmessage = function (resp) {
 		case "SOMEONE_LIKED_YOU":
 			display_notif(json);
 			break;
+		case "ERROR":
+			display_notif(json);
+			break;
 		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
 			display_notif(json);
 			break;

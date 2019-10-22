@@ -105,6 +105,23 @@ class ApplicationController < Sinatra::Base
 		end
 	end
 
+	def block_blocked(user:)
+		block_unvaluable
+		if current_user.is_there_a_block_beetwen_us?(user: user)
+			flash[:error] = "Error"
+			redirect "/"
+			halt
+		end
+	end
+
+	def halt_blocked(user:)
+		halt_unvaluable
+		if current_user.is_there_a_block_beetwen_us?(user: user)
+			send_notif_to(user: current_user, notif: Notification.new(type: "ERROR"))
+			halt
+		end
+	end
+
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
 		!settings.sockets[user.key].nil?

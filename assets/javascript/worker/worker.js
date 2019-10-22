@@ -41,6 +41,9 @@ const react_to_socket = function (event_ws) {
 		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
 			stream_to_front(json);
 			break;
+		case 'ERROR':
+			stream_to_front(json);
+			break;
 		case 'NEW_MESSAGE':
 			stream_to_front(json);
 			break;
