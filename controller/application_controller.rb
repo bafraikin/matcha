@@ -1,6 +1,7 @@
 
 class ApplicationController < Sinatra::Base
 	include MessengerHelper
+	include NotifHelper
 	register Sinatra::Namespace
 	register Sinatra::Flash
 
@@ -41,6 +42,7 @@ class ApplicationController < Sinatra::Base
 	end
 
 	def current_user
+		settings.log.info(is_connected?(user: session[:current_user]))
 		session[:current_user]
 	end
 

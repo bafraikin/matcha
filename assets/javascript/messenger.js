@@ -58,7 +58,7 @@ const Unmatched_chat = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
-	debugger;
+	chat_body.remove();
 }
 
 const Update_chat = function (objet) {

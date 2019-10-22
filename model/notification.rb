@@ -15,13 +15,12 @@ class Notification < MatchaBase
 		[]
 	end
 
-	def initialize(type: false)
+	def initialize(type:false)
 		if type != false
-		@type = type
-		seen = false
+			@type = type
 		end
 	end
-
+	
 	def self.create(type:)
 		hash = {type: type, seen: false}
 		unless (error = validator(hash: hash)).any?
