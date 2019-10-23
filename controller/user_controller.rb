@@ -41,7 +41,6 @@ class UserController < ApplicationController
 		end
 
 		get "/is_online/:id" do
-			binding.pry
 			if params[:id] && user = User.find(id: params[:id].to_i)
 				return true.to_json if is_connected?(user: user)
 				return user.timestamp.to_json
