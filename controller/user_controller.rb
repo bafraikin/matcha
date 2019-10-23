@@ -57,7 +57,7 @@ class UserController < ApplicationController
 			@param = JSON.parse request.body.read
 			user = User.find(id: @param["user_id"].to_i)
 			return false.to_json if !user.is_a?(User)
-			if user_message_to(user: user, hash: @param["hash"], body: @param["body"])
+			if   !current_user.is_there_a_block_beetwen_us?(user: user) && user_message_to(user: user, hash: @param["hash"], body: @param["body"])
 				send_socket_message_to(user: user, body: @param["body"], hash_conv: @param["hash"])
 				return true.to_json
 			else
@@ -103,7 +103,8 @@ class UserController < ApplicationController
 			id = params[:id].to_i
 			halt if (id == 0 && params[:id] != "0") || params[:authenticity_token] != session[:csrf]
 			rel = current_user.is_related_with(id: id, type_of_link: "MATCH")
-			if rel.any?
+			user = User.find(id: params[:id].to_i)
+			if rel.any? && user && !current_user.is_there_a_block_beetwen_us?(user: user)
 				hash = rel[0][0].properties[:data]
 				messenger = Messenger.where(equality: {match_hash: hash})
 				messages = messenger[0].get_messages if messenger.any? && messenger[0].is_a?(Messenger)
@@ -260,11 +261,12 @@ class UserController < ApplicationController
 			return if params[:id].nil?
 			block_unvaluable if params[:id].to_i != current_user.id
 			@user = User.find(id: params[:id].to_i)
+			block_blocked(user: @user) if params[:id].to_i != current_user.id && @user
 			if !@user
 				redirect "/"
 				halt
 			elsif current_user.id != @user.id
-				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
+				@like = current_user.is_related_with(id: @user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
 				@user.update_popularity_score(to_add: 1)
 				send_notif_view_to(user: @user)
 				current_user.has_view(user: @user)
@@ -286,8 +288,9 @@ class UserController < ApplicationController
 			halt_unvaluable
 			user_to_like = User.find(id: params[:id].to_i)
 			if !params[:id].to_s.empty? && user_to_like
+				halt_blocked(user: user_to_like)
 				notif = nil
-				likes = current_user.is_related_with(id: user_to_like.id, type_of_link: "LIKE|:MATCH")
+				likes = current_user.is_related_with(id: user_to_like.id, type_of_link: "LIKE | :MATCH")
 				if likes.empty?
 					current_user.add_like(id: user_to_like.id)
 					user_to_like.update_popularity_score(to_add: 10)

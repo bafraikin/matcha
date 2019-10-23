@@ -1,20 +1,19 @@
 let connections = [];
 let all_match = {};
-let current_conversation = [];
+let current_conversation = {};
 let socket;
 
-const set_socket = function() {
-	if (!socket)
-	{
-socket =new WebSocket("ws://localhost:4567/user/socket");
+const set_socket = function () {
+	if (!socket) {
+		socket = new WebSocket("ws://localhost:4567/user/socket");
 
-socket.onopen = function (event) {
-	socket.send("websocket instantie");
-};
+		socket.onopen = function (event) {
+			socket.send("websocket instantie");
+		};
 
-socket.onmessage = function (event_ws) {
-	react_to_socket(event_ws);
-};
+		socket.onmessage = function (event_ws) {
+			react_to_socket(event_ws);
+		};
 	}
 }
 
@@ -46,6 +45,9 @@ const react_to_socket = function (event_ws) {
 			stream_to_front(json);
 			break;
 		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
+			stream_to_front(json);
+			break;
+		case 'ERROR':
 			stream_to_front(json);
 			break;
 		case 'NEW_MESSAGE':
@@ -82,24 +84,26 @@ function normalize_data(data) {
 	return (data.replace(/\+/g, '%2B'));
 }
 
-const open_conv = function (port,objet) {
-	if ((objet.user_id || objet.user_id === 0) && objet.csrf) {
+const open_conv = function (port, objet) {
+	if ((objet.user_id || objet.user_id === 0) && objet.csrf && !current_conversation["user" + objet.user_id]) {
 		let promise = openMessage(objet.user_id, objet.csrf);
 		promise.then((data) => {
 			if (!data)
 				return;
 			data['src'] = objet.src;
 			data['user_id'] = objet.user_id;
-			current_conversation.push(data);
+			current_conversation["user" + objet.user_id] = data;
 			data['type'] = "open_conv";
 			port.postMessage(data);
 		});
 	}
+	else
+		postMessage({ type: "FALSE" });
 }
 
 const sendMessage = async function (objet) {
 	try {
-		objet.body  = encodeURI(objet.body);
+		objet.body = encodeURI(objet.body);
 		const response = await fetch("/user/send_message", {
 			method: 'post',
 			headers: {
@@ -109,14 +113,20 @@ const sendMessage = async function (objet) {
 			},
 			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: objet.body }),
 		});
-		objet['type'] = "MESSAGE";		
+		objet['bool'] = await fetch_json(response);
+		objet['type'] = "MESSAGE";
 		stream_to_front(objet);
 	}
 	catch (error) {
 		console.log('Request failed', error);
 	}
-
 }
+
+const close_conv = function(id) {
+	if (current_conversation["user" + id])
+		delete(current_conversation["user" + id]);
+}
+
 const handleMessage = function (port, message) {
 	if (!(message && message.data && message.data.type))
 		return;
@@ -131,8 +141,11 @@ const handleMessage = function (port, message) {
 		case 'SEND_MESSAGE':
 			sendMessage(objet);
 			break;
-		case 'get_message': 
-		break;
+		case "CLOSE_CONV":
+			close_conv(objet.body);
+			break;
+		case 'get_message':
+			break;
 		default:
 			connections.forEach(connection => connection.postMessage(objet.type));
 	}
@@ -144,6 +157,7 @@ onconnect = function (e) {
 		set_socket();
 	const port = e.ports[0];
 	port.start();
+	port.postMessage({ type: "CURRENT_CONV", body: current_conversation });
 	port.onmessage = function (message) {
 		handleMessage(port, message);
 	}

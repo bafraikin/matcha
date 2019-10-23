@@ -6,16 +6,16 @@ const display_notif = function(notif) {
 			create_notif_like(notif);
 			break;
 		case 'NEW_MATCH':
-			console.log("nouveau match");
+			notif_match(notif);
+			break;
+		case 'ERROR':
+			notif_error(notif);
 			break;
 		case 'NEW_MESSAGE':
-			console.log("nouveau message");
+			create_notif_like(notif);
 			break;
 		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
-			console.log("someone saw")
-			break;
-		case 'MESSAGE':
-			console.log("message");
+			create_notif_like(notif);
 			break;
 		default:
 			console.log("something strange happen", notif);
@@ -29,6 +29,44 @@ const display_notif = function(notif) {
 const destroy_it = function() {
 	this.parentNode.removeChild(this);
 }
+
+const notif_match = function(notif) {
+	const wrapper = document.querySelector("#notif_wrapper");
+	notif = create_notif(notif);
+	if (!(notif && wrapper))
+		return;
+	if (window.innerWidth < 600)
+	{
+		notif.classList.add("alert");
+		notif.classList.add("alert-warning");
+	}
+	else
+	{
+		notif.classList.add("badge");
+		notif.classList.add("badge-warning");
+	}
+	wrapper.append(notif);
+}
+
+const notif_error = function(notif) {
+	const wrapper = document.querySelector("#notif_wrapper");
+	notif = create_notif(notif);
+	if (!(notif && wrapper))
+		return;
+	notif.classList = "";
+	if (window.innerWidth < 600)
+	{
+		notif.classList.add("alert");
+		notif.classList.add("alert-danger");
+	}
+	else
+	{
+		notif.classList.add("badge");
+		notif.classList.add("badge-danger");
+	}
+	wrapper.append(notif);
+}
+
 
 const create_notif_like = function(notif) {
 	const wrapper = document.querySelector("#notif_wrapper");

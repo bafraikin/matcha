@@ -42,6 +42,7 @@ const reportUser = async function(id) {
 		body: JSON.stringify({user_id: id}),
 	};
 	const response = await fetch('/user/report_user', myInit);
+	window.location = "/";
 }
 
 function dont_send_it(button) {

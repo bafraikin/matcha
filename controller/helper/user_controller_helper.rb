@@ -14,9 +14,9 @@ module UserControllerHelper
 		return false if !(params["limit"].to_i > 0)
 		return false if !(params["authenticity_token"] == session["csrf"])
 		return false if !(params["ascendant"] == "true" || params["ascendant"] == "false")
-		return false if !(params["min"].to_i > 18 && params["min"].to_i < 98)
-		return false if !(params["max"].to_i > 18 && params["max"].to_i < 98)
-		return false if !(params["max"].to_i > params["min"].to_i)
+		return false if !(params["min"].to_i >= 18 && params["min"].to_i <= 98)
+		return false if !(params["max"].to_i >= 18 && params["max"].to_i <= 98)
+		return false if !(params["max"].to_i >= params["min"].to_i)
 		return false if !(possible_sort.include?(params["sort"]))
 		@hashtags = []
 		params_that_sould_exist.each {| param| 

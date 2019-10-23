@@ -16,9 +16,22 @@ class User < MatchaBase
 		{popularity_score: 20, valuable: false}
 	end
 
+	def self.cant_be_blank_on_creation
+		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
+	end
+
+	def cant_be_empty_for_valuable_account
+		[:interest, :first_name, :sex, :age, :pictures, :biography]
+	end
+
 	def destroy
 		pictures.map(&:destroy)
 		super
+	end
+
+	def is_there_a_block_beetwen_us?(user:)
+		block = self.is_related_with(id: user.id, type_of_link: "BLOCK")
+		block.any?
 	end
 
 	def has_view(user:)
@@ -39,6 +52,7 @@ class User < MatchaBase
 
 	def toggle_block_user(user:)
 		blocked = self.blocked_user
+		delete_match_with(id: user.id) if is_match_with(user_id: user.id) != false
 		unless blocked.map(&:id).include?(user.id)
 			self.suppress_his_relation_with(id: user.id)
 			self.create_links(id: user.id, type: "BLOCK", data: nil)
@@ -80,13 +94,6 @@ QUERY
 		self.get_node_related_with(link: "LIKE", type_of_node: ['user'], to_them: true)
 	end
 
-	def self.cant_be_blank_on_creation
-		[:interest, :first_name, :last_name, :password, :sex, :age, :email_token, :email, :valuable]
-	end
-
-	def cant_be_empty_for_valuable_account
-		[:interest, :first_name, :sex, :age, :pictures, :biography]
-	end
 
 	def is_match_with(user_id:)
 		match = self.is_related_with(id: user_id, type_of_link: "MATCH")
@@ -102,8 +109,13 @@ QUERY
 		self.save
 	end
 
+	def filled_in_interest?
+		hash = Hashtag.all.map(&:to_hash)
+		hash.size > (hash - hashtags.map(&:to_hash)).size
+	end
+
 	def is_valuable?
-		self.cant_be_empty_for_valuable_account.select do |method|
+		bool = self.cant_be_empty_for_valuable_account.select do |method|
 			self.send(method).then do|result|
 				if result.is_a?(Array) || result.is_a?(String)
 					result.empty?
@@ -114,6 +126,7 @@ QUERY
 				end
 			end
 		end.empty?
+	 bool && filled_in_interest?
 	end
 
 	def update_valuable
@@ -307,6 +320,5 @@ QUERY
 QUERY
 		self.class.perform_request(query: query).rows.flatten
 	end
-
 end
 

@@ -27,7 +27,7 @@ module MessengerHelper
 	def suppr_talker(talker:)
 		session[:messenger][:number] = session[:messenger][:number].to_i - 1
 		if !(session[:messenger][:talker].nil?)
-			session[:messenger][:talker].delete!("user#{talker.id}".to_sym)
+			session[:messenger][:talker].delete("user#{talker.id}".to_sym)
 		end
 		session[:messenger]
 	end
