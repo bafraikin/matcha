@@ -112,6 +112,7 @@ const sendMessage = async function (objet) {
 			},
 			body: JSON.stringify({ hash: objet.hash_conv, user_id: objet.user_id, body: objet.body }),
 		});
+		objet['bool'] = await fetch_json(response); 
 		objet['type'] = "MESSAGE";		
 		stream_to_front(objet);
 	}

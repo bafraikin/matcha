@@ -59,9 +59,15 @@ const Unmatched_chat = function (objet) {
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
 	chat_body.remove();
+	alert("End of discussion");
 }
 
 const Update_chat = function (objet) {
+	if (objet.bool == false)
+	{
+		Unmatched_chat(objet);
+		return;
+	}
 	let isChatOpen = document.querySelector("span[id='" + objet.hash_conv + "']");
 	if (!isChatOpen)
 		return;
