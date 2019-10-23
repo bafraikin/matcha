@@ -32,7 +32,7 @@ const destroy_it = function() {
 
 const notif_match = function(notif) {
 	const wrapper = document.querySelector("#notif_wrapper");
-	let notif = create_notif(notif);
+	notif = create_notif(notif);
 	if (!(notif && wrapper))
 		return;
 	if (window.innerWidth < 600)

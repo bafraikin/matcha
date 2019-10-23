@@ -40,6 +40,15 @@ class UserController < ApplicationController
 			erb:"list_users.html"
 		end
 
+		get "/is_online/:id" do
+			binding.pry
+			if params[:id] && user = User.find(id: params[:id].to_i)
+				return true.to_json if is_connected?(user: user)
+				return user.timestamp.to_json
+			end
+			return false
+		end
+
 		post '/report_user' do
 			halt_unvaluable
 			request.body.rewind
@@ -94,7 +103,6 @@ class UserController < ApplicationController
 		get '/matches_hashes' do
 			halt_unvaluable
 			@users = current_user.all_matches_with_hash
-			@users *= 10
 			return @users.to_json
 		end
 
