@@ -267,7 +267,7 @@ class UserController < ApplicationController
 				redirect "/"
 				halt
 			elsif current_user.id != @user.id
-				@like = @user.is_related_with(id: current_user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
+				@like = current_user.is_related_with(id: @user.id, type_of_link: "LIKE|:MATCH", orientation: true).any?
 				@user.update_popularity_score(to_add: 1)
 				send_notif_view_to(user: @user)
 				current_user.has_view(user: @user)
