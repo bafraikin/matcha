@@ -94,7 +94,6 @@ class UserController < ApplicationController
 		get '/matches_hashes' do
 			halt_unvaluable
 			@users = current_user.all_matches_with_hash
-			@users *= 10
 			return @users.to_json
 		end
 
