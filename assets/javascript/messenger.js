@@ -26,14 +26,15 @@ const createBannerUser = function (exemple, user) {
 
 const displayMatchReadyForChat = function (data) {
 	const div = document.getElementById('possible_conv_match');
-	const exemple = document.getElementById('exemple_possible_conv');
-	const img = div.querySelector('img#loader_conv');
-	if (!div || !data.forEach || !exemple || data.length == 0 || !img)
+	let exemple = document.getElementById('exemple_possible_conv');
+	exemple = exemple.cloneNode(true);
+	div.innerHTML = "";
+	if (!div || !data.forEach || !exemple || data.length == 0)
 		return;
-	img.parentNode.removeChild(img);
 	data.forEach((user) => {
 		div.appendChild(createBannerUser(exemple, user));
 	})
+	div.appendChild(exemple);
 }
 
 const sendMessageToWorker = function () {
@@ -58,6 +59,7 @@ const Unmatched_chat = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
+	worker.port.postMessage({ type: "CLOSE_CONV", body: chat_body.id });
 	chat_body.remove();
 	alert("End of discussion");
 }

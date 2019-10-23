@@ -16,6 +16,7 @@ const set_socket = function () {
 		};
 	}
 }
+set_socket();
 
 const get_match = function () {
 	fetch('/user/matches_hashes').then((resp) => {
@@ -57,6 +58,7 @@ const react_to_socket = function (event_ws) {
 			stream_to_front(json);
 			break;
 		case 'UNMATCH':
+			get_match();
 			stream_to_front(json);
 			break;
 		case undefined:
@@ -65,7 +67,6 @@ const react_to_socket = function (event_ws) {
 		default:
 			console.log(json);
 	}
-
 }
 
 const fetch_json = function (response) {
@@ -157,7 +158,7 @@ onconnect = function (e) {
 		set_socket();
 	const port = e.ports[0];
 	port.start();
-	port.postMessage({ type: "CURRENT_CONV", body: current_conversation });
+	port.postMessage({ type: "CURRENT_CONV", body: current_conversation});
 	port.onmessage = function (message) {
 		handleMessage(port, message);
 	}
@@ -174,6 +175,6 @@ const openMessage = async function (id, csrf) {
 		return false;
 	}
 };
-set_socket();
+
 
 get_match();

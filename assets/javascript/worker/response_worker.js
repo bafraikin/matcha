@@ -3,7 +3,7 @@ worker.port.onmessage = function (resp) {
 	if (!resp.data || resp.data == "")
 		return;
 	const json = resp.data;
-	switch(json.type) { 
+	switch (json.type) {
 		case "all_match":
 			displayMatchReadyForChat(json.data);
 			break;
@@ -13,7 +13,7 @@ worker.port.onmessage = function (resp) {
 		case "NEW_MATCH":
 			display_notif(json);
 			break;
-			case "CURRENT_CONV":
+		case "CURRENT_CONV":
 			display_conv(json);
 			break;
 		case "SOMEONE_LIKED_YOU":
