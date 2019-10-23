@@ -8,7 +8,7 @@ const displayChatMessages = function (message_json, id, to_add) {
 			elem.id = "badge_chat_left";
 		}
 		else {
-			elem.classList.add("py-1", "px-1", "rounded",  "text-justify", "float-right", "bg-primary", "text-white");
+			elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-right", "bg-primary", "text-white");
 			elem.id = "badge_chat_right";
 		}
 		elem.innerText = decodeURI(message_json[i].body);
@@ -19,7 +19,15 @@ const displayChatMessages = function (message_json, id, to_add) {
 }
 
 const closeDiscussion = function () {
+	if (!(this && worker))
+		return;
+		console.log("tour d ca ajas hdfa ");
+	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id });
 	this.parentNode.removeChild(this);
+}
+
+const display_conv = function (convs) {
+	Object.keys(convs.body).forEach(conv => displayNewModalChat(convs.body[conv]));
 }
 
 // {first_name:, hash_conv:, messages: [{}], src:}
@@ -36,7 +44,7 @@ const displayNewModalChat = function (objet) {
 	messenger.appendChild(toDisplay);
 }
 
-const getNotif = function() {
+const getNotif = function () {
 	fetch("/user/get_notif").then((resp) => resp.text().then((text) => {
 		if (!(this && text && text != ""))
 			return;
