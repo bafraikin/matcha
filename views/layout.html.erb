@@ -11,10 +11,10 @@
 		<link rel="stylesheet" href="/assets/stylesheets/layout.css" type="text/css" charset="utf-8">
 		<% if user_logged_in? %>
 			<div id="user_id" name="<%= current_user.id %>"></div>
-			<script defer charset="utf-8">
-				const worker = new SharedWorker("/assets/javascript/worker/worker.js", "toto");
+			<script  defer charset="utf-8">
+				const worker = new SharedWorker("/assets/javascript/worker/worker.js");
 			</script>
-			<script defer charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
+			<script  defer charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
 		<% end %>
 		<title> <%= title %> </title>
 	</head>

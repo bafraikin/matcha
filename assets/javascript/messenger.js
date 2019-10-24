@@ -5,8 +5,6 @@ const new_message = function (text, receiver) {
 	return JSON.stringify({ data: text, receiver: receiver });
 }
 
-
-
 const openConv = function (user) {
 	if (!(csrf && user && (user.user_id || user.user_id === 0) && user.src))
 		return;
@@ -27,6 +25,8 @@ const createBannerUser = function (exemple, user) {
 const displayMatchReadyForChat = function (data) {
 	const div = document.getElementById('possible_conv_match');
 	let exemple = document.getElementById('exemple_possible_conv');
+	if (!exemple)
+		return;
 	exemple = exemple.cloneNode(true);
 	div.innerHTML = "";
 	if (!div || !data.forEach || !exemple || data.length == 0)
