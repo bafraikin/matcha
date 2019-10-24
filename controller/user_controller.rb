@@ -40,6 +40,14 @@ class UserController < ApplicationController
 			erb:"list_users.html"
 		end
 
+		get "/is_online/:id" do
+			if params[:id] && user = User.find(id: params[:id].to_i)
+				return true.to_json if is_connected?(user: user)
+				return user.timestamp.to_json
+			end
+			return false
+		end
+
 		post '/report_user' do
 			halt_unvaluable
 			request.body.rewind

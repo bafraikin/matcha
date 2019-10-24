@@ -1,3 +1,5 @@
+intervals = {};
+
 const displayChatMessages = function (message_json, id, to_add) {
 	let i = 0;
 	let messages = [];
@@ -21,7 +23,8 @@ const displayChatMessages = function (message_json, id, to_add) {
 const closeDiscussion = function () {
 	if (!(this && worker))
 		return;
-		console.log("tour d ca ajas hdfa ");
+	clearInterval(intervals["user" + this.id]);
+	delete(intervals["user" + this.id]);
 	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id });
 	this.parentNode.removeChild(this);
 }
@@ -30,19 +33,39 @@ const display_conv = function (convs) {
 	Object.keys(convs.body).forEach(conv => displayNewModalChat(convs.body[conv]));
 }
 
-// {first_name:, hash_conv:, messages: [{}], src:}
 const displayNewModalChat = function (objet) {
 	const exemple = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
 	toDisplay.id = objet.user_id;
-	toDisplay.querySelector(".card-header span#first_name").innerHTML = objet.first_name;
+	toDisplay.querySelector(".card-header div span#first_name").innerHTML = objet.first_name;
+	intervals["user" + objet.user_id] = setInterval(isOnline.bind(toDisplay.querySelector(".card-header div"), objet.user_id), 5000);
 	toDisplay.querySelector(".card-footer span").id = objet.hash_conv;
 	displayChatMessages(objet.messages, objet.user_id, toDisplay.querySelector(".card-body"));
 	toDisplay.querySelector(".card-footer textarea").onkeypress = HandleKeyPressChat;
 	messenger.appendChild(toDisplay);
 }
+
+const updateChat = function(that, text) {
+	if (!(that && text && text != ""))
+		return;
+	if (text.match(/true/))
+		that.querySelector("#status").innerHTML = "<div class='text-success'><i class='fa fa-bandcamp'></i></div>"
+	else
+		that.querySelector("#status").innerHTML =  "<div class='text-muted'>il y a " + Math.floor((new Date().getTime() - (JSON.parse(text) * 1000)) / 1000 / 60) + " min</div>";
+}
+
+const isOnline = function(id) {
+	if (!this)
+		return;
+	const that = this;
+	fetch("/user/is_online/" + id).then(resp => resp.text().then((text) => {
+			updateChat(that, text);
+	}
+	).catch(error => console.log(error, 1))).catch(error => console.log(error));
+}
+
 
 const getNotif = function () {
 	fetch("/user/get_notif").then((resp) => resp.text().then((text) => {
