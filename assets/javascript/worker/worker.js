@@ -166,10 +166,15 @@ onconnect = function (e) {
 }
 
 const openMessage = async function (id, csrf) {
+	try {
 		const response = await fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf));
 		const response_1 = await check_status(response);
 		const data = await fetch_json(response_1);
 		return data;
+	}
+	catch (error) {
+		return false;
+	}
 };
 
 
