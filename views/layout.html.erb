@@ -15,6 +15,11 @@
 				const worker = new SharedWorker("/assets/javascript/worker/worker.js", "toto");
 			</script>
 			<script defer charset="utf-8" src="/assets/javascript/worker/response_worker.js"></script>
+			<script charset="utf-8">
+				const im_ready = function() {
+				worker.port.postMessage({type: "YOU_WERE_READY", data: <%= current_user.id %> })
+				}
+			</script>	
 		<% end %>
 		<title> <%= title %> </title>
 	</head>
@@ -117,7 +122,7 @@
 					</div>
 					<div class="card-footer">
 						<span class="invisible">hash</span>
-                                                <textarea class="form-control" name="" id="input_chat"></textarea>
+						<textarea class="form-control" name="" id="input_chat"></textarea>
 					</div>
 				</div>
 			</div>

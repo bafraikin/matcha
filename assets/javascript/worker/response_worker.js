@@ -13,6 +13,9 @@ worker.port.onmessage = function (resp) {
 		case "NEW_MATCH":
 			display_notif(json);
 			break;
+		case "IM_READY":
+			im_ready();
+			break;
 		case "CURRENT_CONV":
 			display_conv(json);
 			break;

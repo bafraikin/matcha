@@ -2,6 +2,53 @@ let connections = [];
 let all_match = {};
 let current_conversation = {};
 let socket;
+let db;
+let current_user_id;
+
+/*
+indexedDB = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB; 
+IDBTransaction = IDBTransaction || webkitIDBTransaction || msIDBTransaction;
+IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange
+var DBOpenRequest = indexedDB.open("toDoList", 4);
+
+DBOpenRequest.onsuccess = function(event) {
+  db = DBOpenRequest.result;
+  addData();
+};
+
+function addData() {
+   var request = db.transaction(["employee"], "readwrite")
+   .objectStore("employee")
+   .add({ id: "01", name: "prasad", age: 24, email: "prasad@tutorialspoint.com" });
+
+   request.onsuccess = function(event) {
+      console.log("Prasad has been added to your database.");
+   };
+
+   request.onerror = function(event) {
+      console.log("Unable to add data\r\nPrasad is already exist in your database! ");
+   }
+}
+
+function read() {
+   var transaction = db.transaction(["employee"]);
+   var objectStore = transaction.objectStore("employee");
+   var request = objectStore.get("00-03");
+
+   request.onerror = function(event) {
+      console.log("Unable to retrieve daa from database!");
+   };
+
+   request.onsuccess = function(event) {
+
+      if(request.result) {
+         console.log(request.result);
+      } else {
+         console.log("Kenny couldn't be found in your database!");
+      }
+   };
+}
+*/
 
 const set_socket = function () {
 	if (!socket) {
@@ -26,6 +73,13 @@ const get_match = function () {
 			all_match = JSON.parse(text);
 		});
 	});
+}
+
+const begin = function (object) {
+	if (!(object.data && !isNaN(object.data)))
+		debugger;
+	current_user_id = object.data;
+
 }
 
 const stream_to_front = function (to_stream) {
@@ -147,6 +201,9 @@ const handleMessage = function (port, message) {
 			break;
 		case 'get_message':
 			break;
+		case 'YOU_WERE_READY':
+			begin(objet);
+			break;
 		default:
 			connections.forEach(connection => connection.postMessage(objet.type));
 	}
@@ -158,10 +215,11 @@ onconnect = function (e) {
 		set_socket();
 	const port = e.ports[0];
 	port.start();
-	port.postMessage({ type: "CURRENT_CONV", body: current_conversation});
+	//port.postMessage({ type: "CURRENT_CONV", body: current_conversation});
 	port.onmessage = function (message) {
 		handleMessage(port, message);
 	}
+	port.postMessage({type: "IM_READY"});
 }
 
 const openMessage = async function (id, csrf) {
