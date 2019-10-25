@@ -1,10 +1,14 @@
 <form action="registrate" method="post" accept-charset="utf-8">
   <input type=hidden name='authenticity_token' value="<%=env['rack.session'][:csrf]%>">
+	<div class="col">
   <p>email</p>
-  <input type="email" value="" name="user[email]" id="email_matcha"/>
+  <input type="email" class="form-control" name="user[email]" id="email_matcha"/>
+  </div>
+			<div class="col">
   <p>password</p>
-  <input type="password" value="" name="user[password]" id=""/>
-  <input type="submit" value="OK" />
+  <input type="password" class="form-control" name="user[password]" id=""/>
+  </div>
+  <input class="btn btn-primary mb-2" type="submit" value="OK" />
   <input type="hidden" name="user[latitude]" value="">
   <input type="hidden" name="user[longitude]" value="">
 </form>

@@ -36,6 +36,13 @@ body {
 	padding-top: 56px;
 }
 
+.matcha_text {
+	text-align: center;
+	font-size: 5vh;
+	color: white;
+	margin-top: 10%;
+  }
+  
 .success {
 	background-color: green;
 }

@@ -23,11 +23,8 @@ const displayChatMessages = function (message_json, id, to_add) {
 const closeDiscussion = function () {
 	if (!(this && worker))
 		return;
-<<<<<<< HEAD
-=======
 	clearInterval(intervals["user" + this.id]);
 	delete(intervals["user" + this.id]);
->>>>>>> c2e35bb96a7e1836adf0134a3bbaabf0f4de8f24
 	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id });
 	this.parentNode.removeChild(this);
 	if (window.innerWidth < 700)

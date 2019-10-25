@@ -18,7 +18,7 @@
 		<% end %>
 		<title> <%= title %> </title>
 	</head>
-	<body>
+	<body style="<% unless user_logged_in?%>background: linear-gradient(to right, #ff5858, #f857a6); <% end %>" >  
 		<% flash.keys.each do |type| %>
 			<div data-alert class="flash <%= type %> alert-box radius">
 				<%= flash[type] %>
@@ -151,6 +151,8 @@
 			<script src="/assets/javascript/notif.js" charset="utf-8"> </script>
 			<script src="/assets/javascript/messenger.js" charset="utf-8"></script>
 			<script src="/assets/javascript/views/layout.js" charset="utf-8"></script>
+		<% else %>
+			<h3 class="matcha_text">MATCHA</h3>
 		<% end %>
 	</body>
 </html>
