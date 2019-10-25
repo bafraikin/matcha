@@ -10,7 +10,7 @@ const new_message = function (text, receiver) {
 const openConv = function (user) {
 	if (!(csrf && user && (user.user_id || user.user_id === 0) && user.src))
 		return;
-	worker.port.postMessage({ type: 'onpen_conv', user_id: user.user_id, src: user.src, csrf: normalize_data(csrf) });
+	worker.port.postMessage({ type: 'open_conv', user_id: user.user_id, src: user.src, csrf: normalize_data(csrf) });
 };
 
 const createBannerUser = function (exemple, user) {
