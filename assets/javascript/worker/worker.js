@@ -1,54 +1,62 @@
 let connections = [];
 let all_match = {};
-let current_conversation = {};
+let current_conv = {isPrivate: false};
 let socket;
 let db;
 let current_user_id;
+let DBOpenRequest;
 
-/*
 indexedDB = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB; 
 IDBTransaction = IDBTransaction || webkitIDBTransaction || msIDBTransaction;
 IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange
-var DBOpenRequest = indexedDB.open("toDoList", 4);
 
-DBOpenRequest.onsuccess = function(event) {
-  db = DBOpenRequest.result;
-  addData();
-};
 
-function addData() {
-   var request = db.transaction(["employee"], "readwrite")
-   .objectStore("employee")
-   .add({ id: "01", name: "prasad", age: 24, email: "prasad@tutorialspoint.com" });
-
-   request.onsuccess = function(event) {
-      console.log("Prasad has been added to your database.");
-   };
-
-   request.onerror = function(event) {
-      console.log("Unable to add data\r\nPrasad is already exist in your database! ");
-   }
+const prepareDB = function() {
+	DBOpenRequest = indexedDB.open("current_conv" + current_user_id);
+	DBOpenRequest.onsuccess = function(event) {
+		console.log("we created db")
+	}
+	DBOpenRequest.onupgradeneeded = function(event) {
+		var db = event.target.result;
+		var objectStore = db.createObjectStore("current_conversation", { keyPath: "id" });
+	};
+	DBOpenRequest.onerror = function(event) {
+		current_conv.isPrivate = true;
+	}
 }
 
-function read() {
-   var transaction = db.transaction(["employee"]);
-   var objectStore = transaction.objectStore("employee");
-   var request = objectStore.get("00-03");
+function addData(data) {
+	var request = db.transaction("current_conversation", "readwrite")
+		.objectStore("current_conversation")
+		.add(data);
 
-   request.onerror = function(event) {
-      console.log("Unable to retrieve daa from database!");
-   };
+	request.onsuccess = function(event) {
+		console.log(we did it);
+	};
 
-   request.onsuccess = function(event) {
-
-      if(request.result) {
-         console.log(request.result);
-      } else {
-         console.log("Kenny couldn't be found in your database!");
-      }
-   };
+	request.onerror = function(event) {
+		console.log("Unable to add data\r\nPrasad is already exist in your database! ");
+	}
 }
-*/
+
+function read(name) {
+	var transaction = db.transaction("current_conversation", "read");
+	var objectStore = transaction.objectStore("current_conversation");
+	var request = objectStore.get(name);
+
+	request.onerror = function(event) {
+		console.log("Unable to retrieve daa from database!");
+	};
+
+	request.onsuccess = function(event) {
+		if(request.result) {
+			console.log(request.result);
+		} else {
+			console.log("Kenny couldn't be found in your database!");
+		}
+	};
+}
+
 
 const set_socket = function () {
 	if (!socket) {
@@ -65,6 +73,10 @@ const set_socket = function () {
 }
 set_socket();
 
+const isPrivate = function() {
+	return current_conv.isPrivate;
+}
+
 const get_match = function () {
 	fetch('/user/matches_hashes').then((resp) => {
 		resp.text().then(text => {
@@ -79,7 +91,7 @@ const begin = function (object) {
 	if (!(object.data && !isNaN(object.data)))
 		debugger;
 	current_user_id = object.data;
-
+	prepareDB();
 }
 
 const stream_to_front = function (to_stream) {
