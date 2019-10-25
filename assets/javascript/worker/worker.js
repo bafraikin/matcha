@@ -38,9 +38,9 @@ const clear = function () {
 }
 
 const addConv = function(data, callback) {
-	var request = db.transaction("current_conversation", "readwrite")
-		.objectStore("current_conversation")
-		.add(data);
+	let transaction = db.transaction("current_conversation", "readwrite");
+		let objectStore = transaction.objectStore("current_conversation");
+		let request = objectStore.add(data);
 	request.onsuccess = function(event) {
 		callback();
 	};
@@ -61,7 +61,7 @@ const getAllConv = function(callback, callbackError) {
 		if(request.result) 
 		{
 			console.log(request);
-			stream_to_front(request.result);
+			stream_to_front({type: "CURRENT_CONV" , body: request.result});
 		}
 		else
 			console.log(request);
@@ -83,13 +83,14 @@ const current_conversation = function(user_id, callback, callbackError) {
 const getConv = function(user_id, callback, callback_error) {
 	var transaction = db.transaction("current_conversation", "readonly");
 	var objectStore = transaction.objectStore("current_conversation");
-	var request = objectStore.get(user_id);
+	var request = objectStore.get(parseInt(user_id));
 
 	request.onerror = function(event) {
 		console.log("Unable to retrieve daa from database!");
 	};
 
 	request.onsuccess = function(event) {
+		console.log(event);
 		if(request.result) 
 			callback(request.result);
 		else 
@@ -102,9 +103,9 @@ const tryRemoveConv = function(user_id) {
 };
 
 const removeConv = function(conv) {
-	var transaction = db.transaction("current_conversation", "read");
+	var transaction = db.transaction("current_conversation", "readwrite");
 	var objectStore = transaction.objectStore("current_conversation");
-	var request = objectStore.delete(conv.user_id);
+	objectStore.delete(conv.user_id);
 }
 
 const set_socket = function () {
@@ -144,7 +145,7 @@ const get_match = function () {
 }
 
 const begin = function (object) {
-	if (object.data && !isNaN(object.data))
+	if ((object.data || object.data === 0) && !isNaN(object.data))
 	{
 		current_user_id = object.data;
 	prepareDB();
