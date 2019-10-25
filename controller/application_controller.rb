@@ -125,7 +125,7 @@ class ApplicationController < Sinatra::Base
 			halt
 		end
 	end
-
+	
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
 		!settings.sockets[user.key].nil?

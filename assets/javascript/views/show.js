@@ -241,3 +241,6 @@ const update_sex = function () {
 		sex.addEventListener("change", update_sex);
 	});
 })();
+
+
+setInterval(isOnline.bind(document.querySelector("div#status").parentNode, document.querySelector("div#status").parentNode.id), 5000);
