@@ -2,7 +2,6 @@
 const display_notif = function(notif) {
 	switch (notif.type) {
 		case 'SOMEONE_LIKED_YOU':
-			console.log("tu plais a quelqu'un petit coquin");
 			create_notif_like(notif);
 			break;
 		case 'NEW_MATCH':

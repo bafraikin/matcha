@@ -12,6 +12,8 @@ class ApplicationController < Sinatra::Base
 	enable :sessions
 	use Rack::Protection
 	use Rack::Protection::AuthenticityToken
+	set :dump_errors, true
+	
 
 
 	before do

@@ -21,9 +21,10 @@ const displayChatMessages = function (message_json, id, to_add) {
 const closeDiscussion = function () {
 	if (!(this && worker))
 		return;
-		console.log("tour d ca ajas hdfa ");
 	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id });
 	this.parentNode.removeChild(this);
+	if (window.innerWidth < 700)
+		document.querySelector('#messenger').classList.remove('infront')
 }
 
 const display_conv = function (convs) {
@@ -36,6 +37,8 @@ const displayNewModalChat = function (objet) {
 	const messenger = document.querySelector("#messenger");
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
+	if (window.innerWidth < 700)
+		exemple.parentNode.classList.add('infront')
 	toDisplay.id = objet.user_id;
 	toDisplay.querySelector(".card-header span#first_name").innerHTML = objet.first_name;
 	toDisplay.querySelector(".card-footer span").id = objet.hash_conv;
@@ -67,4 +70,11 @@ window.onload = () => {
 		button.addEventListener('click', function () {
 			askForChatterToWorker();
 		});
-};
+}
+
+window.onresize = function () {
+	if (window.innerWidth > 700)
+		document.querySelector('#messenger').classList.remove('infront');
+	if (window.innerWidth < 700)
+		document.querySelector('#messenger').classList.add('infront');
+}
