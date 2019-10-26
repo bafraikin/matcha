@@ -9,8 +9,7 @@ let csrf;
 
 indexedDB = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB; 
 IDBTransaction = IDBTransaction || webkitIDBTransaction || msIDBTransaction;
-IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange
-
+IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange;
 
 const prepareDB = function(callback) {
 	DBOpenRequest = indexedDB.open("current_conv" + current_user_id, 1,{version: 1, storage: "persistent"});
@@ -127,6 +126,7 @@ const set_socket = function () {
 		};
 	}
 }
+
 set_socket();
 
 const isPrivate = function() {
@@ -233,7 +233,6 @@ const open_conv = function (objet) {
 				}
 				else
 				{
-					debugger;
 					let tmp = data;
 					tmp["type"] = "open_conv";
 					addConv(data, stream_to_front.bind(this, tmp));
