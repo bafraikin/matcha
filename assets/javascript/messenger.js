@@ -59,8 +59,7 @@ const Unmatched_chat = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
-	worker.port.postMessage({ type: "CLOSE_CONV", body: chat_body.id });
-	chat_body.remove();
+	worker.port.postMessage({ type: "CLOSE_CONV", body: chat_body.id, hash_conv: objet.hash_conv });
 	alert("End of discussion");
 }
 

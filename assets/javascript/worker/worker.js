@@ -266,7 +266,8 @@ const sendMessage = async function (objet) {
 	}
 }
 
-const close_conv = function(id) {
+const close_conv = function(object) {
+	let id = object.body;
 	if (isPrivate())
 	{
 		if (current_conv["user" + id])
@@ -274,6 +275,7 @@ const close_conv = function(id) {
 	}
 	else
 		tryRemoveConv(id);
+	stream_to_front({type: 'CLOSE_CONV' ,hash_conv: object.hash_conv});
 }
 
 const handleMessage = function (port, message) {
@@ -295,7 +297,7 @@ const handleMessage = function (port, message) {
 			sendMessage(objet);
 			break;
 		case "CLOSE_CONV":
-			close_conv(objet.body);
+			close_conv(objet);
 			break;
 		case 'get_message':
 			break;

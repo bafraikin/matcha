@@ -37,6 +37,9 @@ worker.port.onmessage = function (resp) {
 		case 'UNMATCH':
 			Unmatched_chat(json);
 			break;
+		case 'CLOSE_CONV':
+			closeDiscussion(json);
+			break;
 		default:
 			console.log(json);
 	}
