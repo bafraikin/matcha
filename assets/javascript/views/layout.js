@@ -34,6 +34,8 @@ const display_conv = function (convs) {
 const displayNewModalChat = function (objet) {
 	const exemple = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
+	if (!(exemple && messenger && !document.querySelector("#messenger span.invisible#" + objet.hash_conv)))
+		return;
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
 	toDisplay.id = objet.user_id;

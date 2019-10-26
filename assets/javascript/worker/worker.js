@@ -5,6 +5,7 @@ let socket;
 let db;
 let current_user_id;
 let DBOpenRequest;
+let csrf; 
 
 indexedDB = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB; 
 IDBTransaction = IDBTransaction || webkitIDBTransaction || msIDBTransaction;
@@ -12,7 +13,7 @@ IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange
 
 
 const prepareDB = function(callback) {
-	DBOpenRequest = indexedDB.open("current_conv" + current_user_id);
+	DBOpenRequest = indexedDB.open("current_conv" + current_user_id, 1,{version: 1, storage: "persistent"});
 
 	DBOpenRequest.onsuccess = function(event) {
 		db = event.target.result;
@@ -39,11 +40,17 @@ const clear = function () {
 
 const addConv = function(data, callback) {
 	let transaction = db.transaction("current_conversation", "readwrite");
-		let objectStore = transaction.objectStore("current_conversation");
-		let request = objectStore.add(data);
+	let objectStore = transaction.objectStore("current_conversation");
+	let request = objectStore.add(data);
+
+	transaction.onabort = function(event) {
+		current_conv.isPrivate = true;
+		current_conv["user" + data.user_id] = data;
+	}
+
 	request.onsuccess = function(event) {
 		callback();
-	};
+	}
 
 	request.onerror = function(event) {
 		console.log("Unable to add data\r\nPrasad is already exist in your database! ");
@@ -72,9 +79,9 @@ const current_conversation = function(user_id, callback, callbackError) {
 	if (isPrivate())
 	{
 		if (current_conv["user" + user_id])
-			callback();
-		else
 			callbackError();
+		else
+			callback();
 	}
 	else
 		getConv(user_id, callbackError, callback);
@@ -115,7 +122,6 @@ const set_socket = function () {
 		socket.onopen = function (event) {
 			socket.send("websocket instantie");
 		};
-
 		socket.onmessage = function (event_ws) {
 			react_to_socket(event_ws);
 		};
@@ -148,7 +154,7 @@ const begin = function (object) {
 	if ((object.data || object.data === 0) && !isNaN(object.data))
 	{
 		current_user_id = object.data;
-	prepareDB();
+		prepareDB();
 	}
 	else
 		return;
@@ -210,10 +216,10 @@ function normalize_data(data) {
 	return (data.replace(/\+/g, '%2B'));
 }
 
-const open_conv = function (port, objet) {
-	if ((objet.user_id || objet.user_id === 0) && objet.csrf) {
+const open_conv = function (objet) {
+	if ((objet.user_id || objet.user_id === 0) && csrf) {
 		current_conversation(objet.user_id, function() {
-			let promise = openMessage(objet.user_id, objet.csrf);
+			let promise = openMessage(objet.user_id, csrf);
 			promise.then((data) => {
 				if (!data)
 					return;
@@ -227,15 +233,15 @@ const open_conv = function (port, objet) {
 				}
 				else
 				{
+					debugger;
 					let tmp = data;
 					tmp["type"] = "open_conv";
 					addConv(data, stream_to_front.bind(this, tmp));
 				}
 			});
-		},
-			function(port) {
-				port.postMessage({ type: "FALSE" });
-			}.bind(this, port));
+		}, function() {
+			stream_to_front({ type: "FALSE" });
+		});
 	}
 }
 
@@ -276,7 +282,11 @@ const handleMessage = function (port, message) {
 	let objet = message.data;
 	switch (objet.type) {
 		case 'open_conv':
-			open_conv(port, objet)
+			csrf = undefined;
+			if (!(objet.csrf && objet.csrf != "")) 
+				return ;
+			csrf = objet.csrf;
+			open_conv(objet)
 			break;
 		case 'give_me_match':
 			port.postMessage({ type: "all_match", data: all_match });
