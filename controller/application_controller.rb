@@ -12,6 +12,8 @@ class ApplicationController < Sinatra::Base
 	enable :sessions
 	use Rack::Protection
 	use Rack::Protection::AuthenticityToken
+	set :dump_errors, true
+	
 
 
 	before do
@@ -123,7 +125,7 @@ class ApplicationController < Sinatra::Base
 			halt
 		end
 	end
-
+	
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
 		!settings.sockets[user.key].nil?

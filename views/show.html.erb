@@ -36,7 +36,11 @@
 			<p class="form-control" id="first_name" contenteditable='true'><%= h(@user.first_name) %></p>
 			<input type='submit' value="save">
 		<% else %>
+			<div class="d-flex justify-content-center" id="<%= @user.id %>">	
 			<p><%= h(@user.first_name) %></p>
+			<div id="status">
+				</div>
+				</div>
 		<% end %> 
 	</div>
 
@@ -55,13 +59,11 @@
 			<p class="font-weight-bold">email</p>
 			<p class="form-control" id="email" contenteditable='true'><%= h(@user.email) %></p>
 			<input type='submit' value="save">
-
 		<% end %> 
 	</div>
 
 	<div>
 		<% if current_user.id == @user.id %>
-
 			<p class="font-weight-bold">Set new password</p>
 			<p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);" contenteditable='true'></p>
 			<br>
@@ -140,8 +142,8 @@
 		<div id="longitude" name="<%= @user.longitude%>"></div>
 	</div>
 
-	<script charset="utf-8" src="/assets/javascript/views/show.js"></script>
-	<script charset="utf-8"  <%= "onload='bool_true()'" if (current_user.id == @user.id ) %> src="/assets/javascript/geo_loc.js"></script>
+	<script defer charset="utf-8" src="/assets/javascript/views/show.js"></script>
+	<script  charset="utf-8"  <%= "onload='bool_true()'" if (current_user.id == @user.id ) %> src="/assets/javascript/geo_loc.js"></script>
 	<script defer async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARJwCIX52hoxe50mvSYgszfeaWZE9-jGA&callback=initMap"></script>
 </div>
 

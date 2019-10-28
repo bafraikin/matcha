@@ -5,8 +5,6 @@ const new_message = function (text, receiver) {
 	return JSON.stringify({ data: text, receiver: receiver });
 }
 
-
-
 const openConv = function (user) {
 	if (!(csrf && user && (user.user_id || user.user_id === 0) && user.src))
 		return;
@@ -27,8 +25,12 @@ const createBannerUser = function (exemple, user) {
 const displayMatchReadyForChat = function (data) {
 	const div = document.getElementById('possible_conv_match');
 	let exemple = document.getElementById('exemple_possible_conv');
+	if (!exemple)
+		return;
 	exemple = exemple.cloneNode(true);
 	div.innerHTML = "";
+	if (exemple)
+		exemple = exemple.cloneNode(true);
 	if (!div || !data.forEach || !exemple || data.length == 0)
 		return;
 	data.forEach((user) => {
@@ -59,13 +61,18 @@ const Unmatched_chat = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
-	worker.port.postMessage({ type: "CLOSE_CONV", body: chat_body.id, hash_conv: objet.hash_conv });
+
+	worker.port.postMessage({ type: "CLOSE_CONV", body: chat_body.id });
+	chat_body.remove();
+	if (window.innerWidth < 700)
+		document.querySelector('#messenger').classList.remove('infront')
+
 	alert("End of discussion");
+
 }
 
 const Update_chat = function (objet) {
-	if (objet.bool == false)
-	{
+	if (objet.bool == false) {
 		Unmatched_chat(objet);
 		return;
 	}

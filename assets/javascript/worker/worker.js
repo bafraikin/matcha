@@ -114,7 +114,7 @@ const removeConv = function(conv) {
 	objectStore.delete(conv.user_id);
 }
 
-const set_socket = function () {
+const set_socket = function() {
 	if (!socket) {
 		socket = new WebSocket("ws://localhost:4567/user/socket");
 
@@ -140,7 +140,7 @@ const streamCurrentConv = function(callback) {
 		getAllConv(callback, callback)
 }
 
-const get_match = function () {
+const get_match = function() {
 	fetch('/user/matches_hashes').then((resp) => {
 		resp.text().then(text => {
 			if (text == "")
@@ -160,11 +160,12 @@ const begin = function (object) {
 		return;
 }
 
-const stream_to_front = function (to_stream) {
+const stream_to_front = function(to_stream) {
 	connections.forEach(port => port.postMessage(to_stream));
 };
 
-const react_to_socket = function (event_ws) {
+
+const react_to_socket = function(event_ws) {
 	if (!(event_ws && event_ws.isTrusted && event_ws.data != ""))
 		return;
 	json = JSON.parse(event_ws.data);
@@ -200,11 +201,11 @@ const react_to_socket = function (event_ws) {
 	}
 }
 
-const fetch_json = function (response) {
+const fetch_json = function(response) {
 	return response.json()
 }
 
-const check_status = function (response) {
+const check_status = function(response) {
 	if (response.status >= 200 && response.status < 300) {
 		return Promise.resolve(response)
 	} else {
