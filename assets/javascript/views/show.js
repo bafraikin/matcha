@@ -242,5 +242,5 @@ const update_sex = function () {
 	});
 })();
 
-
+if (document.querySelector("div#status"))
 setInterval(isOnline.bind(document.querySelector("div#status").parentNode, document.querySelector("div#status").parentNode.id), 5000);
