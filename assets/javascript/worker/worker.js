@@ -1,7 +1,118 @@
 let connections = [];
 let all_match = {};
-let current_conversation = {};
+let current_conv = {isPrivate: false};
 let socket;
+let db;
+let current_user_id;
+let DBOpenRequest;
+let csrf; 
+
+indexedDB = indexedDB || mozIndexedDB || webkitIndexedDB || msIndexedDB; 
+IDBTransaction = IDBTransaction || webkitIDBTransaction || msIDBTransaction;
+IDBKeyRange = IDBKeyRange || webkitIDBKeyRange || msIDBKeyRange;
+
+const prepareDB = function(callback) {
+	DBOpenRequest = indexedDB.open("current_conv" + current_user_id, 1,{version: 1, storage: "persistent"});
+
+	DBOpenRequest.onsuccess = function(event) {
+		db = event.target.result;
+		streamCurrentConv(stream_to_front);
+	};
+	DBOpenRequest.onupgradeneeded = function(event) {
+		console.log("we upgraded db")
+		db = event.target.result;
+		let objectStore = db.createObjectStore("current_conversation", {keyPath: "user_id"});
+		objectStore.transaction.oncomplete = function(event) {
+			var customerObjectStore = db.transaction("current_conversation", "readwrite").objectStore("current_conversation");
+		}
+	};
+	DBOpenRequest.onerror = function(event) {
+		current_conv.isPrivate = true;
+	}
+};
+
+const clear = function () {
+	let objetStore = db.transaction("current_conversation", "readwrite");
+	objetStore =  objetStore.objectStore("current_conversation");
+	objetStore.clear();
+}
+
+const addConv = function(data, callback) {
+	let transaction = db.transaction("current_conversation", "readwrite");
+	let objectStore = transaction.objectStore("current_conversation");
+	let request = objectStore.add(data);
+
+	transaction.onabort = function(event) {
+		current_conv.isPrivate = true;
+		current_conv["user" + data.user_id] = data;
+	}
+
+	request.onsuccess = function(event) {
+		callback();
+	}
+
+	request.onerror = function(event) {
+		console.log("Unable to add data\r\nPrasad is already exist in your database! ");
+	}
+};
+
+const getAllConv = function(callback, callbackError) {
+	var transaction = db.transaction("current_conversation", "readonly");
+	var objectStore = transaction.objectStore("current_conversation");
+	var request = objectStore.getAll();
+	request.onerror = function(event) {
+		console.log("Unable to retrieve daa from database!");
+	};
+	request.onsuccess = function(event) {
+		if(request.result) 
+		{
+			console.log(request);
+			stream_to_front({type: "CURRENT_CONV" , body: request.result});
+		}
+		else
+			console.log(request);
+	};
+}
+
+const current_conversation = function(user_id, callback, callbackError) {
+	if (isPrivate())
+	{
+		if (current_conv["user" + user_id])
+			callbackError();
+		else
+			callback();
+	}
+	else
+		getConv(user_id, callbackError, callback);
+};
+
+const getConv = function(user_id, callback, callback_error) {
+	var transaction = db.transaction("current_conversation", "readonly");
+	var objectStore = transaction.objectStore("current_conversation");
+	var request = objectStore.get(parseInt(user_id));
+
+	request.onerror = function(event) {
+		console.log("Unable to retrieve daa from database!");
+	};
+
+	request.onsuccess = function(event) {
+		console.log(event);
+		if(request.result) 
+			callback(request.result);
+		else 
+			callback_error();
+	};
+};
+
+const tryRemoveConv = function(user_id) {
+	getConv(user_id, removeConv, () => {});
+};
+
+const removeConv = function(conv) {
+	var transaction = db.transaction("current_conversation", "readwrite");
+	var objectStore = transaction.objectStore("current_conversation");
+	objectStore.delete(conv.user_id);
+}
 
 const set_socket = function() {
 	if (!socket) {
@@ -10,7 +121,6 @@ const set_socket = function() {
 		socket.onopen = function (event) {
 			socket.send("websocket instantie");
 		};
-
 		socket.onmessage = function (event_ws) {
 			react_to_socket(event_ws);
 		};
@@ -18,6 +128,17 @@ const set_socket = function() {
 }
 
 set_socket();
+
+const isPrivate = function() {
+	return current_conv.isPrivate;
+}
+
+const streamCurrentConv = function(callback) {
+	if (isPrivate())
+		callback(current_conv);
+	else
+		getAllConv(callback, callback)
+}
 
 const get_match = function() {
 	fetch('/user/matches_hashes').then((resp) => {
@@ -27,6 +148,16 @@ const get_match = function() {
 			all_match = JSON.parse(text);
 		});
 	});
+}
+
+const begin = function (object) {
+	if ((object.data || object.data === 0) && !isNaN(object.data))
+	{
+		current_user_id = object.data;
+		prepareDB();
+	}
+	else
+		return;
 }
 
 const stream_to_front = function(to_stream) {
@@ -86,21 +217,32 @@ function normalize_data(data) {
 	return (data.replace(/\+/g, '%2B'));
 }
 
-const open_conv = function (port, objet) {
-	if ((objet.user_id || objet.user_id === 0) && objet.csrf && !current_conversation["user" + objet.user_id]) {
-		let promise = openMessage(objet.user_id, objet.csrf);
-		promise.then((data) => {
-			if (!data)
-				return;
-			data['src'] = objet.src;
-			data['user_id'] = objet.user_id;
-			current_conversation["user" + objet.user_id] = data;
-			data['type'] = "open_conv";
-			port.postMessage(data);
+const open_conv = function (objet) {
+	if ((objet.user_id || objet.user_id === 0) && csrf) {
+		current_conversation(objet.user_id, function() {
+			let promise = openMessage(objet.user_id, csrf);
+			promise.then((data) => {
+				if (!data)
+					return;
+				data['src'] = objet.src;
+				data['user_id'] = objet.user_id;
+				if (isPrivate())
+				{
+					current_conv["user" + objet.user_id] = data;
+					data["type"] = "open_conv";
+					stream_to_front(data);
+				}
+				else
+				{
+					let tmp = data;
+					tmp["type"] = "open_conv";
+					addConv(data, stream_to_front.bind(this, tmp));
+				}
+			});
+		}, function() {
+			stream_to_front({ type: "FALSE" });
 		});
 	}
-	else
-		port.postMessage({ type: "FALSE" });
 }
 
 const sendMessage = async function (objet) {
@@ -124,9 +266,16 @@ const sendMessage = async function (objet) {
 	}
 }
 
-const close_conv = function(id) {
-	if (current_conversation["user" + id])
-		delete(current_conversation["user" + id]);
+const close_conv = function(object) {
+	let id = object.body;
+	if (isPrivate())
+	{
+		if (current_conv["user" + id])
+			delete(current_conv["user" + id]);
+	}
+	else
+		tryRemoveConv(id);
+	stream_to_front({type: 'CLOSE_CONV' ,hash_conv: object.hash_conv});
 }
 
 const handleMessage = function (port, message) {
@@ -134,8 +283,12 @@ const handleMessage = function (port, message) {
 		return;
 	let objet = message.data;
 	switch (objet.type) {
-		case 'onpen_conv':
-			open_conv(port, objet)
+		case 'open_conv':
+			csrf = undefined;
+			if (!(objet.csrf && objet.csrf != "")) 
+				return ;
+			csrf = objet.csrf;
+			open_conv(objet)
 			break;
 		case 'give_me_match':
 			port.postMessage({ type: "all_match", data: all_match });
@@ -144,9 +297,12 @@ const handleMessage = function (port, message) {
 			sendMessage(objet);
 			break;
 		case "CLOSE_CONV":
-			close_conv(objet.body);
+			close_conv(objet);
 			break;
 		case 'get_message':
+			break;
+		case 'YOU_WERE_READY':
+			begin(objet);
 			break;
 		default:
 			connections.forEach(connection => connection.postMessage(objet.type));
@@ -159,10 +315,10 @@ onconnect = function (e) {
 		set_socket();
 	const port = e.ports[0];
 	port.start();
-	port.postMessage({ type: "CURRENT_CONV", body: current_conversation});
 	port.onmessage = function (message) {
 		handleMessage(port, message);
 	}
+	port.postMessage({type: "IM_READY"});
 }
 
 const openMessage = async function (id, csrf) {
@@ -176,6 +332,5 @@ const openMessage = async function (id, csrf) {
 		return false;
 	}
 };
-
 
 get_match();

@@ -20,15 +20,20 @@ const displayChatMessages = function (message_json, id, to_add) {
 	messages.forEach(message => to_add.appendChild(message));
 }
 
-const closeDiscussion = function () {
+const tryDiscussion = function () {
 	if (!(this && worker))
 		return;
-	clearInterval(intervals["user" + this.id]);
+	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id, hash_conv: this.querySelector('span.invisible').id });
+}
+
+const closeDiscussion = function (objet) {
+	let isChatOpen = document.querySelector("span[id='" + objet.hash_conv + "']");
+	if (!isChatOpen)
+		return;
+	let chat_body = isChatOpen.parentNode.parentNode;
+  clearInterval(intervals["user" + this.id]);
 	delete(intervals["user" + this.id]);
-	worker.port.postMessage({ type: "CLOSE_CONV", body: this.id });
-	this.parentNode.removeChild(this);
-	if (window.innerWidth < 700)
-		document.querySelector('#messenger').classList.remove('infront')
+	chat_body.remove();
 }
 
 const display_conv = function (convs) {
@@ -38,6 +43,8 @@ const display_conv = function (convs) {
 const displayNewModalChat = function (objet) {
 	const exemple = document.querySelector("#exemple_chat_modal");
 	const messenger = document.querySelector("#messenger");
+	if (!(exemple && messenger && !(Array.from(document.querySelectorAll("#messenger span.invisible")).filter(elem => elem.id == objet.hash_conv).length)))
+		return;
 	let toDisplay = exemple.cloneNode(true);
 	toDisplay.classList.remove("invisible");
 	if (window.innerWidth < 700)

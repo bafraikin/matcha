@@ -13,6 +13,9 @@ worker.port.onmessage = function (resp) {
 		case "NEW_MATCH":
 			display_notif(json);
 			break;
+		case "IM_READY":
+			im_ready();
+			break;
 		case "CURRENT_CONV":
 			display_conv(json);
 			break;
@@ -33,6 +36,9 @@ worker.port.onmessage = function (resp) {
 			break;
 		case 'UNMATCH':
 			Unmatched_chat(json);
+			break;
+		case 'CLOSE_CONV':
+			closeDiscussion(json);
 			break;
 		default:
 			console.log(json);
