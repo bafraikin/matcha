@@ -117,6 +117,20 @@ p[id="biography"] {
 	word-wrap: break-word;
 	overflow: auto;
 }
+p[id=first_name] {
+	word-wrap: break-word;
+	 overflow: auto;
+}
+
+ p[id=last_name] {
+	word-wrap: break-word;
+	 overflow: auto;
+}
+
+p[id=email] {
+	word-wrap: break-word;
+	overflow: auto;
+}
 
 
 .grid-container {

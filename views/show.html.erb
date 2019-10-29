@@ -26,7 +26,7 @@
 			<p class="form-control" id="biography" contenteditable='true'><%= h(@user.biography) %></p>
 			<input type='submit' value="save">
 		<% else %>
-			<p><%= h(@user.biography) %></p>
+			<p id="biography"><%= h(@user.biography) %></p>
 		<% end %> 
 	</div>
 
@@ -37,7 +37,7 @@
 			<input type='submit' value="save">
 		<% else %>
 			<div class="d-flex justify-content-center" id="<%= @user.id %>">	
-			<p><%= h(@user.first_name) %></p>
+			<p id="first_name"><%= h(@user.first_name) %></p>
 			<div id="status">
 				</div>
 				</div>
@@ -50,7 +50,7 @@
 			<p class="form-control" id="last_name" contenteditable='true'><%= h(@user.last_name) %></p>
 			<input type='submit' value="save">
 		<% else %>
-			<p><%= h(@user.last_name) %></p>
+			<p id="last_name"><%= h(@user.last_name) %></p>
 		<% end %> 
 	</div>
 
@@ -65,7 +65,7 @@
 	<div>
 		<% if current_user.id == @user.id %>
 			<p class="font-weight-bold">Set new password</p>
-			<p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5);" contenteditable='true'></p>
+			<p  id="password" class="form-control"  style="color: transparent; text-shadow: 0 0 5px rgba(20, 20, 20, 0.5); word-wrap: break-word; overflow: auto;" contenteditable='true'></p>
 			<br>
 			<input type='submit' value="save">
 
