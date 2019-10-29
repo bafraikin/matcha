@@ -31,8 +31,8 @@ const closeDiscussion = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
-  clearInterval(intervals["user" + this.id]);
-	delete(intervals["user" + this.id]);
+  clearInterval(intervals["user" + objet.id]);
+	delete(intervals["user" + objet.id]);
 	chat_body.remove();
 }
 

@@ -22,9 +22,6 @@ const prepareDB = function(callback) {
 		console.log("we upgraded db")
 		db = event.target.result;
 		let objectStore = db.createObjectStore("current_conversation", {keyPath: "user_id"});
-		objectStore.transaction.oncomplete = function(event) {
-			var customerObjectStore = db.transaction("current_conversation", "readwrite").objectStore("current_conversation");
-		}
 	};
 	DBOpenRequest.onerror = function(event) {
 		current_conv.isPrivate = true;
@@ -37,10 +34,42 @@ const clear = function () {
 	objetStore.clear();
 }
 
+const update_conv = function(objet) {
+	if (isPrivate())
+		updateConvWorker(objet);
+	else
+		getAllConv(updateConvIndexDB.bind(objet));
+}
+
+const updateConvWorker = function(objet) {
+	Object.keys(current_conv).forEach(function(key) {
+		if (current_conv[key].hash_conv && current_conv[key].hash_conv && current_conv[key].hash_conv == objet.hash_conv)
+		{
+			current_conv[key].messages.push(objet);
+			return;
+		}
+	});
+}
+
+const updateConvIndexDB = function(objet) {
+	if (!(objet && objet.body && objet.body[0] && this && this.hash_conv))
+		return;
+	objet = objet.body;
+	that = this;
+	objet.forEach(function(obj) {
+		if (obj.hash_conv == that.hash_conv)
+		{
+			obj.messages.push(that);
+			addConv(obj, () => {});
+			return;
+		}
+	});
+}
+
 const addConv = function(data, callback) {
 	let transaction = db.transaction("current_conversation", "readwrite");
 	let objectStore = transaction.objectStore("current_conversation");
-	let request = objectStore.add(data);
+	let request = objectStore.put(data);
 
 	transaction.onabort = function(event) {
 		current_conv.isPrivate = true;
@@ -52,7 +81,6 @@ const addConv = function(data, callback) {
 	}
 
 	request.onerror = function(event) {
-		console.log("Unable to add data\r\nPrasad is already exist in your database! ");
 	}
 };
 
@@ -67,7 +95,7 @@ const getAllConv = function(callback, callbackError) {
 		if(request.result) 
 		{
 			console.log(request);
-			stream_to_front({type: "CURRENT_CONV" , body: request.result});
+			callback({type: "CURRENT_CONV" , body: request.result});
 		}
 		else
 			console.log(request);
@@ -135,7 +163,14 @@ const isPrivate = function() {
 
 const streamCurrentConv = function(callback) {
 	if (isPrivate())
-		callback(current_conv);
+	{
+		let tmp = {};
+		let conv = {...current_conv};
+		delete(conv.isPrivate);
+		tmp["type"] = "CURRENT_CONV";
+		tmp["body"] = conv;
+		callback(tmp);
+	}
 	else
 		getAllConv(callback, callback)
 }
@@ -187,6 +222,7 @@ const react_to_socket = function(event_ws) {
 			stream_to_front(json);
 			break;
 		case 'MESSAGE':
+			update_conv(json);
 			stream_to_front(json);
 			break;
 		case 'UNMATCH':
@@ -259,7 +295,11 @@ const sendMessage = async function (objet) {
 		});
 		objet['bool'] = await fetch_json(response);
 		objet['type'] = "MESSAGE";
-		stream_to_front(objet);
+		if (objet['bool'])
+		{
+			update_conv(objet);
+			stream_to_front(objet);
+		}
 	}
 	catch (error) {
 		console.log('Request failed', error);
@@ -275,7 +315,7 @@ const close_conv = function(object) {
 	}
 	else
 		tryRemoveConv(id);
-	stream_to_front({type: 'CLOSE_CONV' ,hash_conv: object.hash_conv});
+	stream_to_front({type: 'CLOSE_CONV', hash_conv: object.hash_conv, id: id});
 }
 
 const handleMessage = function (port, message) {
