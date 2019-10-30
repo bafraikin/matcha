@@ -50,7 +50,7 @@ module NotifHelper
 		send_notif_to(user: user, notif: notif)
 	end
 
-	def send_notif_unmatch(first_user:, second_user:, hash_conv:)
+	def send_notif_unmatch(first_user:, second_user:, hash_conv: nil)
 		notif = Notification.new(type: "UNMATCH")
 		send_notif_to(user: second_user, notif: notif, hash_conv: hash_conv)
 		send_notif_to(user: first_user, notif: notif, hash_conv: hash_conv)

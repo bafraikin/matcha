@@ -12,6 +12,14 @@ class User < MatchaBase
 		[]
 	end
 
+	def messengers
+		query=<<QUERY 
+		MATCH (n:user {email: '#{self.email}'})-[r:MATCH]-(:user)
+		OPTIONAL MATCH(mess:messenger {match_hash: r.data}) RETURN mess
+QUERY
+		self.class.query_transform(query: query)
+	end
+
 	def self.default_value
 		{popularity_score: 20, valuable: false}
 	end
@@ -35,7 +43,7 @@ class User < MatchaBase
 	end
 
 	def has_view(user:)
-			create_links(id: user.id, type: "HAS_VIEW", data: nil)
+		create_links(id: user.id, type: "HAS_VIEW", data: nil)
 	end
 
 	def users_that_looked_my_profile
@@ -126,7 +134,7 @@ QUERY
 				end
 			end
 		end.empty?
-	 bool && filled_in_interest?
+		bool && filled_in_interest?
 	end
 
 	def update_valuable

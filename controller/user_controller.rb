@@ -165,6 +165,9 @@ class UserController < ApplicationController
 
 		get '/destroy' do
 			block_unsigned
+			match = current_user.get_node_related_with(link: "MATCH", type_of_node: ["user"])
+			match.each {|user| send_notif_unmatch(first_user: current_user, second_user: user)}
+			current_user.messengers.each(&:destroy)
 			current_user.destroy
 			session.clear
 			redirect "/"
@@ -226,7 +229,6 @@ class UserController < ApplicationController
 				current_user.update_valuable
 			end
 			pic[0].destroy
-			FileUtils.rm("./assets/pictures/" + pic[0].src)
 			current_user.update_popularity_score(to_add: -10)
 			true.to_json
 		end
