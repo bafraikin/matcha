@@ -4,3 +4,4 @@ assets/pictures/*
 !assets/pictures/root.png
 !assets/pictures/favico.png
 !assets/pictures/*.gif
+!assets/pictures/user0.png
