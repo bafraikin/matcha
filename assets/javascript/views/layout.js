@@ -34,7 +34,7 @@ const closeDiscussion = function (objet) {
 	clearInterval(intervals["user" + objet.id]);
 	delete (intervals["user" + objet.id]);
 	chat_body.remove();
-	if (document.querySelectorAll('#first_name').length == 1)
+	if (document.querySelectorAll('#chat_body').length == 1)
 		document.querySelector('#messenger').classList.remove('infront');
 }
 
@@ -108,6 +108,6 @@ window.onload = () => {
 window.onresize = function () {
 	if (window.innerWidth > 700)
 		document.querySelector('#messenger').classList.remove('infront');
-	if (window.innerWidth < 700)
+	if (window.innerWidth < 700 && document.querySelectorAll('#chat_body').length > 1)
 		document.querySelector('#messenger').classList.add('infront');
 }
