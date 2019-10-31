@@ -21,6 +21,8 @@ class RegistrationController < ApplicationController
 					redirect to('registration/login')
 				elsif a.any?
 					session[:current_user] = a[0]
+					current_user.timestamp = Time.now.to_i
+					current_user.save
 					save_if_valide_coordinate(params[:user][:latitude], params[:user][:longitude])
 					flash[:success] = "Connection reussi"
 					redirect "/"
@@ -35,6 +37,8 @@ class RegistrationController < ApplicationController
 
 		get '/sign_out' do
 			block_unsigned
+			current_user.timestamp = Time.now.to_i
+			current_user.save
 			session.clear
 			flash[:success] = "Deconnecter avec succes"
 			redirect "/"

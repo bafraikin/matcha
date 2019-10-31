@@ -1,15 +1,28 @@
 module UserHelper
 	module Validator
 		def valid_password?(string)
-			if string.nil? || string.size < 8 || string[/\d/].nil? && string[/\w/].nil? || string[/\W/].nil?
+			if string.nil? || string.size < 8 || string[/\d/].nil? && string[/\w/].nil? || string[/\W/].nil? || string.size > 250
 				false
 			else
 				true
 			end
 		end
 
+		def valid_popularity_score?(number)
+			number.is_a?(Integer)
+		end
+
 		def valid_email?(string)
-			if string.nil? || string[/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i].nil?
+			if string.nil? || string[/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i].nil? || string.length > 80
+				false
+			else
+				true
+			end
+		end
+
+		def valid_biography?(string)
+			return true if string.nil?
+			if string.length > 500
 				false
 			else
 				true
@@ -25,7 +38,7 @@ module UserHelper
 		end
 
 		def valid_first_name?(first_name)
-			if first_name.nil? || first_name[/\A\w+\z/].to_s.size < 2
+			if first_name.nil? || first_name[/\A\w+\z/].to_s.size < 2 || first_name.length > 20
 				false
 			else
 				true
@@ -33,7 +46,7 @@ module UserHelper
 		end
 
 		def valid_last_name?(last_name)
-			if last_name.nil? || last_name[/\A(\w|')+\z/].to_s.size < 2
+			if last_name.nil? || last_name[/\A(\w|')+\z/].to_s.size < 2 || last_name.length > 20
 				false
 			else
 				true
@@ -80,6 +93,10 @@ module UserHelper
 
 		def error_sex
 			"Your should have a sex and it should be valid"
+		end
+
+		def error_biography
+			"Way to long, keep it short"
 		end
 
 		def error_first_name

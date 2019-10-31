@@ -1,19 +1,23 @@
 
 const display_notif = function(notif) {
-	const object = JSON.parse(notif.data);
-	switch (object.type) {
+	switch (notif.type) {
 		case 'SOMEONE_LIKED_YOU':
-			console.log("tu plais a quelqu'un petit coquin");
-			create_notif_like(object);
+			display_this_notif(notif);
 			break;
 		case 'NEW_MATCH':
-			console.log("nouveau match");
+			notif_match(notif);
+			break;
+		case 'ERROR':
+			notif_error(notif);
 			break;
 		case 'NEW_MESSAGE':
-			console.log("nouveau message");
+			display_this_notif(notif);
+			break;
+		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
+			display_this_notif(notif);
 			break;
 		default:
-			console.log("something strange happen", object.type);
+			console.log("something strange happen", notif);
 	}
 }
 
@@ -25,13 +29,46 @@ const destroy_it = function() {
 	this.parentNode.removeChild(this);
 }
 
-const create_notif_like = function(notif) {
+const notif_match = function(notif) {
 	const wrapper = document.querySelector("#notif_wrapper");
-	const like_span = document.querySelector("#matcha_like span");
-	let number = parseInt(like_span.innerText);
-	if (!isNaN(number) && number <= 98)
-		like_span.innerText = ++number;
-	like_span.parentNode.classList.add("active");
+	notif = create_notif(notif);
+	if (!(notif && wrapper))
+		return;
+	if (window.innerWidth < 600)
+	{
+		notif.classList.add("alert");
+		notif.classList.add("alert-warning");
+	}
+	else
+	{
+		notif.classList.add("badge");
+		notif.classList.add("badge-warning");
+	}
+	wrapper.append(notif);
+}
+
+const notif_error = function(notif) {
+	const wrapper = document.querySelector("#notif_wrapper");
+	notif = create_notif(notif);
+	if (!(notif && wrapper))
+		return;
+	notif.classList = "";
+	if (window.innerWidth < 600)
+	{
+		notif.classList.add("alert");
+		notif.classList.add("alert-danger");
+	}
+	else
+	{
+		notif.classList.add("badge");
+		notif.classList.add("badge-danger");
+	}
+	wrapper.append(notif);
+}
+
+
+const display_this_notif = function(notif) {
+	const wrapper = document.querySelector("#notif_wrapper");
 	notif = create_notif(notif);
 	wrapper.append(notif);
 }
@@ -59,21 +96,6 @@ const create_notif = function(notif) {
 	body.innerHTML = notif.type.replace(/_/g, " ");
 	tell_this_notif_what_should_remove_it(body);
 	return (body);
-}
-
-const openMessage = function(id) {
-	const myInit = { method: 'GET',cache: 'default' };
-	let csrf = document.querySelector("meta[name=csrf-token]");
-	if (csrf)
-		csrf = csrf.content
-	else
-		return;
-	fetch("/user/open_message?id=" + id + "&authenticity_token=" + normalize_data(csrf), myInit).then((response) => {
-		response.json().then((json) => {
-			if (json.type)
-				;
-		});
-	});
 }
 
 window.onload = () => {

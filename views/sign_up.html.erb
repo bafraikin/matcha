@@ -1,29 +1,47 @@
 		<form action="create" method="post" accept-charset="utf-8">
 			<input type=hidden name='authenticity_token' value="<%=env['rack.session'][:csrf]%>">
+			<div class="row">
+			<div class="col">
 			<label>first_name</label>
-			<input type="text" value="" name="user[first_name]" id="first_name"/>	
+			<input type="text" value="" class="form-control" name="user[first_name]" id="first_name"/>	
+			</div>
+			<div class="col">
 			<label>last_name</label>
-			<input type="text" value="" name="user[last_name]" id=""/>	
+			<input type="text" value="" class="form-control" name="user[last_name]" id="lastname"/>	
+			</div>
+			</div>
+			<div class="row">
+			<div class="col">
 			<label>password</label>
-			<input type="password" value="" name="user[password]" id=""/>	
+			<input type="password" value="" class="form-control" name="user[password]" id="pwd"/>	
+			</div>
+			<div class="col">
 			<label>confirm password</label>
-			<input type="password" value="" name="user[confirm_password]" id=""/>	
+			<input type="password" value=""  class="form-control" name="user[confirm_password]" id="c_pwd"/>	
+			</div>
+			</div>
+			<div class="col">
 			<label>email</label>
-			<input type="email" value="" name="user[email]" id="" placeholder="email"/>	
+			<input type="email" value="" class="form-control" name="user[email]" id="email" placeholder="email"/>	
+			</div>
+			</div>
+			<div class="col">
 			<label>age</label>
-			<input type="numeric" value="" name="user[age]" id=""/>	
+			<input type="numeric" value="" class="form-control" name="user[age]" id="age"/>	
+			</div>
 			<label>sex</label>
-			<select name="user[sex]" id="user[sex]" multiple size="1">
+			<select class="custom-select" name="user[sex]" id="user[sex]" size="1">
 			<%User.gender_pool.each do |gender| %>
 				<option value="<%=gender%>"><%=gender%></option>
 			<%end%>
 			</select>
-			<label>interest</label>
+			<br>
+			<h6>interest :</h6>
 			<%User.gender_pool.each_with_index do |gender, index| %>
-			<div>
-				<input type="checkbox" value="<%=gender%>" name="user[interest<%=index%>]" id=""/>
-				<label><%=gender%></label>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" value="<%=gender%>" name="user[interest<%=index%>]" id="<%=gender%>"/>
+				<label class="form-check-label"><%=gender%></label>
 			</div>
 			<%end%>
-			<input type="submit" value="OK" />		
+			<input class="btn btn-primary mb-2"  type="submit" value="OK" />		
 		</form>

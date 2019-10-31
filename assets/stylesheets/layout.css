@@ -1,3 +1,25 @@
+.invisible {
+	display: none;
+}
+
+.dropdown-menu {
+	max-height: 18vh;
+	overflow: hidden auto;
+	width: 100%;
+}
+
+.dropdown-menu p {
+	font-size: 0.9vw;
+}
+
+#possible_conv_match.card-body {
+	display: block!important;
+}
+
+textarea {
+	resize: none;
+	height: unset;
+}
 
 a.icon {
 	background-color: grey;
@@ -5,21 +27,24 @@ a.icon {
 	margin-left: 10px;
 }
 
-
-
 div.card-footer {
 	display: flex;
 	justify-content: space-around;
-  }
-  
+}
 
 body {
 	padding-top: 56px;
 }
 
+.matcha_text {
+	text-align: center;
+	font-size: 5vh;
+	color: white;
+	margin-top: 10%;
+  }
+  
 .success {
 	background-color: green;
-
 }
 
 .error {
@@ -28,34 +53,81 @@ body {
 
 #notif_wrapper {
 	display: flex;
-	left: 50%;
+	left: 80%;
 	align-content: end;
 	width: 20vw;
 	position: fixed;
 	bottom: 10%;
 	flex-direction: column;
 }
+
 #messenger {
-	bottom: 0%;
+	bottom: 0;
 	position: fixed;
-	height: 50px;
+	height: 0px;
+	/*width: 100%; */
+	display: flex;
+	right: 0%;
+}
+
+#messenger .card-body {
+	display: block;
+}
+
+#badge_chat_left {
+	max-width: 75%;
+	margin-right: 100%;
+}
+
+#badge_chat_right {
+	max-width: 75%;
+	margin-left: 100%;
+}
+
+#messenger .card {
+	width: 250px;
+	bottom: 25vh;
+	height: 25vh;
+	margin-left: 1vw;
+}
+
+#message_sender_invisible {
+	position: relative;
+	float: left;
 }
 
 #messenger .card-header {
 	padding: 0;
+	display: flex;
+	justify-content: space-between;
 }
 
 #messenger .card-footer {
 	padding: 0;
 }
+
 #messenger .card-body {
-	height: 90px;
+	height: 200px;
 	overflow: auto;
 	padding: 0;
 }
 
 p[id="biography"] {
 	height: 20vh;
+	word-wrap: break-word;
+	overflow: auto;
+}
+p[id=first_name] {
+	word-wrap: break-word;
+	 overflow: auto;
+}
+
+ p[id=last_name] {
+	word-wrap: break-word;
+	 overflow: auto;
+}
+
+p[id=email] {
 	word-wrap: break-word;
 	overflow: auto;
 }
@@ -68,12 +140,21 @@ p[id="biography"] {
 	grid-template-areas: ". text text text ." ". text text text ." ". text text text ." ". checkbox checkbox checkbox ." ". . . . .";
 }
 
-.checkbox { grid-area: checkbox;
+.checkbox {
+	grid-area: checkbox;
 	display: inline;
-max-width: 500px; }
+	max-width: 500px;
+}
 
-.text { grid-area: text;
-max-width: 500px; }
+.text {
+	grid-area: text;
+	max-width: 500px;
+}
+
+.infront {
+	height: calc(100% - 55px) !important;
+	z-index: 3;
+}
 
 @media (max-width: 700px) {
 	#notif_wrapper {
@@ -83,6 +164,16 @@ max-width: 500px; }
 	}
 
 	#messenger {
-		display: none;
+		right: 0%;
+		width: 100%;
+	}
+	#messenger .card {
+		margin-left: 0vw;
+		width: 100%;
+		bottom: 0;
+		height: 100%;
+	}
+	#messenger .card-body {
+		height: 100%;
 	}
 }

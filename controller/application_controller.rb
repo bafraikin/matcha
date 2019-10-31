@@ -1,6 +1,7 @@
 
 class ApplicationController < Sinatra::Base
 	include MessengerHelper
+	include NotifHelper
 	register Sinatra::Namespace
 	register Sinatra::Flash
 
@@ -11,13 +12,14 @@ class ApplicationController < Sinatra::Base
 	enable :sessions
 	use Rack::Protection
 	use Rack::Protection::AuthenticityToken
+	set :dump_errors, true
+	
 
 
 	before do
 		headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
 		headers['Access-Control-Allow-Origin'] = 'https://api.ipify.org/?format=json'
 		headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
-
 	  end
 	  
 	  options '*' do
@@ -42,6 +44,7 @@ class ApplicationController < Sinatra::Base
 	end
 
 	def current_user
+		settings.log.info(is_connected?(user: session[:current_user]))
 		session[:current_user]
 	end
 
@@ -49,13 +52,6 @@ class ApplicationController < Sinatra::Base
 		!session[:current_user].nil?
 	end
 
-	def block_unsigned
-		if !user_logged_in?
-			flash[:error] = "You need to sign in"
-			redirect "/"
-			halt
-		end
-	end
 
 	def block_logged_in
 		if user_logged_in?
@@ -73,51 +69,77 @@ class ApplicationController < Sinatra::Base
 		end
 	end
 
+	def halt_unsigned
+			halt if !user_logged_in?
+	end
+
+	def halt_unvalidated
+		halt_unsigned
+		halt if !current_user.account_validated?
+	end
+
+	def halt_unvaluable
+		halt_unvalidated
+		halt if !current_user.is_valuable?
+	end
+
+	def block_unsigned
+		if !user_logged_in?
+			flash[:error] = "You need to sign in"
+			redirect "/"
+			halt
+		end
+	end
+
 	def block_unvalidated
-		if current_user.nil? || !current_user.account_validated?
+		block_unsigned
+		if !current_user.account_validated?
 			flash[:error] = "You need to validate your account"
 			redirect "/"
 			halt
 		end
 	end
 
+	def block_unvaluable
+		block_unvalidated
+		if !current_user.is_valuable?
+			flash[:error] = "Please add more info on your account before"
+			redirect "/"
+			halt
+		end
+	end
+
+	def block_blocked(user:)
+		block_unvaluable
+		if current_user.is_there_a_block_beetwen_us?(user: user)
+			flash[:error] = "Error"
+			redirect "/"
+			halt
+		end
+	end
+
+	def halt_blocked(user:)
+		halt_unvaluable
+		if current_user.is_there_a_block_beetwen_us?(user: user)
+			send_notif_to(user: current_user, notif: Notification.new(type: "ERROR"))
+			halt
+		end
+	end
+	
 	def is_connected?(user:)
 		return false if !user.is_a?(User)
 		!settings.sockets[user.key].nil?
 	end
 
-	def send_notif_to(user:, notif:, from: nil)
-		return if !user.is_a?(User) || !is_connected?(user: user)
-		settings.log.info("sending notif to #{user.key}")
-		notif = notif.to_hash if notif.is_a?(Notification)
-		notif.merge!(from: from.full_name) if from
-		settings.sockets[user.key].send(notif.to_json)
-	end
-
 	get /\/?/ do
 		@users = []
-		if user_logged_in?
-			@users = current_user.find_matchable
-		end
+		@hashtags = Hashtag.all
+		@hashtag_user = user_logged_in? ? current_user.hashtags.map(&:name) : []
 		erb:'matchable.html' 
 	end
 
 	get "/assets/*" do
 		env["PATH_INFO"].sub!("/assets", "")
 		settings.environment.call(env)
-	end
-
-	private	
-	def new_websocket(user:)
-		key = user.key
-		request.websocket do |ws|
-			ws.onopen do
-				settings.sockets[key] = ws
-			end
-			ws.onclose do
-				warn("websocket closed")
-				settings.sockets.delete(key)
-			end
-		end
 	end
 end

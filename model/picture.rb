@@ -19,6 +19,13 @@ class Picture < MatchaBase
 		"root.png"
 	end
 
+	def destroy
+		if File.exist?('assets/pictures/' + src)
+			File.delete('assets/pictures/' + src)
+		end
+		super
+	end
+
 	def self.root
 		if File.exist?(root_path)
 			root =  Picture.where(equality: {src: root_name})
