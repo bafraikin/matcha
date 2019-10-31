@@ -37,6 +37,8 @@ class RegistrationController < ApplicationController
 
 		get '/sign_out' do
 			block_unsigned
+			current_user.timestamp = Time.now.to_i
+			current_user.save
 			session.clear
 			flash[:success] = "Deconnecter avec succes"
 			redirect "/"
