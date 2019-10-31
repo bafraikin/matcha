@@ -5,7 +5,7 @@ const displayChatMessages = function (message_json, id, to_add) {
 	let messages = [];
 	while (message_json[i]) {
 		let elem = document.createElement('p');
-		if (message_json[i].id_user == id) {
+		if ((parseInt(message_json[i].user_id) != id && message_json[i].user_id) || message_json[i].id_user == id) {
 			elem.classList.add("py-1", "px-1", "rounded", "text-justify", "float-left", "bg-warning", "text-black");
 			elem.id = "badge_chat_left";
 		}
