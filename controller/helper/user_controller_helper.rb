@@ -5,7 +5,7 @@ module UserControllerHelper
 	end
 
 	def valid_params_request?(params)
-		params_that_sould_exist = ["min", "max", "sort", "range", "skip", "ascendant", "limit",  "authenticity_token"]
+		params_that_sould_exist = ["min", "max", "pop_min", "pop_max", "sort", "range", "skip", "ascendant", "limit",  "authenticity_token"]
 		possible_sort = ["distance", "age", "interest", "popularity_score"]
 		@hashtags.each {|hash| params_that_sould_exist << "hashtag_" + hash.name[1..]}
 		return false if params.keys - params_that_sould_exist != []
