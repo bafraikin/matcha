@@ -78,10 +78,12 @@ to_fetch = true;
 		const sort = document.querySelector("label.active input[type=radio]");
 		const  min = document.querySelector("input[type=number][name=min]");
 		const  max = document.querySelector("input[type=number][name=max]");
-		if (!csrf || !number || !(number.length) || !limit || !toggle || !hashtags || !sort || !min || !max) 
+		const  pop_min = document.querySelector("input[type=number][name=pop_min]");
+		const  pop_max = document.querySelector("input[type=number][name=pop_max]");
+		if (!csrf || !number || !(number.length) || !limit || !toggle || !hashtags || !sort || !min || !max || !pop_min || !pop_max) 
 			return (-1);
 		number = number.length - 1;
-		params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&sort="+ sort.name  + "&limit=" + limit.value + "&ascendant=" + toggle.checked  + "&min=" + min.value + "&max=" + max.value;
+		params += "authenticity_token=" + normalize_data(csrf.content) + "&skip=" + number + "&range=" + range.value + "&sort="+ sort.name  + "&limit=" + limit.value + "&ascendant=" + toggle.checked  + "&min=" + min.value + "&max=" + max.value + "&pop_min=" + pop_min.value + "&pop_max=" + pop_max.value;
 		hashtags.forEach(hash => params += "&hashtag_" + hash.value.slice(1) + "=" + hash.checked)
 		return (params);
 	}

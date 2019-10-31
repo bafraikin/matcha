@@ -156,7 +156,7 @@ class UserController < ApplicationController
 			@hashtags = Hashtag.all
 			settings.log.info(params)
 			if valid_params_request?(params)
-				@users =  current_user.find_matchable("age >= #{params['min']}", "age <= #{params['max']}", range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]), hashtags: @hashtags, sort_by: params["sort"])
+				@users =  current_user.find_matchable("popularity_score >= #{params['pop_min']}" , "popularity_score <= #{params['pop_max']}", "age >= #{params['min']}", "age <= #{params['max']}", range: params["range"].to_f / 1000, skip: params["skip"].to_i, limit: params["limit"].to_i, asc: JSON.parse(params["ascendant"]), hashtags: @hashtags, sort_by: params["sort"])
 			else
 				return [].to_json
 			end

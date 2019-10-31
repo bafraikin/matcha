@@ -18,6 +18,9 @@ module UserControllerHelper
 		return false if !(params["max"].to_i >= 18 && params["max"].to_i <= 98)
 		return false if !(params["max"].to_i >= params["min"].to_i)
 		return false if !(possible_sort.include?(params["sort"]))
+		return false if (params["pop_max"].nil?)
+		return false if (params["pop_min"].nil?)
+		return false if !(params["pop_min"].to_i < params["pop_max"].to_i)
 		@hashtags = []
 		params_that_sould_exist.each {| param| 
 			if param[/hashtag/]
