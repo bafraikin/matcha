@@ -35,6 +35,8 @@ const clear = function () {
 }
 
 const update_conv = function(objet) {
+	if (objet && objet.user_id)
+		objet["id_user"] = current_user_id;
 	if (isPrivate())
 		updateConvWorker(objet);
 	else
@@ -222,6 +224,7 @@ const react_to_socket = function(event_ws) {
 			stream_to_front(json);
 			break;
 		case 'MESSAGE':
+			debugger;
 			update_conv(json);
 			stream_to_front(json);
 			break;
