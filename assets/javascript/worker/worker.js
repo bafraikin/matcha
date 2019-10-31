@@ -224,7 +224,6 @@ const react_to_socket = function(event_ws) {
 			stream_to_front(json);
 			break;
 		case 'MESSAGE':
-			debugger;
 			update_conv(json);
 			stream_to_front(json);
 			break;
