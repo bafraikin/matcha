@@ -299,10 +299,8 @@ const sendMessage = async function (objet) {
 		objet['bool'] = await fetch_json(response);
 		objet['type'] = "MESSAGE";
 		if (objet['bool'])
-		{
 			update_conv(objet);
-			stream_to_front(objet);
-		}
+		stream_to_front(objet);
 	}
 	catch (error) {
 		console.log('Request failed', error);
