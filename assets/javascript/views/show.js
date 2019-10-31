@@ -7,17 +7,6 @@ function send_like(id)
 	req.open('POST', '/user/toggle_like', true);
 	req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	req.setRequestHeader("HTTP_X_CSRF_TOKEN", csrf);
-
-	req.onreadystatechange = function(event) 
-	{
-		if (this.readyState === XMLHttpRequest.DONE)
-		{
-			if (this.status === 200) 
-				console.log("Réponse recu");
-			else 
-				console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
-		}
-	}
 	req.send("id=" + encodeURI(id) + "&authenticity_token=" + normalize_data(csrf));
 }
 

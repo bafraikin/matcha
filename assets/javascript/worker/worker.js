@@ -19,7 +19,6 @@ const prepareDB = function(callback) {
 		streamCurrentConv(stream_to_front);
 	};
 	DBOpenRequest.onupgradeneeded = function(event) {
-		console.log("we upgraded db")
 		db = event.target.result;
 		let objectStore = db.createObjectStore("current_conversation", {keyPath: "user_id"});
 	};
@@ -95,12 +94,7 @@ const getAllConv = function(callback, callbackError) {
 	};
 	request.onsuccess = function(event) {
 		if(request.result) 
-		{
-			console.log(request);
-			callback({type: "CURRENT_CONV" , body: request.result});
-		}
-		else
-			console.log(request);
+			callback({type: "CURRENT_CONV" , body: request.result});	
 	};
 }
 
@@ -126,7 +120,6 @@ const getConv = function(user_id, callback, callback_error) {
 	};
 
 	request.onsuccess = function(event) {
-		console.log(event);
 		if(request.result) 
 			callback(request.result);
 		else 
@@ -224,7 +217,6 @@ const react_to_socket = function(event_ws) {
 			stream_to_front(json);
 			break;
 		case 'MESSAGE':
-			debugger;
 			update_conv(json);
 			stream_to_front(json);
 			break;
