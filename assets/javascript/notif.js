@@ -2,7 +2,7 @@
 const display_notif = function(notif) {
 	switch (notif.type) {
 		case 'SOMEONE_LIKED_YOU':
-			create_notif_like(notif);
+			display_this_notif(notif);
 			break;
 		case 'NEW_MATCH':
 			notif_match(notif);
@@ -11,10 +11,10 @@ const display_notif = function(notif) {
 			notif_error(notif);
 			break;
 		case 'NEW_MESSAGE':
-			create_notif_like(notif);
+			display_this_notif(notif);
 			break;
 		case 'SOMEONE_HAS_SAW_YOUR_PROFILE':
-			create_notif_like(notif);
+			display_this_notif(notif);
 			break;
 		default:
 			console.log("something strange happen", notif);
@@ -67,13 +67,8 @@ const notif_error = function(notif) {
 }
 
 
-const create_notif_like = function(notif) {
+const display_this_notif = function(notif) {
 	const wrapper = document.querySelector("#notif_wrapper");
-	const like_span = document.querySelector("#matcha_like span");
-	let number = parseInt(like_span.innerText);
-	if (!isNaN(number) && number <= 98)
-		like_span.innerText = ++number;
-	like_span.parentNode.classList.add("active");
 	notif = create_notif(notif);
 	wrapper.append(notif);
 }
