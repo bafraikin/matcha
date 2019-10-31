@@ -60,7 +60,8 @@ class UserController < ApplicationController
 		end
 
 		post '/send_message' do
-			halt_unvaluable
+			halt_unsigned
+			return false.to_json if !current_user.is_valuable?
 			request.body.rewind
 			@param = JSON.parse request.body.read
 			user = User.find(id: @param["user_id"].to_i)

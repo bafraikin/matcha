@@ -44,7 +44,6 @@ class ApplicationController < Sinatra::Base
 	end
 
 	def current_user
-		settings.log.info(is_connected?(user: session[:current_user]))
 		session[:current_user]
 	end
 

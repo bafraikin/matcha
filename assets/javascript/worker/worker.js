@@ -139,7 +139,7 @@ const removeConv = function(conv) {
 
 const set_socket = function() {
 	if (!socket) {
-		socket = new WebSocket("ws:/user/socket");
+		socket = new WebSocket("ws://localhost:4567/user/socket");
 
 		socket.onopen = function (event) {
 			socket.send("websocket instantie");
