@@ -31,9 +31,11 @@ const closeDiscussion = function (objet) {
 	if (!isChatOpen)
 		return;
 	let chat_body = isChatOpen.parentNode.parentNode;
-  clearInterval(intervals["user" + objet.id]);
-	delete(intervals["user" + objet.id]);
+	clearInterval(intervals["user" + objet.id]);
+	delete (intervals["user" + objet.id]);
 	chat_body.remove();
+	if (document.querySelectorAll('#first_name').length == 1)
+		document.querySelector('#messenger').classList.remove('infront');
 }
 
 const display_conv = function (convs) {
@@ -58,21 +60,21 @@ const displayNewModalChat = function (objet) {
 	messenger.appendChild(toDisplay);
 }
 
-const updateChat = function(that, text) {
+const updateChat = function (that, text) {
 	if (!(that && text && text != ""))
 		return;
 	if (text.match(/true/))
 		that.querySelector("#status").innerHTML = "<div class='text-success'><i class='fa fa-bandcamp'></i></div>"
 	else
-		that.querySelector("#status").innerHTML =  "<div class='text-muted'>il y a " + Math.floor((new Date().getTime() - (JSON.parse(text) * 1000)) / 1000 / 60) + " min</div>";
+		that.querySelector("#status").innerHTML = "<div class='text-muted'>il y a " + Math.floor((new Date().getTime() - (JSON.parse(text) * 1000)) / 1000 / 60) + " min</div>";
 }
 
-const isOnline = function(id) {
+const isOnline = function (id) {
 	if (!this)
 		return;
 	const that = this;
 	fetch("/user/is_online/" + id).then(resp => resp.text().then((text) => {
-			updateChat(that, text);
+		updateChat(that, text);
 	}
 	).catch(error => console.log(error, 1))).catch(error => console.log(error));
 }
