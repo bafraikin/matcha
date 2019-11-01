@@ -1,3 +1,5 @@
+ruby '2.6.3'
+
 source 'https://rubygems.org' do
 	gem 'neo4j-core'
 	gem 'pry-byebug'
